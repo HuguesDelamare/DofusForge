@@ -10,7 +10,6 @@ routes = Blueprint('routes', __name__)
 def index():
     return render_template("index.html")
 
-
 @routes.route("/ingredient_prices", methods=['POST'])
 def save_ingredient_prices():
     try:
@@ -59,7 +58,6 @@ def save_ingredient_prices():
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
-
 @routes.route("/api/last_component_price/<int:component_id>", methods=["GET"])
 def last_component_price(component_id):
     """
@@ -82,7 +80,6 @@ def last_component_price(component_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
-
 
 @routes.route("/api/last_recipes/<int:item_id>", methods=['GET'])
 def get_last_recipes(item_id):
@@ -114,7 +111,6 @@ def get_last_recipes(item_id):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
 
 @routes.route('/track_resource', methods=['POST'])
 @login_required
@@ -149,7 +145,6 @@ def track_resource():
         return jsonify({'message': f"La ressource '{resource_name}' est maintenant suivie."}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
 
 @routes.route('/trackings', methods=['GET'])
 @login_required
