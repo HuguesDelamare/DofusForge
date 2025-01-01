@@ -111,3 +111,20 @@ main {
     color: green;
     font-weight: bold;
 }
+
+.track-btn {
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+.track-btn i {
+    font-size: 1.2rem;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.track-btn:hover i {
+    color: #ff0000;
+    transform: scale(1.2);
+}

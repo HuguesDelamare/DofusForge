@@ -253,13 +253,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Création d’une ligne d’ingrédient dans le tableau
     function createIngredientRow(itemData, quantity, ingredientId) {
         const row = ingredientTableBody.insertRow();
         row.dataset.ingredientId = ingredientId;
-
-        row.dataset.oldPrice = itemData.oldPrice || 0;  // dernier prix en DB
-
+    
+        row.dataset.oldPrice = itemData.oldPrice || 0; // dernier prix en DB
+    
         // 7 cellules
         const imageCell = row.insertCell();
         const ingredientCell = row.insertCell();
@@ -268,22 +267,62 @@ document.addEventListener('DOMContentLoaded', function() {
         const totalCell = row.insertCell();
         const evoCell = row.insertCell();
         const actionCell = row.insertCell();
-
+    
         // Ajout du bouton Track
         actionCell.innerHTML = `
             <button 
-                class="btn btn-primary btn-sm track-btn" 
+                class="btn btn-sm track-btn" 
                 data-id="${ingredientId}" 
-                data-name="${itemData.name.fr}">
+                data-name="${itemData.name.fr}" 
+                data-tracked="false" 
+                title="Ajouter au suivi">
                 <i class="bi bi-bookmark"></i>
             </button>
         `;
-
+    
         const trackButton = actionCell.querySelector('.track-btn');
+    
+        // Gestion des clics
         trackButton.addEventListener('click', function () {
-            trackResource(ingredientId, itemData.name.fr);
+            const isTracked = this.getAttribute("data-tracked") === "true";
+            const icon = this.querySelector("i");
+    
+            if (isTracked) {
+                // Enlever le suivi
+                trackResource(ingredientId, itemData.name.fr, false);
+                this.setAttribute("data-tracked", "false");
+                icon.className = "bi bi-bookmark";
+                this.setAttribute("title", "Ajouter au suivi");
+            } else {
+                // Ajouter au suivi
+                trackResource(ingredientId, itemData.name.fr, true);
+                this.setAttribute("data-tracked", "true");
+                icon.className = "bi bi-bookmark-check-fill";
+                this.setAttribute("title", "Suivi activé");
+            }
         });
-
+    
+        // Gestion du survol
+        trackButton.addEventListener('mouseenter', function () {
+            const isTracked = this.getAttribute("data-tracked") === "true";
+            const icon = this.querySelector("i");
+    
+            if (isTracked) {
+                icon.className = "bi bi-bookmark-x-fill"; // Icône pour indiquer qu'on peut enlever
+                this.setAttribute("title", "Supprimer du suivi");
+            }
+        });
+    
+        trackButton.addEventListener('mouseleave', function () {
+            const isTracked = this.getAttribute("data-tracked") === "true";
+            const icon = this.querySelector("i");
+    
+            if (isTracked) {
+                icon.className = "bi bi-bookmark-check-fill"; // Retour à l'icône de suivi activé
+                this.setAttribute("title", "Suivi activé");
+            }
+        });
+    
         // IMAGE
         if (itemData.img) {
             imageCell.innerHTML = `
@@ -296,27 +335,28 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             imageCell.textContent = "Pas d'image";
         }
-
+    
         // NOM
         ingredientCell.textContent = itemData.name.fr;
-
+    
         // QUANTITÉ
         quantityCell.textContent = quantity || "Quantité non définie";
-
+    
         // INPUT PRIX/unité
         const priceInput = document.createElement('input');
         priceInput.type = 'number';
         priceInput.className = 'form-control form-control-sm no-spinners price-input';
         priceCell.appendChild(priceInput);
-
+    
         // TOTAL
         totalCell.textContent = "0";
-
+    
         // ÉVOLUTION
         evoCell.innerHTML = `<span style="color: gray;">N/A</span>`;
-
+    
         priceInput.addEventListener('input', updateRowTotal);
     }
+    
 
     // Recalcule total de la ligne + flèche
     function updateRowTotal(event) {
@@ -500,11 +540,12 @@ document.addEventListener('DOMContentLoaded', function() {
     //  AJOUT DES FONCTIONS POUR LE SUIVI
     // -------------------------------------------
 
-    function trackResource(resourceId, resourceName, currentPrice) {
-        fetch('/track_resource', {
+    function trackResource(resourceId, resourceName, addToTrack) {
+        const endpoint = addToTrack ? '/track_resource' : '/untrack_resource';
+        fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ resource_id: resourceId, resource_name: resourceName, current_price: currentPrice })
+            body: JSON.stringify({ resource_id: resourceId, resource_name: resourceName })
         })
         .then(response => {
             if (!response.ok) {
@@ -514,11 +555,11 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(data => {
             if (data.message) {
-                alert(data.message);
+                console.log(data.message);
             } else {
-                alert("Erreur : " + data.error);
+                console.error("Erreur : ", data.error);
             }
         })
         .catch(error => console.error("Erreur lors du suivi : ", error));
     }
-});
+    
