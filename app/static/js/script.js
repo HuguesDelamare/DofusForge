@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const hiddenItemIdInput = document.getElementById('selected-item-id');
     const historiqueTableBody = document.getElementById('historique-table-body');
     const itemImageContainer = document.getElementById('item-image-container');
-
+    
     const TAX_RATE = 0.02;
     let currentRecipeData = null;
     let autoCompleteTimeout;
@@ -266,7 +266,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const quantityCell = row.insertCell();
         const priceCell = row.insertCell();
         const totalCell = row.insertCell();
-        const evoCell   = row.insertCell();
+        const evoCell = row.insertCell();
+        const trackcell = row.insertCell();
 
         // IMAGE
         if (itemData.img) {
@@ -478,5 +479,43 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         return ingredientPrices;
+    }
+
+ // -------------------------------------------
+    //  AJOUT DES FONCTIONS POUR LE SUIVI
+    // -------------------------------------------
+
+    function trackResource(resourceId, resourceName, currentPrice) {
+        fetch('/track_resource', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ resource_id: resourceId, resource_name: resourceName, current_price: currentPrice })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                alert(data.message);
+            } else {
+                alert("Erreur : " + data.error);
+            }
+        })
+        .catch(error => console.error("Erreur lors du suivi : ", error));
+    }
+    
+    function untrackResource(resourceId) {
+        fetch('/untrack_resource', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ resource_id: resourceId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                alert(data.message);
+            } else {
+                alert("Erreur : " + data.error);
+            }
+        })
+        .catch(error => console.error("Erreur lors de l'annulation du suivi : ", error));
     }
 });

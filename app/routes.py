@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, jsonify, request
 from app import db
-from app.models import ComponentsPrice, Recipe
+from app.models import ComponentsPrice, Recipe, TrackedResource
 from flask_login import current_user
 
 routes = Blueprint('routes', __name__)
@@ -114,3 +114,68 @@ def get_last_recipes(item_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+from app.models import TrackedResource
+
+@routes.route('/track_resource', methods=['POST'])
+def track_resource():
+    try:
+        if not current_user.is_authenticated:
+            return jsonify({"error": "Utilisateur non authentifié"}), 401
+
+        data = request.get_json()
+        resource_id = data.get('resource_id')
+        resource_name = data.get('resource_name')
+        current_price = data.get('current_price', 0)
+
+        if not resource_id or not resource_name:
+            return jsonify({"error": "Données incomplètes"}), 400
+
+        tracked = TrackedResource.query.filter_by(
+            user_id=current_user.id, resource_id=resource_id
+        ).first()
+
+        if tracked:
+            return jsonify({"message": "Cette ressource est déjà suivie"}), 200
+
+        new_tracked = TrackedResource(
+            user_id=current_user.id,
+            resource_id=resource_id,
+            resource_name=resource_name,
+            current_price=current_price
+        )
+        db.session.add(new_tracked)
+        db.session.commit()
+        return jsonify({"message": "Ressource suivie avec succès"}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+
+@routes.route('/untrack_resource', methods=['POST'])
+def untrack_resource():
+    try:
+        if not current_user.is_authenticated:
+            return jsonify({"error": "Utilisateur non authentifié"}), 401
+
+        data = request.get_json()
+        resource_id = data.get('resource_id')
+
+        if not resource_id:
+            return jsonify({"error": "ID de la ressource manquant"}), 400
+
+        tracked = TrackedResource.query.filter_by(
+            user_id=current_user.id, resource_id=resource_id
+        ).first()
+
+        if not tracked:
+            return jsonify({"error": "Ressource non trouvée"}), 404
+
+        db.session.delete(tracked)
+        db.session.commit()
+        return jsonify({"message": "Ressource retirée du suivi"}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500

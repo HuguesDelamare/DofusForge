@@ -106,3 +106,8 @@ main {
     flex-direction: column;
     min-height: 100vh;
 }
+
+.track-btn.tracked {
+    color: green;
+    font-weight: bold;
+}
