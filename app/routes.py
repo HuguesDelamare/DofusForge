@@ -1,27 +1,17 @@
 from flask import Blueprint, render_template, jsonify, request
 from app import db
 from app.models import ComponentsPrice, Recipe
+from flask_login import current_user
 
 routes = Blueprint('routes', __name__)
 
 @routes.route("/")
 def index():
-    """Page d'accueil : renvoie vers le template index.html."""
     return render_template("index.html")
 
 
 @routes.route("/ingredient_prices", methods=['POST'])
 def save_ingredient_prices():
-    """
-    Reçoit le JSON suivant :
-    {
-      "item_id": 123,
-      "item_name": "Nom",
-      "item_price": 999,        # Prix HDV
-      "item_craft_price": 555,  # Prix du craft
-      "components": [ {componentId:..., price:...}, ... ]
-    }
-    """
     try:
         data = request.get_json()
         if not data:
@@ -30,7 +20,6 @@ def save_ingredient_prices():
         item_id = data.get('item_id')
         item_name = data.get('item_name', "").strip()
         item_price = data.get('item_price')
-        # Nouveau champ : prix du craft
         item_craft_price = data.get('item_craft_price', 0)
         components = data.get('components')
 
@@ -40,6 +29,7 @@ def save_ingredient_prices():
             item_name=item_name,
             item_price=item_price,
             item_craft_price=item_craft_price
+            user_id=current_user.id
         )
         db.session.add(recipe)
 
@@ -115,6 +105,7 @@ def get_last_recipes(item_id):
                 "item_craft_price": r.item_craft_price,
                 "item_price": r.item_price,              
                 "date_recorded": r.date_recorded.isoformat()
+                "username": r.user.username
             })
 
         return jsonify(data), 200

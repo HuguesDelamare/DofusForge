@@ -111,6 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <td>${recipe.item_name}</td>
                         <td>${formatNumber(recipe.item_craft_price)} kamas</td>
                         <td>${formatNumber(recipe.item_price)} kamas</td>
+                        <td>${recipe.username}</td>
                         <td>${dateLocale}</td>
                     `;
                     historiqueTableBody.appendChild(row);

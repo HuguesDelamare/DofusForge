@@ -29,13 +29,14 @@ class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     item_id = db.Column(db.Integer, nullable=False)
     item_name = db.Column(db.String(255), nullable=False)
-    item_price = db.Column(db.Integer, nullable=False)  # Prix HDV
-    item_craft_price = db.Column(db.Integer, nullable=False, default=0)  # Prix du craft
-
+    item_price = db.Column(db.Integer, nullable=False)
+    item_craft_price = db.Column(db.Integer, nullable=False, default=0)
     date_recorded = db.Column(
         db.DateTime,
         default=lambda: datetime.now(timezone.utc).replace(second=0, microsecond=0)
     )
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user = db.relationship('User', backref='recipes')
 
     def __repr__(self):
         return (
