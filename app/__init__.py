@@ -1,8 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_login import LoginManager, UserMixin
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import LoginManager
 import os
 
 # Initialisation des extensions globales
@@ -13,6 +12,7 @@ login_manager.login_view = 'auth.login'
 
 @login_manager.user_loader
 def load_user(user_id):
+    from .models import User  # Import dynamique pour éviter les conflits
     return User.query.get(int(user_id))
 
 def create_app():
@@ -41,19 +41,3 @@ def create_app():
     app.register_blueprint(auth, url_prefix='/auth')
 
     return app
-
-class User(UserMixin, db.Model):
-    __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
-
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
-
-    def __repr__(self):
-        return f'<User {self.username}>'
