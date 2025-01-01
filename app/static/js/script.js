@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         row.dataset.oldPrice = itemData.oldPrice || 0;  // dernier prix en DB
 
-        // 6 cellules
+        // 7 cellules
         const imageCell = row.insertCell();
         const ingredientCell = row.insertCell();
         const quantityCell = row.insertCell();
