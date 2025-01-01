@@ -60,10 +60,6 @@ def save_ingredient_prices():
 
 @routes.route("/api/last_component_price/<int:component_id>", methods=["GET"])
 def last_component_price(component_id):
-    """
-    Récupère le dernier prix enregistré pour un composant donné (component_id).
-    Tri par date_recorded desc et prend le premier.
-    """
     try:
         last_record = (ComponentsPrice.query
                        .filter_by(component_id=component_id)
@@ -83,11 +79,6 @@ def last_component_price(component_id):
 
 @routes.route("/api/last_recipes/<int:item_id>", methods=['GET'])
 def get_last_recipes(item_id):
-    """
-    Récupère les 10 dernières recettes pour un 'item_id' donné,
-    triées par date_recorded décroissante.
-    Inclut le nom d'utilisateur ayant ajouté la recette.
-    """
     try:
         recipes = (Recipe.query
                    .filter_by(item_id=item_id)
@@ -104,7 +95,7 @@ def get_last_recipes(item_id):
                 "item_craft_price": r.item_craft_price,
                 "item_price": r.item_price,
                 "date_recorded": r.date_recorded.isoformat(),
-                "added_by": r.user.username if r.user else "Inconnu"  # Relation User <-> Recipe
+                "added_by": r.user.username if r.user else "Inconnu"
             })
 
         return jsonify(data), 200
@@ -116,7 +107,7 @@ def get_last_recipes(item_id):
 @login_required
 def track_resource():
     try:
-        data = request.get_json()  # Récupère les données JSON de la requête
+        data = request.get_json()
         resource_id = data.get('resource_id')
         resource_name = data.get('resource_name')
         current_price = data.get('current_price')
@@ -124,7 +115,6 @@ def track_resource():
         if not resource_id or not resource_name:
             return jsonify({'error': 'Invalid data'}), 400
 
-        # Vérifier si la ressource est déjà suivie par l'utilisateur
         existing_tracking = TrackedResource.query.filter_by(
             user_id=current_user.id,
             resource_id=resource_id
@@ -133,7 +123,6 @@ def track_resource():
         if existing_tracking:
             return jsonify({'message': f"La ressource '{resource_name}' est déjà suivie."}), 200
 
-        # Ajouter une nouvelle ressource suivie
         new_tracking = TrackedResource(
             user_id=current_user.id,
             resource_id=resource_id,
@@ -149,11 +138,11 @@ def track_resource():
 @routes.route('/trackings', methods=['GET'])
 @login_required
 def trackings():
-    # Requête pour récupérer toutes les ressources suivies par l'utilisateur
     trackings = db.session.query(
         TrackedResource.resource_name,
         ComponentsPrice.component_price.label("last_price"),
-        ComponentsPrice.date_recorded
+        ComponentsPrice.date_recorded,
+        TrackedResource.resource_id
     ).join(
         ComponentsPrice, TrackedResource.resource_id == ComponentsPrice.component_id
     ).filter(
@@ -163,3 +152,21 @@ def trackings():
     ).all()
 
     return render_template('trackings.html', trackings=trackings)
+
+@routes.route('/api/resource_history/<int:resource_id>', methods=['GET'])
+@login_required
+def resource_history(resource_id):
+    try:
+        history = (ComponentsPrice.query
+                   .filter_by(component_id=resource_id)
+                   .order_by(ComponentsPrice.date_recorded.asc())
+                   .all())
+
+        data = [{
+            "date_recorded": record.date_recorded.strftime('%Y-%m-%d'),
+            "price": record.component_price
+        } for record in history]
+
+        return jsonify(data), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

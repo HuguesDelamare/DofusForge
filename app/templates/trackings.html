@@ -4,23 +4,45 @@
 {% block content %}
 <div class="container mt-5">
     <h1>Mes Trackings</h1>
-    <table class="table table-bordered table-hover">
-        <thead>
-            <tr>
-                <th>Nom de la ressource</th>
-                <th>Dernier prix</th>
-                <th>Date de mise à jour</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for tracking in trackings %}
-            <tr>
-                <td>{{ tracking.resource_name }}</td>
-                <td>{{ tracking.last_price }} kamas</td>
-                <td>{{ tracking.date_recorded.strftime('%d/%m/%Y %H:%M') }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="row">
+        <!-- Tableau des ressources trackées -->
+        <div class="col-md-6">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Nom de la ressource</th>
+                        <th>Dernier prix</th>
+                        <th>Date de mise à jour</th>
+                        <th>Voir graphique</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tracking in trackings %}
+                    <tr>
+                        <td>{{ tracking.resource_name }}</td>
+                        <td>{{ tracking.last_price }} kamas</td>
+                        <td>{{ tracking.date_recorded.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>
+                            <button 
+                                class="btn btn-primary btn-sm view-graph-btn" 
+                                data-id="{{ tracking.resource_id }}" 
+                                data-name="{{ tracking.resource_name }}">
+                                Voir
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section du graphique -->
+        <div class="col-md-6">
+            <div id="graph-container">
+                <h3 id="graph-title">Graphique des prix</h3>
+                <canvas id="price-chart" style="max-height: 400px;"></canvas>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
