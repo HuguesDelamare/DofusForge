@@ -43,8 +43,17 @@ class Recipe(db.Model):
             f"date={self.date_recorded}>"
         )
 
+class TrackedResource(db.Model):
+    __tablename__ = 'tracked_resources'
 
-    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    resource_id = db.Column(db.Integer, nullable=False)
+    resource_name = db.Column(db.String(255), nullable=False)
+    date_tracked = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', backref='tracked_resources')
+
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
