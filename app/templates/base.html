@@ -20,6 +20,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Liens principaux -->
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="/">Accueil</a>
@@ -27,14 +28,17 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/about">À propos</a>
                     </li>
+                    <!-- Onglet Tracking pour les utilisateurs authentifiés -->
                     {% if current_user.is_authenticated %}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url_for('routes.trackings') }}">Trackings</a>
                         </li>
                     {% endif %}
                 </ul>
+    
                 <!-- Boutons d'inscription et de connexion -->
                 <ul class="navbar-nav ms-auto">
+                    {% if current_user.is_authenticated %}
                         <li class="nav-item">
                             <a class="nav-link" href="/auth/profile">{{ current_user.username }}</a>
                         </li>
@@ -53,6 +57,7 @@
             </div>
         </div>
     </nav>
+    
     
 
     <!-- Contenu principal -->
