@@ -275,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 class="btn btn-primary btn-sm track-btn" 
                 data-id="${ingredientId}" 
                 data-name="${itemData.name.fr}">
-                Track
+                <i class="bi bi-bookmark"></i>
             </button>
         `;
 
@@ -500,20 +500,25 @@ document.addEventListener('DOMContentLoaded', function() {
     //  AJOUT DES FONCTIONS POUR LE SUIVI
     // -------------------------------------------
 
-    function trackResource(resourceId, resourceName) {
+    function trackResource(resourceId, resourceName, currentPrice) {
         fetch('/track_resource', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ resource_id: resourceId, resource_name: resourceName })
+            body: JSON.stringify({ resource_id: resourceId, resource_name: resourceName, current_price: currentPrice })
         })
-            .then(response => response.json())
-            .then(data => {
-                if (data.message) {
-                    alert(data.message);
-                } else {
-                    alert("Erreur : " + data.error);
-                }
-            })
-            .catch(error => console.error("Erreur lors du suivi : ", error));
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json(); // Parse le JSON si la réponse est correcte
+        })
+        .then(data => {
+            if (data.message) {
+                alert(data.message);
+            } else {
+                alert("Erreur : " + data.error);
+            }
+        })
+        .catch(error => console.error("Erreur lors du suivi : ", error));
     }
 });

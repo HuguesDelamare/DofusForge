@@ -1,6 +1,7 @@
+import datetime
 from flask import Blueprint, render_template, jsonify, request
 from app import db
-from app.models import ComponentsPrice, Recipe, TrackedResource
+from app.models import ComponentsPrice, Recipe, TrackedResource, db
 from flask_login import current_user, login_required
 
 routes = Blueprint('routes', __name__)
@@ -114,35 +115,41 @@ def get_last_recipes(item_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
 @routes.route('/track_resource', methods=['POST'])
 @login_required
 def track_resource():
-    data = request.get_json()
-    resource_id = data.get('resource_id')
-    resource_name = data.get('resource_name')
+    try:
+        data = request.get_json()  # Récupère les données JSON de la requête
+        resource_id = data.get('resource_id')
+        resource_name = data.get('resource_name')
+        current_price = data.get('current_price')
 
-    if not resource_id or not resource_name:
-        return jsonify({'error': 'Données manquantes'}), 400
+        if not resource_id or not resource_name:
+            return jsonify({'error': 'Invalid data'}), 400
 
-    # Vérifie si la ressource est déjà suivie
-    existing_tracking = TrackedResource.query.filter_by(
-        user_id=current_user.id, resource_id=resource_id
-    ).first()
+        # Vérifier si la ressource est déjà suivie par l'utilisateur
+        existing_tracking = TrackedResource.query.filter_by(
+            user_id=current_user.id,
+            resource_id=resource_id
+        ).first()
 
-    if existing_tracking:
-        return jsonify({'message': f"Ressource '{resource_name}' déjà suivie."}), 200
+        if existing_tracking:
+            return jsonify({'message': f"La ressource '{resource_name}' est déjà suivie."}), 200
 
-    # Ajoute un nouveau suivi
-    tracking = TrackedResource(
-        user_id=current_user.id,
-        resource_id=resource_id,
-        resource_name=resource_name,
-        date_tracked=datetime.utcnow()
-    )
-    db.session.add(tracking)
-    db.session.commit()
+        # Ajouter une nouvelle ressource suivie
+        new_tracking = TrackedResource(
+            user_id=current_user.id,
+            resource_id=resource_id,
+            resource_name=resource_name
+        )
+        db.session.add(new_tracking)
+        db.session.commit()
 
-    return jsonify({'message': f"Ressource '{resource_name}' ajoutée au suivi."}), 200
+        return jsonify({'message': f"La ressource '{resource_name}' est maintenant suivie."}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 
 @routes.route('/trackings', methods=['GET'])
 @login_required
