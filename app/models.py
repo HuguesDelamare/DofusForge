@@ -23,7 +23,6 @@ class ComponentsPrice(db.Model):
             f"date={self.date_recorded}>"
         )
 
-
 class Recipe(db.Model):
     __tablename__ = 'recipes'
     id = db.Column(db.Integer, primary_key=True)
@@ -31,12 +30,11 @@ class Recipe(db.Model):
     item_name = db.Column(db.String(255), nullable=False)
     item_price = db.Column(db.Integer, nullable=False)
     item_craft_price = db.Column(db.Integer, nullable=False, default=0)
-    date_recorded = db.Column(
-        db.DateTime,
-        default=lambda: datetime.now(timezone.utc).replace(second=0, microsecond=0)
-    )
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    user = db.relationship('User', backref='recipes')
+    date_recorded = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+    # Relation avec User
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user = db.relationship('User', backref='recipes', lazy=True)
 
     def __repr__(self):
         return (
@@ -44,6 +42,7 @@ class Recipe(db.Model):
             f"item_price={self.item_price}, craft_price={self.item_craft_price}, "
             f"date={self.date_recorded}>"
         )
+
     
 class User(UserMixin, db.Model):
     __tablename__ = 'users'

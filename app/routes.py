@@ -88,6 +88,7 @@ def get_last_recipes(item_id):
     """
     Récupère les 10 dernières recettes pour un 'item_id' donné,
     triées par date_recorded décroissante.
+    Inclut le nom d'utilisateur ayant ajouté la recette.
     """
     try:
         recipes = (Recipe.query
@@ -103,12 +104,13 @@ def get_last_recipes(item_id):
                 "item_id": r.item_id,
                 "item_name": r.item_name,
                 "item_craft_price": r.item_craft_price,
-                "item_price": r.item_price,              
+                "item_price": r.item_price,
                 "date_recorded": r.date_recorded.isoformat(),
-                "username": r.user.username
+                "added_by": r.user.username if r.user else "Inconnu"  # Relation User <-> Recipe
             })
 
         return jsonify(data), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
