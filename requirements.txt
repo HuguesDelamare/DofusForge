@@ -35,3 +35,5 @@ typing_extensions==4.12.2
 tzdata==2022.6
 Werkzeug==2.3.6
 psycopg2-binary==2.9.7
+gunicorn==20.1.0
+
