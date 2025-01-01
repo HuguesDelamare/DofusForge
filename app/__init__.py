@@ -30,10 +30,6 @@ def create_app():
     # Importer les modèles
     from .models import User, ComponentsPrice, Recipe
 
-    # Créer les tables si elles n'existent pas
-    with app.app_context():
-        db.create_all()
-
     # Enregistrer les routes
     from .routes import routes
     from .auth_routes import auth
