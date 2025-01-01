@@ -1,0 +1,23 @@
+# Fichiers de cache de Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtualenv
+env/
+venv/
+
+# Fichiers de log
+*.log
+
+# Fichiers de configuration personnelle
+*.env
+*.secret
+
+# Base de données locale
+*.sqlite
+
+# Autres
+.DS_Store
+.idea/
+.vscode/

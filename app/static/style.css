@@ -1,0 +1,108 @@
+html,
+body {
+   height: 100%;
+   margin: 0;
+   padding: 0;
+}
+
+main {
+    flex: 1;
+}
+
+/* 
+ * TABLEAU 
+ */
+.table-custom {
+    --bs-table-bg: #f8f9fa;
+    --bs-table-striped-bg: #e9ecef;
+    --bs-table-hover-bg: #dee2e6;
+    --bs-table-border-color: #ced4da;
+}
+
+.table-custom th,
+.table-custom td {
+    border-color: var(--bs-table-border-color) !important;
+    padding: 12px !important;
+}
+
+.table-custom thead th {
+    background-color: #0d6efd; 
+    color: #fff; 
+    padding: 15px 20px !important;
+    text-align: center;
+}
+
+.profit {
+    background-color: #c8e6c9 !important; /* Vert clair */
+}
+
+.loss {
+    background-color: #ffcdd2 !important; /* Rouge clair */
+}
+
+#ingredient-table {
+    text-align: center;
+}
+
+.no-spinners::-webkit-inner-spin-button,
+.no-spinners::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.no-spinners {
+    -moz-appearance: textfield;
+}
+
+/* Alignement vertical des inputs si nécessaire */
+.align-middle-input input {
+    vertical-align: middle !important;
+}
+
+/* 
+ * BOUTONS 
+ */
+.button-row {
+    display: flex;
+    gap: 10px;               
+    justify-content: flex-end; 
+    margin-top: 1rem;
+}
+
+/* 
+ * AUTOCOMPLETE 
+ */
+#result {
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ddd;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    width: 100%;
+}
+
+.autocomplete-item {
+    padding: 8px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+.autocomplete-item:hover {
+    background-color: #f0f0f0;
+}
+
+/* 
+ * FOOTER 
+ */
+.footer {
+    margin: 0 auto;      
+    text-align: center;  
+    padding: 10px;
+    background-color: #f8f9fa;
+    margin-top: 2rem;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
