@@ -45,18 +45,15 @@ class Recipe(db.Model):
 
 class TrackedResource(db.Model):
     __tablename__ = 'tracked_resources'
+
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     resource_id = db.Column(db.Integer, nullable=False)
     resource_name = db.Column(db.String(255), nullable=False)
-    current_price = db.Column(db.Integer, nullable=True)
-    date_tracked = db.Column(
-        db.DateTime,
-        default=lambda: datetime.now(timezone.utc).replace(second=0, microsecond=0)
-    )
+    date_tracked = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def __repr__(self):
-        return f"<TrackedResource {self.resource_name} by user {self.user_id}>"
+    user = db.relationship('User', backref='tracked_resources')
+
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'

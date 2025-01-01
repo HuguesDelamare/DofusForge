@@ -27,10 +27,14 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/about">À propos</a>
                     </li>
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('routes.trackings') }}">Trackings</a>
+                        </li>
+                    {% endif %}
                 </ul>
                 <!-- Boutons d'inscription et de connexion -->
                 <ul class="navbar-nav ms-auto">
-                    {% if current_user.is_authenticated %}
                         <li class="nav-item">
                             <a class="nav-link" href="/auth/profile">{{ current_user.username }}</a>
                         </li>

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Mes Trackings{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Mes Trackings</h1>
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Nom de la ressource</th>
+                <th>Dernier prix</th>
+                <th>Date de mise à jour</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tracking in trackings %}
+            <tr>
+                <td>{{ tracking.resource_name }}</td>
+                <td>{{ tracking.last_price }} kamas</td>
+                <td>{{ tracking.date_recorded.strftime('%d/%m/%Y %H:%M') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, jsonify, request
 from app import db
 from app.models import ComponentsPrice, Recipe, TrackedResource
-from flask_login import current_user
+from flask_login import current_user, login_required
 
 routes = Blueprint('routes', __name__)
 
@@ -114,68 +114,50 @@ def get_last_recipes(item_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
-from app.models import TrackedResource
-
 @routes.route('/track_resource', methods=['POST'])
+@login_required
 def track_resource():
-    try:
-        if not current_user.is_authenticated:
-            return jsonify({"error": "Utilisateur non authentifié"}), 401
+    data = request.get_json()
+    resource_id = data.get('resource_id')
+    resource_name = data.get('resource_name')
 
-        data = request.get_json()
-        resource_id = data.get('resource_id')
-        resource_name = data.get('resource_name')
-        current_price = data.get('current_price', 0)
+    if not resource_id or not resource_name:
+        return jsonify({'error': 'Données manquantes'}), 400
 
-        if not resource_id or not resource_name:
-            return jsonify({"error": "Données incomplètes"}), 400
+    # Vérifie si la ressource est déjà suivie
+    existing_tracking = TrackedResource.query.filter_by(
+        user_id=current_user.id, resource_id=resource_id
+    ).first()
 
-        tracked = TrackedResource.query.filter_by(
-            user_id=current_user.id, resource_id=resource_id
-        ).first()
+    if existing_tracking:
+        return jsonify({'message': f"Ressource '{resource_name}' déjà suivie."}), 200
 
-        if tracked:
-            return jsonify({"message": "Cette ressource est déjà suivie"}), 200
+    # Ajoute un nouveau suivi
+    tracking = TrackedResource(
+        user_id=current_user.id,
+        resource_id=resource_id,
+        resource_name=resource_name,
+        date_tracked=datetime.utcnow()
+    )
+    db.session.add(tracking)
+    db.session.commit()
 
-        new_tracked = TrackedResource(
-            user_id=current_user.id,
-            resource_id=resource_id,
-            resource_name=resource_name,
-            current_price=current_price
-        )
-        db.session.add(new_tracked)
-        db.session.commit()
-        return jsonify({"message": "Ressource suivie avec succès"}), 200
+    return jsonify({'message': f"Ressource '{resource_name}' ajoutée au suivi."}), 200
 
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": str(e)}), 500
+@routes.route('/trackings', methods=['GET'])
+@login_required
+def trackings():
+    # Requête pour récupérer toutes les ressources suivies par l'utilisateur
+    trackings = db.session.query(
+        TrackedResource.resource_name,
+        ComponentsPrice.component_price.label("last_price"),
+        ComponentsPrice.date_recorded
+    ).join(
+        ComponentsPrice, TrackedResource.resource_id == ComponentsPrice.component_id
+    ).filter(
+        TrackedResource.user_id == current_user.id
+    ).order_by(
+        ComponentsPrice.date_recorded.desc()
+    ).all()
 
-
-@routes.route('/untrack_resource', methods=['POST'])
-def untrack_resource():
-    try:
-        if not current_user.is_authenticated:
-            return jsonify({"error": "Utilisateur non authentifié"}), 401
-
-        data = request.get_json()
-        resource_id = data.get('resource_id')
-
-        if not resource_id:
-            return jsonify({"error": "ID de la ressource manquant"}), 400
-
-        tracked = TrackedResource.query.filter_by(
-            user_id=current_user.id, resource_id=resource_id
-        ).first()
-
-        if not tracked:
-            return jsonify({"error": "Ressource non trouvée"}), 404
-
-        db.session.delete(tracked)
-        db.session.commit()
-        return jsonify({"message": "Ressource retirée du suivi"}), 200
-
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": str(e)}), 500
+    return render_template('trackings.html', trackings=trackings)

@@ -267,7 +267,22 @@ document.addEventListener('DOMContentLoaded', function() {
         const priceCell = row.insertCell();
         const totalCell = row.insertCell();
         const evoCell = row.insertCell();
-        const trackcell = row.insertCell();
+        const actionCell = row.insertCell();
+
+        // Ajout du bouton Track
+        actionCell.innerHTML = `
+            <button 
+                class="btn btn-primary btn-sm track-btn" 
+                data-id="${ingredientId}" 
+                data-name="${itemData.name.fr}">
+                Track
+            </button>
+        `;
+
+        const trackButton = actionCell.querySelector('.track-btn');
+        trackButton.addEventListener('click', function () {
+            trackResource(ingredientId, itemData.name.fr);
+        });
 
         // IMAGE
         if (itemData.img) {
@@ -485,37 +500,20 @@ document.addEventListener('DOMContentLoaded', function() {
     //  AJOUT DES FONCTIONS POUR LE SUIVI
     // -------------------------------------------
 
-    function trackResource(resourceId, resourceName, currentPrice) {
+    function trackResource(resourceId, resourceName) {
         fetch('/track_resource', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ resource_id: resourceId, resource_name: resourceName, current_price: currentPrice })
+            body: JSON.stringify({ resource_id: resourceId, resource_name: resourceName })
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.message) {
-                alert(data.message);
-            } else {
-                alert("Erreur : " + data.error);
-            }
-        })
-        .catch(error => console.error("Erreur lors du suivi : ", error));
-    }
-    
-    function untrackResource(resourceId) {
-        fetch('/untrack_resource', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ resource_id: resourceId })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.message) {
-                alert(data.message);
-            } else {
-                alert("Erreur : " + data.error);
-            }
-        })
-        .catch(error => console.error("Erreur lors de l'annulation du suivi : ", error));
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);
+                } else {
+                    alert("Erreur : " + data.error);
+                }
+            })
+            .catch(error => console.error("Erreur lors du suivi : ", error));
     }
 });

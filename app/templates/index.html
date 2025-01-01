@@ -3,7 +3,6 @@
 
 {% block content %}
 <div class="wrapper d-flex flex-column">
-
     <main class="container mt-5">
         <h1 class="mb-4 text-center">Calculateur de prix Dofus</h1>
 
@@ -15,8 +14,7 @@
                     id="search-input" 
                     placeholder="Recherchez un objet..." 
                     class="form-control" 
-                    aria-label="Rechercher un objet"
-                >
+                    aria-label="Rechercher un objet">
             </div>
             <div id="result" class="autocomplete-container mt-2 shadow-sm rounded bg-white border"></div>
         </div>
@@ -25,9 +23,7 @@
         <input type="hidden" id="selected-item-id" value="">
 
         <!-- Container pour l'image de l'objet principal -->
-        <div id="item-image-container" class="my-3 text-center">
-            <!-- L’image de l’objet principal sera insérée ici via JS -->
-        </div>
+        <div id="item-image-container" class="my-3 text-center"></div>
 
         <div class="row g-4">
             <!-- Tableau des ingrédients -->
@@ -35,8 +31,7 @@
                 <div class="table-responsive">
                     <table 
                         class="table table-custom table-striped table-hover align-middle text-center" 
-                        id="ingredient-table"
-                    >
+                        id="ingredient-table">
                         <thead class="table-dark">
                             <tr>
                                 <th scope="col">Image</th>
@@ -45,12 +40,12 @@
                                 <th scope="col">Prix /u</th>
                                 <th scope="col">Total</th>
                                 <th scope="col">Évolution</th>
-                                <th scope="col">Suivi</th>
+                                <th scope="col">Action</th>
                             </tr>
                         </thead>
                         <tbody id="ingredient-table-body">
                             <tr>
-                                <td colspan="6" class="text-center fst-italic text-muted">
+                                <td colspan="7" class="text-center fst-italic text-muted">
                                     Veuillez rechercher un objet.
                                 </td>
                             </tr>
@@ -94,39 +89,9 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Historique des crafts (depuis la DB) -->
-            <div class="mt-5">
-                <h3 class="text-center">Historique (depuis la DB)</h3>
-                <div class="table-responsive">
-                    <table 
-                        class="table table-bordered table-hover table-sm align-middle text-center" 
-                        id="historique-table"
-                    >
-                        <thead class="table-primary">
-                            <tr>
-                                <th scope="col">Nom</th>
-                                <th scope="col">Prix du craft</th>
-                                <th scope="col">Prix HDV</th>
-                                <th scope="col">Ajouté par</th>
-                                <th scope="col">Date</th>
-                                <th scope="col">Suivi<th>
-                            </tr>
-                        </thead>
-                        <tbody id="historique-table-body">
-                            <tr>
-                                <td colspan="4" class="text-center fst-italic text-muted">
-                                    Aucun historique disponible.
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </div>
     </main>
 </div>
 
 <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 {% endblock %}
