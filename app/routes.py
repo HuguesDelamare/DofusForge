@@ -28,7 +28,7 @@ def save_ingredient_prices():
             item_id=item_id,
             item_name=item_name,
             item_price=item_price,
-            item_craft_price=item_craft_price
+            item_craft_price=item_craft_price,
             user_id=current_user.id
         )
         db.session.add(recipe)
