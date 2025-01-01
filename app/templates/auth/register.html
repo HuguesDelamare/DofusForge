@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Créer un compte</h1>
+    <form method="POST" action="{{ url_for('auth.register') }}">
+        <div class="mb-3">
+            <label for="username" class="form-label">Nom d'utilisateur</label>
+            <input 
+                type="text" 
+                class="form-control" 
+                id="username" 
+                name="username" 
+                placeholder="Entrez votre nom d'utilisateur"
+                required>
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Adresse Email</label>
+            <input 
+                type="email" 
+                class="form-control" 
+                id="email" 
+                name="email" 
+                placeholder="Entrez votre email"
+                required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Mot de passe</label>
+            <input 
+                type="password" 
+                class="form-control" 
+                id="password" 
+                name="password" 
+                placeholder="Entrez un mot de passe"
+                required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Créer un compte</button>
+    </form>
+
+    <p class="text-center mt-3">
+        Vous avez déjà un compte ? <a href="{{ url_for('auth.login') }}">Connectez-vous ici</a>.
+    </p>
+</div>
+{% endblock %}
