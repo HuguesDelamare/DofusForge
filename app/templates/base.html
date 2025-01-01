@@ -32,7 +32,7 @@
                 <ul class="navbar-nav ms-auto">
                     {% if current_user.is_authenticated %}
                         <li class="nav-item">
-                            <a class="nav-link" href="/profile">{{ current_user.username }}</a>
+                            <a class="nav-link" href="/auth/profile">{{ current_user.username }}</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="/auth/logout">Se déconnecter</a>
