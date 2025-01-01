@@ -104,7 +104,7 @@ def get_last_recipes(item_id):
                 "item_name": r.item_name,
                 "item_craft_price": r.item_craft_price,
                 "item_price": r.item_price,              
-                "date_recorded": r.date_recorded.isoformat()
+                "date_recorded": r.date_recorded.isoformat(),
                 "username": r.user.username
             })
 
