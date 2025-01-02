@@ -58,3 +58,15 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return f'<User {self.username}>'
+    
+class TrackedResource(db.Model):
+    __tablename__ = 'tracked_resources'
+    id = db.Column(db.Integer, primary_key=True)  # Identifiant unique
+    component_id = db.Column(db.Integer, nullable=False)  # Identifiant du composant (lié à l'API ou à votre BD)
+    component_name = db.Column(db.String(255), nullable=False)  # Nom du composant
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # ID de l'utilisateur
+    user = db.relationship('User', backref='tracked_resources', lazy=True)  # Relation avec le modèle User
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)  # Date de suivi
+
+    def __repr__(self):
+        return f"<TrackedResource {self.component_name} (User: {self.user_id})>"

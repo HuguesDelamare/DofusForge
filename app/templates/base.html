@@ -27,14 +27,14 @@
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="/">Accueil</a>
                     </li>
-                    <!-- Onglet Tracking pour les utilisateurs authentifiés -->
+                    <!-- Onglet "My Trackings" pour les utilisateurs authentifiés -->
                     {% if current_user.is_authenticated %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('routes.trackings') }}">Trackings</a>
+                            <a class="nav-link" href="{{ url_for('routes.my_trackings') }}">My Trackings</a>
                         </li>
                     {% endif %}
                 </ul>
-    
+            
                 <!-- Boutons d'inscription et de connexion -->
                 <ul class="navbar-nav ms-auto">
                     {% if current_user.is_authenticated %}
@@ -53,7 +53,7 @@
                         </li>
                     {% endif %}
                 </ul>
-            </div>
+            </div>            
         </div>
     </nav>
     

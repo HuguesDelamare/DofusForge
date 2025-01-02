@@ -17,6 +17,29 @@ document.addEventListener('DOMContentLoaded', function() {
     const cache = new Map();
 
     // -------------------------------------------
+    //  Chargement des données de suivi au chargement de la page
+    // -------------------------------------------
+
+    const itemId = hiddenItemIdInput.value; // Récupère l'ID de l'item sélectionné
+
+    if (itemId) {
+        fetch(`/get_craft_data/${itemId}`)
+            .then(response => response.json())
+            .then(components => {
+                // Parcourir les composants et les ajouter au tableau
+                components.forEach(component => {
+                    createIngredientRow(
+                        component,
+                        component.quantity,
+                        component.component_id,
+                        component.isTracked // Le suivi est déterminé par le backend
+                    );
+                });
+            })
+            .catch(error => console.error("Erreur lors de la récupération des données :", error));
+    }
+
+    // -------------------------------------------
     //  FONCTIONS UTILITAIRES
     // -------------------------------------------
 
@@ -187,7 +210,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function displayRecipe(recipeData, itemId) {
         ingredientTableBody.innerHTML = "";
-
+    
         if (recipeData.img) {
             itemImageContainer.innerHTML = `
                 <img 
@@ -199,7 +222,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             itemImageContainer.innerHTML = "";
         }
-
+    
         if (recipeData && recipeData.ingredients && recipeData.quantities) {
             if (recipeData.ingredients.length === 0) {
                 resultDiv.innerHTML = `ID de l'objet : ${itemId} - OK<br>Cet objet n'a pas de recette.`;
@@ -212,7 +235,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 currentRecipeData = null;
                 return;
             }
-
+    
             const ingredientPromises = recipeData.ingredients.map((ingredient, index) => {
                 return fetch(`https://api.dofusdb.fr/items/${ingredient.id}?lang=fr`)
                     .then(itemResponse => {
@@ -227,15 +250,29 @@ document.addEventListener('DOMContentLoaded', function() {
                                 return dbRes.json();
                             })
                             .then(dbData => {
-                                itemData.oldPrice = dbData.last_price || 0;
-                                createIngredientRow(itemData, recipeData.quantities[index], ingredient.id);
+                                // Vérification si le composant est suivi
+                                return fetch(`/my_trackings`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                                    .then(trackResponse => {
+                                        if (!trackResponse.ok) throw new Error(`Erreur HTTP ${trackResponse.status}`);
+                                        return trackResponse.json();
+                                    })
+                                    .then(trackData => {
+                                        const isTracked = trackData.some(tracked => tracked.component_id === ingredient.id);
+                                        itemData.oldPrice = dbData.last_price || 0;
+                                        createIngredientRow(
+                                            itemData,
+                                            recipeData.quantities[index],
+                                            ingredient.id,
+                                            isTracked
+                                        );
+                                    });
                             });
                     })
                     .catch(error => {
                         console.error("Erreur lors de la récupération d'un ingrédient / prix DB :", error);
                     });
             });
-
+    
             Promise.all(ingredientPromises).then(() => {
                 resultDiv.innerHTML = `ID de l'objet : ${itemId} - OK`;
                 ajouterButton.style.display = "block";
@@ -252,13 +289,14 @@ document.addEventListener('DOMContentLoaded', function() {
             currentRecipeData = null;
         }
     }
-
-    function createIngredientRow(itemData, quantity, ingredientId) {
+    
+    // Fonction pour créer une ligne dans le tableau des ingrédients
+    function createIngredientRow(itemData, quantity, ingredientId, isTracked) {
         const row = ingredientTableBody.insertRow();
         row.dataset.ingredientId = ingredientId;
-    
-        row.dataset.oldPrice = itemData.oldPrice || 0; // dernier prix en DB
-    
+
+        row.dataset.oldPrice = itemData.oldPrice || 0; // Dernier prix en DB
+
         // 7 cellules
         const imageCell = row.insertCell();
         const ingredientCell = row.insertCell();
@@ -267,62 +305,68 @@ document.addEventListener('DOMContentLoaded', function() {
         const totalCell = row.insertCell();
         const evoCell = row.insertCell();
         const actionCell = row.insertCell();
-    
+
         // Ajout du bouton Track
         actionCell.innerHTML = `
             <button 
                 class="btn btn-sm track-btn" 
                 data-id="${ingredientId}" 
                 data-name="${itemData.name.fr}" 
-                data-tracked="false" 
-                title="Ajouter au suivi">
-                <i class="bi bi-bookmark"></i>
+                data-tracked="${isTracked}" 
+                title="${isTracked ? "Suivi activé" : "Ajouter au suivi"}">
+                <i class="${isTracked ? "bi bi-bookmark-check-fill" : "bi bi-bookmark"}"></i>
             </button>
         `;
-    
+
         const trackButton = actionCell.querySelector('.track-btn');
-    
+
         // Gestion des clics
         trackButton.addEventListener('click', function () {
-            const isTracked = this.getAttribute("data-tracked") === "true";
+            const isCurrentlyTracked = this.getAttribute("data-tracked") === "true";
             const icon = this.querySelector("i");
-    
-            if (isTracked) {
+
+            if (isCurrentlyTracked) {
+                console.log(`Untracking component: ${ingredientId}, ${itemData.name.fr}`);
                 // Enlever le suivi
-                trackResource(ingredientId, itemData.name.fr, false);
-                this.setAttribute("data-tracked", "false");
-                icon.className = "bi bi-bookmark";
-                this.setAttribute("title", "Ajouter au suivi");
+                untrackComponent(
+                    ingredientId,
+                    itemData.name.fr,
+                    this,
+                    icon
+                );
             } else {
+                console.log(`Tracking component: ${ingredientId}, ${itemData.name.fr}`);
                 // Ajouter au suivi
-                trackResource(ingredientId, itemData.name.fr, true);
-                this.setAttribute("data-tracked", "true");
-                icon.className = "bi bi-bookmark-check-fill";
-                this.setAttribute("title", "Suivi activé");
+                trackComponent(
+                    ingredientId,
+                    itemData.name.fr,
+                    this,
+                    icon
+                );
             }
         });
-    
+
         // Gestion du survol
         trackButton.addEventListener('mouseenter', function () {
-            const isTracked = this.getAttribute("data-tracked") === "true";
+            const isCurrentlyTracked = this.getAttribute("data-tracked") === "true";
             const icon = this.querySelector("i");
-    
-            if (isTracked) {
+
+            if (isCurrentlyTracked) {
                 icon.className = "bi bi-bookmark-x-fill"; // Icône pour indiquer qu'on peut enlever
                 this.setAttribute("title", "Supprimer du suivi");
             }
         });
-    
+
         trackButton.addEventListener('mouseleave', function () {
-            const isTracked = this.getAttribute("data-tracked") === "true";
+            const isCurrentlyTracked = this.getAttribute("data-tracked") === "true";
             const icon = this.querySelector("i");
-    
-            if (isTracked) {
+
+            if (isCurrentlyTracked) {
                 icon.className = "bi bi-bookmark-check-fill"; // Retour à l'icône de suivi activé
                 this.setAttribute("title", "Suivi activé");
             }
         });
-    
+
         // IMAGE
         if (itemData.img) {
             imageCell.innerHTML = `
@@ -335,28 +379,27 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             imageCell.textContent = "Pas d'image";
         }
-    
+
         // NOM
         ingredientCell.textContent = itemData.name.fr;
-    
+
         // QUANTITÉ
         quantityCell.textContent = quantity || "Quantité non définie";
-    
+
         // INPUT PRIX/unité
         const priceInput = document.createElement('input');
         priceInput.type = 'number';
         priceInput.className = 'form-control form-control-sm no-spinners price-input';
         priceCell.appendChild(priceInput);
-    
+
         // TOTAL
         totalCell.textContent = "0";
-    
+
         // ÉVOLUTION
         evoCell.innerHTML = `<span style="color: gray;">N/A</span>`;
-    
+
         priceInput.addEventListener('input', updateRowTotal);
     }
-    
 
     // Recalcule total de la ligne + flèche
     function updateRowTotal(event) {
@@ -541,17 +584,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // -------------------------------------------
 
     function trackResource(resourceId, resourceName, addToTrack) {
-        const endpoint = addToTrack ? '/track_resource' : '/untrack_resource';
+        const endpoint = addToTrack ? '/track_component' : '/untrack_component';
         fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ resource_id: resourceId, resource_name: resourceName })
+            body: JSON.stringify({ component_id: resourceId, component_name: resourceName })
         })
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
-            return response.json(); // Parse le JSON si la réponse est correcte
+            return response.json();
         })
         .then(data => {
             if (data.message) {
@@ -561,5 +604,43 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .catch(error => console.error("Erreur lors du suivi : ", error));
+    }
+
+    function trackComponent(id, name, button, icon) {
+        fetch('/track_component', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ component_id: id, component_name: name })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                button.dataset.tracked = "true";
+                icon.className = "bi bi-bookmark-check-fill";
+                button.title = "Suivi activé";
+            } else {
+                alert('Erreur lors du suivi.');
+            }
+        })
+        .catch(error => console.error('Erreur lors du suivi :', error));
+    } 
+
+    function untrackComponent(id, name, button, icon) {
+        fetch('/untrack_component', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ component_id: id })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                button.dataset.tracked = "false";
+                icon.className = "bi bi-bookmark";
+                button.title = "Ajouter au suivi";
+            } else {
+                alert('Erreur lors de la suppression du suivi.');
+            }
+        })
+        .catch(error => console.error('Erreur lors de la suppression :', error));
     }
 });

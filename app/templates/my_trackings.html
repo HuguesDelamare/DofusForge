@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Mes Suivis{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Mes Suivis</h1>
+    <p>Vous pouvez suivre jusqu'à <strong>15 composants</strong>.</p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nom du Composant</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="tracking-table-body">
+            <!-- Les lignes seront générées dynamiquement -->
+        </tbody>
+    </table>
+
+    <!-- Section pour afficher le graphique -->
+    <div id="resource-info" style="display: none; margin-top: 20px;">
+        <h3 id="resource-title">Informations sur la ressource</h3>
+        <canvas id="resource-chart" width="400" height="200"></canvas>
+    </div>    
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/my_trackings.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Librairie pour le graphique -->
+{% endblock %}

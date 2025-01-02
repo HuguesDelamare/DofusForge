@@ -1,7 +1,7 @@
 import datetime
 from flask import Blueprint, render_template, jsonify, request
 from app import db
-from app.models import ComponentsPrice, Recipe, TrackedResource, db
+from app.models import ComponentsPrice, TrackedResource, Recipe, db
 from flask_login import current_user, login_required
 
 routes = Blueprint('routes', __name__)
@@ -102,4 +102,129 @@ def get_last_recipes(item_id):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@routes.route("/my_trackings", methods=["GET"])
+@login_required
+def my_trackings():
+    # Récupérer les suivis de l'utilisateur connecté
+    tracked_resources = TrackedResource.query.filter_by(user_id=current_user.id).all()
+
+    # Si c'est une requête AJAX (JSON demandé)
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return jsonify([
+            {"component_id": t.component_id, "component_name": t.component_name}
+            for t in tracked_resources
+        ])
+
+    # Sinon, rendre la page HTML
+    return render_template(
+        "my_trackings.html",
+        tracked_resources=tracked_resources
+    )
+
+@routes.route("/track_component", methods=["POST"])
+@login_required
+def track_component():
+    data = request.get_json()
+    component_id = data.get("component_id")
+    component_name = data.get("component_name")
+
+    if not component_id or not component_name:
+        return jsonify({"error": "Données invalides"}), 400
+
+    # Vérifiez si l'utilisateur a déjà atteint la limite
+    count = TrackedResource.query.filter_by(user_id=current_user.id).count()
+    if count >= 15:
+        return jsonify({"error": "Vous ne pouvez pas suivre plus de 15 composants."}), 400
+
+    # Vérifiez si le composant est déjà suivi
+    existing = TrackedResource.query.filter_by(
+        component_id=component_id,
+        user_id=current_user.id
+    ).first()
+
+    if existing:
+        return jsonify({"message": "Composant déjà suivi"}), 200
+
+    # Ajoutez le composant à la base de données
+    new_tracking = TrackedResource(
+        component_id=component_id,
+        component_name=component_name,
+        user_id=current_user.id
+    )
+    db.session.add(new_tracking)
+    db.session.commit()
+
+    return jsonify({"message": "Composant ajouté au suivi"}), 201
+
+@routes.route("/untrack_component", methods=["POST"])
+@login_required
+def untrack_component():
+    data = request.get_json()
+    component_id = data.get("component_id")
+
+    # Vérifiez que le composant existe pour cet utilisateur
+    tracked = TrackedResource.query.filter_by(
+        component_id=component_id,
+        user_id=current_user.id
+    ).first()
+
+    if not tracked:
+        return jsonify({"error": "Composant non trouvé"}), 404
+
+    # Supprimez le composant
+    db.session.delete(tracked)
+    db.session.commit()
+
+    return jsonify({"message": "Composant supprimé du suivi"}), 200
+
+@routes.route("/get_craft_data/<int:item_id>", methods=["GET"])
+@login_required
+def get_craft_data(item_id):
+    try:
+        # Récupérer les composants de la recette pour l'item donné
+        recipe = Recipe.query.filter_by(item_id=item_id).first()
+        if not recipe:
+            return jsonify({"error": "Recette introuvable"}), 404
+
+        # Adaptez en fonction de la structure de vos données pour les composants
+        components = [
+            {
+                "component_id": c.component_id,
+                "component_name": c.component_name,
+                "quantity": c.quantity,
+                "is_tracked": TrackedResource.query.filter_by(
+                    component_id=c.component_id,
+                    user_id=current_user.id
+                ).first() is not None
+            }
+            for c in recipe.components  # Exemple : si les composants sont liés à la recette
+        ]
+
+        return jsonify(components), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@routes.route("/get_resource_data/<int:component_id>", methods=["GET"])
+@login_required
+def get_resource_data(component_id):
+    try:
+        # Récupérer toutes les entrées de prix pour le composant
+        prices = ComponentsPrice.query.filter_by(component_id=component_id).order_by(ComponentsPrice.date_recorded.asc()).all()
+
+        if not prices:
+            return jsonify({"error": "Aucune donnée trouvée pour ce composant."}), 404
+
+        data = {
+            "component_id": component_id,
+            "component_name": prices[0].component_id if prices else "Inconnu",
+            "prices": [{"date": p.date_recorded.isoformat(), "price": p.component_price} for p in prices]
+        }
+
+        return jsonify(data), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
