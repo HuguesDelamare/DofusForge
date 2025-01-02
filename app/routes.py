@@ -184,6 +184,7 @@ def resource_history(resource_id):
         return jsonify({"error": str(e)}), 500
 
 
+
 @routes.route('/api/is_tracked/<int:resource_id>', methods=['GET'])
 @login_required
 def is_tracked(resource_id):
