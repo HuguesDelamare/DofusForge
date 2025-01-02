@@ -213,3 +213,17 @@ def get_tracked_ids():
         return jsonify(tracked_ids), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@routes.route('/api/search', methods=['GET'])
+def search_items():
+    term = request.args.get('term', '').strip()
+    if not term:
+        return jsonify({"error": "No search term provided"}), 400
+
+    try:
+        url = f"https://api.beta.dofusdb.fr/items?slug.fr={term}"
+        response = requests.get(url)
+        response.raise_for_status()
+        return jsonify(response.json()), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

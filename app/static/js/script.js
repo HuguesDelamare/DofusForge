@@ -2,16 +2,16 @@ document.addEventListener('DOMContentLoaded', async function () {
     const searchInput = document.getElementById('search-input');
     const resultDiv = document.getElementById('result');
     const ingredientTableBody = document.getElementById('ingredient-table-body');
-    const resetButton = document.getElementById('reset-button');
     const ajouterButton = document.getElementById('ajouter-recette');
     const itemImageContainer = document.getElementById('item-image-container');
     let trackedIds = []; // Liste des IDs suivis
+    const cache = new Map();
 
     // -------------------------------------------
     //  FONCTIONS UTILITAIRES
     // -------------------------------------------
 
-    async function fetchWithCache(url, cache) {
+    async function fetchWithCache(url) {
         if (cache.has(url)) {
             return cache.get(url);
         }
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         try {
             const response = await fetch('/api/tracked_ids');
             if (!response.ok) throw new Error(`Erreur HTTP ${response.status}`);
-            trackedIds = await response.json(); // Charge les IDs suivis
+            trackedIds = await response.json(); // Charger les IDs suivis
         } catch (error) {
             console.error('Erreur lors du chargement des IDs suivis :', error);
         }
@@ -61,12 +61,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 console.log(data.message);
                 updateTrackIcon(button, addToTrack);
 
-                // Mettez à jour localement les IDs suivis
-                if (addToTrack) {
-                    trackedIds.push(parseInt(resourceId));
-                } else {
-                    trackedIds = trackedIds.filter(id => id !== parseInt(resourceId));
-                }
+                // Recharge les IDs suivis pour maintenir la cohérence
+                await loadTrackedIds();
             } else {
                 console.error("Erreur : ", data.error);
             }
