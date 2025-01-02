@@ -17,7 +17,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for tracking in trackings %}
+                    {% for tracking in trackings|unique(attribute='resource_id') %}
                     <tr>
                         <td>{{ tracking.resource_name }}</td>
                         <td>{{ tracking.last_price }} kamas</td>
@@ -33,6 +33,7 @@
                     </tr>
                     {% endfor %}
                 </tbody>
+                
             </table>
         </div>
 

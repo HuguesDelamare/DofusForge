@@ -110,45 +110,57 @@ def track_resource():
         data = request.get_json()
         resource_id = data.get('resource_id')
         resource_name = data.get('resource_name')
-        current_price = data.get('current_price')
+        action = data.get('action')  # "add" ou "remove"
 
-        if not resource_id or not resource_name:
-            return jsonify({'error': 'Invalid data'}), 400
+        if not resource_id or not resource_name or not action:
+            return jsonify({'error': 'Données invalides'}), 400
 
-        existing_tracking = TrackedResource.query.filter_by(
-            user_id=current_user.id,
-            resource_id=resource_id
-        ).first()
+        if action == "add":
+            existing_tracking = TrackedResource.query.filter_by(
+                user_id=current_user.id,
+                resource_id=resource_id
+            ).first()
 
-        if existing_tracking:
-            return jsonify({'message': f"La ressource '{resource_name}' est déjà suivie."}), 200
+            if existing_tracking:
+                return jsonify({'message': f"La ressource '{resource_name}' est déjà suivie."}), 200
 
-        new_tracking = TrackedResource(
-            user_id=current_user.id,
-            resource_id=resource_id,
-            resource_name=resource_name
-        )
-        db.session.add(new_tracking)
+            new_tracking = TrackedResource(
+                user_id=current_user.id,
+                resource_id=resource_id,
+                resource_name=resource_name
+            )
+            db.session.add(new_tracking)
+        elif action == "remove":
+            existing_tracking = TrackedResource.query.filter_by(
+                user_id=current_user.id,
+                resource_id=resource_id
+            ).first()
+
+            if existing_tracking:
+                db.session.delete(existing_tracking)
+
         db.session.commit()
-
-        return jsonify({'message': f"La ressource '{resource_name}' est maintenant suivie."}), 200
+        return jsonify({'message': f"Action '{action}' effectuée sur la ressource '{resource_name}'."}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 @routes.route('/trackings', methods=['GET'])
 @login_required
 def trackings():
     trackings = db.session.query(
         TrackedResource.resource_name,
-        ComponentsPrice.component_price.label("last_price"),
-        ComponentsPrice.date_recorded,
+        db.func.max(ComponentsPrice.component_price).label("last_price"),
+        db.func.max(ComponentsPrice.date_recorded).label("date_recorded"),
         TrackedResource.resource_id
     ).join(
         ComponentsPrice, TrackedResource.resource_id == ComponentsPrice.component_id
     ).filter(
         TrackedResource.user_id == current_user.id
+    ).group_by(
+        TrackedResource.resource_name, TrackedResource.resource_id
     ).order_by(
-        ComponentsPrice.date_recorded.desc()
+        db.func.max(ComponentsPrice.date_recorded).desc()
     ).all()
 
     return render_template('trackings.html', trackings=trackings)
@@ -168,5 +180,18 @@ def resource_history(resource_id):
         } for record in history]
 
         return jsonify(data), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@routes.route('/api/is_tracked/<int:resource_id>', methods=['GET'])
+@login_required
+def is_tracked(resource_id):
+    try:
+        tracking = TrackedResource.query.filter_by(
+            user_id=current_user.id,
+            resource_id=resource_id
+        ).first()
+        return jsonify({"is_tracked": tracking is not None}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
