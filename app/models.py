@@ -54,6 +54,11 @@ class TrackedResource(db.Model):
 
     user = db.relationship('User', backref='tracked_resources')
 
+    __table_args__ = (
+        db.UniqueConstraint('user_id', 'resource_id', name='unique_user_resource'),
+    )
+
+
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
