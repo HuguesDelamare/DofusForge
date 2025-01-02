@@ -1,81 +1,121 @@
-document.addEventListener('DOMContentLoaded', function () {
-    // Autres variables et fonctions existantes
-    const trackedTableBody = document.getElementById('tracked-table-body'); // Corps du tableau des suivis
+document.addEventListener('DOMContentLoaded', function() {
+    const graphContainer = document.getElementById('graph-container');
+    const priceChartCanvas = document.getElementById('price-chart');
+    const loadingIndicator = document.getElementById('loading-indicator');
 
-    async function loadTrackedResources() {
-        try {
-            const response = await fetch('/api/tracked_resources');
-            if (!response.ok) throw new Error(`Erreur HTTP ${response.status}`);
-            const data = await response.json();
+    let priceChart = null;
+    const resourceCache = new Map();
 
-            trackedTableBody.innerHTML = ""; // Réinitialiser le tableau des suivis
-
-            if (!Array.isArray(data) || data.length === 0) {
-                trackedTableBody.innerHTML = `
-                    <tr>
-                        <td colspan="4" class="text-center fst-italic text-muted">
-                            Aucun objet suivi pour le moment.
-                        </td>
-                    </tr>`;
-                return;
-            }
-
-            data.forEach(resource => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${resource.resource_name}</td>
-                    <td>${formatNumber(resource.last_price)} kamas</td>
-                    <td>${new Date(resource.date_recorded).toLocaleString('fr-FR')}</td>
-                    <td>
-                        <button 
-                            class="btn btn-danger btn-sm remove-track-btn" 
-                            data-id="${resource.resource_id}">
-                            Retirer
-                        </button>
-                    </td>
-                `;
-
-                const removeButton = row.querySelector('.remove-track-btn');
-                removeButton.addEventListener('click', function () {
-                    removeTrackedResource(resource.resource_id, resource.resource_name);
-                });
-
-                trackedTableBody.appendChild(row);
-            });
-        } catch (error) {
-            console.error('Erreur lors du chargement des ressources suivies :', error);
-        }
+    // Fonction pour afficher ou masquer l'indicateur de chargement
+    function showLoadingIndicator(show) {
+        loadingIndicator.style.display = show ? 'block' : 'none';
     }
 
-    async function removeTrackedResource(resourceId, resourceName) {
-        if (!confirm(`Êtes-vous sûr de vouloir retirer "${resourceName}" du suivi ?`)) {
+    // Fonction pour rendre le graphique
+    function renderGraph(data, resourceName) {
+        const dates = data.map(entry => entry.date_recorded);
+        const prices = data.map(entry => entry.price);
+
+        if (priceChart) {
+            priceChart.destroy();
+        }
+
+        priceChart = new Chart(priceChartCanvas, {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [{
+                    label: `Évolution des prix: ${resourceName}`,
+                    data: prices,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderWidth: 2,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.raw} kamas`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Prix (kamas)'
+                        },
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    // Fonction pour charger les données et afficher le graphique
+    function loadGraph(resourceId, resourceName) {
+        if (resourceCache.has(resourceId)) {
+            const data = resourceCache.get(resourceId);
+            renderGraph(data, resourceName);
             return;
         }
 
-        try {
-            const response = await fetch('/untrack_resource', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ resource_id: resourceId })
+        showLoadingIndicator(true);
+
+        fetch(`/api/resource_history/${resourceId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                showLoadingIndicator(false);
+
+                if (!data || data.length === 0) {
+                    alert('Aucune donnée disponible pour cette ressource.');
+                    return;
+                }
+
+                resourceCache.set(resourceId, data);
+                renderGraph(data, resourceName);
+            })
+            .catch(error => {
+                showLoadingIndicator(false);
+                console.error('Erreur lors du chargement du graphique :', error);
+                alert('Impossible de charger les données du graphique.');
             });
-
-            if (!response.ok) throw new Error(`Erreur HTTP ${response.status}`);
-            const data = await response.json();
-
-            if (data.message) {
-                alert(data.message);
-                // Recharger les suivis après suppression
-                loadTrackedResources();
-            } else {
-                console.error("Erreur lors de la suppression :", data.error);
-            }
-        } catch (error) {
-            console.error('Erreur lors de la suppression du suivi :', error);
-        }
     }
 
-    // Charger les ressources suivies au chargement de la page
-    loadTrackedResources();
+    // Gestion des clics sur les boutons "Voir"
+    document.querySelectorAll('.view-graph-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const resourceId = this.dataset.id;
+            const resourceName = this.dataset.name;
 
-    // Appels à d'autres fonctions existantes comme loadTrackedIds si nécessaire
+            if (!resourceId) {
+                alert('ID de ressource invalide.');
+                return;
+            }
+
+            this.disabled = true; // Désactiver le bouton temporairement
+            loadGraph(resourceId, resourceName);
+            setTimeout(() => {
+                this.disabled = false; // Réactiver après un délai
+            }, 1000);
+        });
+    });
 });
