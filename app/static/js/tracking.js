@@ -1,125 +1,76 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const graphContainer = document.getElementById('graph-container');
-    const priceChartCanvas = document.getElementById('price-chart');
-    const loadingIndicator = document.getElementById('loading-indicator');
+    const trackButtons = document.querySelectorAll('.track-btn');
 
-    let priceChart = null;
-    const resourceCache = new Map();
-
-    // Fonction pour afficher ou masquer l'indicateur de chargement
-    function showLoadingIndicator(show) {
-        loadingIndicator.style.display = show ? 'block' : 'none';
-    }
-
-    // Fonction pour rendre le graphique
-    function renderGraph(data, resourceName) {
-        const dates = data.map(entry => entry.date_recorded);
-        const prices = data.map(entry => entry.price);
-
-        if (priceChart) {
-            priceChart.destroy();
-        }
-
-        priceChart = new Chart(priceChartCanvas, {
-            type: 'line',
-            data: {
-                labels: dates,
-                datasets: [{
-                    label: `Évolution des prix: ${resourceName}`,
-                    data: prices,
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderWidth: 2,
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function (context) {
-                                return `${context.raw} kamas`;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Date'
-                        }
-                    },
-                    y: {
-                        title: {
-                            display: true,
-                            text: 'Prix (kamas)'
-                        },
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-
-        // Affiche le graphique après sa génération
-        graphContainer.style.display = 'block';
-    }
-
-    // Fonction pour charger les données et afficher le graphique
-    function loadGraph(resourceId, resourceName) {
-        if (resourceCache.has(resourceId)) {
-            const data = resourceCache.get(resourceId);
-            renderGraph(data, resourceName);
-            return;
-        }
-
-        showLoadingIndicator(true);
-
-        fetch(`/api/resource_history/${resourceId}`)
+    // Fonction pour charger les IDs suivis
+    function loadTrackedIds() {
+        fetch('/api/tracked_ids')
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`Erreur HTTP ${response.status}`);
                 }
                 return response.json();
             })
-            .then(data => {
-                showLoadingIndicator(false);
+            .then(trackedIds => {
+                trackButtons.forEach(button => {
+                    const resourceId = button.dataset.id;
+                    const icon = button.querySelector('i');
 
-                if (!data || data.length === 0) {
-                    alert('Aucune donnée disponible pour cette ressource.');
-                    graphContainer.style.display = 'none'; // Cache le graphique si aucune donnée
-                    return;
-                }
-
-                resourceCache.set(resourceId, data);
-                renderGraph(data, resourceName);
+                    if (trackedIds.includes(parseInt(resourceId))) {
+                        button.setAttribute('data-tracked', 'true');
+                        icon.className = 'bi bi-bookmark-check-fill';
+                        button.setAttribute('title', 'Suivi activé');
+                    } else {
+                        button.setAttribute('data-tracked', 'false');
+                        icon.className = 'bi bi-bookmark';
+                        button.setAttribute('title', 'Ajouter au suivi');
+                    }
+                });
             })
             .catch(error => {
-                showLoadingIndicator(false);
-                console.error('Erreur lors du chargement du graphique :', error);
-                alert('Impossible de charger les données du graphique.');
+                console.error('Erreur lors du chargement des ressources suivies :', error);
             });
     }
 
-    // Gestion des clics sur les boutons "Voir"
-    document.querySelectorAll('.view-graph-btn').forEach(button => {
+    // Gestion des clics sur les boutons de suivi
+    trackButtons.forEach(button => {
         button.addEventListener('click', function () {
+            const isTracked = this.getAttribute('data-tracked') === 'true';
             const resourceId = this.dataset.id;
             const resourceName = this.dataset.name;
+            const icon = this.querySelector('i');
 
-            if (!resourceId) {
-                alert('ID de ressource invalide.');
-                return;
+            if (isTracked) {
+                // Supprimer le suivi
+                fetch('/untrack_resource', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ resource_id: resourceId })
+                })
+                    .then(response => {
+                        if (!response.ok) throw new Error(`Erreur HTTP ${response.status}`);
+                        this.setAttribute('data-tracked', 'false');
+                        icon.className = 'bi bi-bookmark';
+                        this.setAttribute('title', 'Ajouter au suivi');
+                    })
+                    .catch(error => console.error('Erreur lors de la suppression du suivi :', error));
+            } else {
+                // Ajouter au suivi
+                fetch('/track_resource', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ resource_id: resourceId, resource_name: resourceName })
+                })
+                    .then(response => {
+                        if (!response.ok) throw new Error(`Erreur HTTP ${response.status}`);
+                        this.setAttribute('data-tracked', 'true');
+                        icon.className = 'bi bi-bookmark-check-fill';
+                        this.setAttribute('title', 'Suivi activé');
+                    })
+                    .catch(error => console.error('Erreur lors de l\'ajout au suivi :', error));
             }
-
-            this.disabled = true; // Désactiver le bouton temporairement
-            loadGraph(resourceId, resourceName);
-            setTimeout(() => {
-                this.disabled = false; // Réactiver après un délai
-            }, 1000);
         });
     });
+
+    // Charger les IDs suivis au chargement de la page
+    loadTrackedIds();
 });

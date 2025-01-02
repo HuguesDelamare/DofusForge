@@ -148,22 +148,29 @@ def track_resource():
 @routes.route('/trackings', methods=['GET'])
 @login_required
 def trackings():
+    # Récupérer toutes les ressources suivies par l'utilisateur
     trackings = db.session.query(
         TrackedResource.resource_name,
-        db.func.max(ComponentsPrice.component_price).label("last_price"),
-        db.func.max(ComponentsPrice.date_recorded).label("date_recorded"),
+        ComponentsPrice.component_price.label("last_price"),
+        ComponentsPrice.date_recorded,
         TrackedResource.resource_id
     ).join(
         ComponentsPrice, TrackedResource.resource_id == ComponentsPrice.component_id
     ).filter(
         TrackedResource.user_id == current_user.id
-    ).group_by(
-        TrackedResource.resource_name, TrackedResource.resource_id
     ).order_by(
-        db.func.max(ComponentsPrice.date_recorded).desc()
+        ComponentsPrice.date_recorded.desc()
     ).all()
 
-    return render_template('trackings.html', trackings=trackings)
+    # Récupérer les IDs suivis pour les utiliser ailleurs
+    tracked_ids = [tracking.resource_id for tracking in trackings]
+
+    return render_template(
+        'trackings.html',
+        trackings=trackings,
+        tracked_ids=tracked_ids
+    )
+
 
 @routes.route('/api/resource_history/<int:resource_id>', methods=['GET'])
 @login_required
@@ -194,5 +201,15 @@ def is_tracked(resource_id):
             resource_id=resource_id
         ).first()
         return jsonify({"is_tracked": tracking is not None}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@routes.route('/api/tracked_ids', methods=['GET'])
+@login_required
+def get_tracked_ids():
+    try:
+        tracked_resources = TrackedResource.query.filter_by(user_id=current_user.id).all()
+        tracked_ids = [resource.resource_id for resource in tracked_resources]
+        return jsonify(tracked_ids), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
