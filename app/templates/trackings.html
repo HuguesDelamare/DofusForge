@@ -13,27 +13,34 @@
                         <th>Nom de la ressource</th>
                         <th>Dernier prix</th>
                         <th>Date de mise à jour</th>
-                        <th>Voir graphique</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="tracked-table-body">
                     {% for tracking in trackings|unique(attribute='resource_id') %}
                     <tr>
                         <td>{{ tracking.resource_name }}</td>
                         <td>{{ tracking.last_price }} kamas</td>
                         <td>{{ tracking.date_recorded.strftime('%d/%m/%Y %H:%M') }}</td>
                         <td>
+                            <!-- Bouton pour voir le graphique -->
                             <button 
                                 class="btn btn-primary btn-sm view-graph-btn" 
                                 data-id="{{ tracking.resource_id }}" 
                                 data-name="{{ tracking.resource_name }}">
                                 Voir
                             </button>
-                        </td>                        
+                            <!-- Bouton pour retirer du suivi -->
+                            <button 
+                                class="btn btn-danger btn-sm remove-track-btn" 
+                                data-id="{{ tracking.resource_id }}" 
+                                data-name="{{ tracking.resource_name }}">
+                                Retirer
+                            </button>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
-                
             </table>
         </div>
 
