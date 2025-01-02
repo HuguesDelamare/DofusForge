@@ -148,13 +148,13 @@ document.addEventListener('DOMContentLoaded', function () {
         evoCell.innerHTML = `<span style="color: gray;">N/A</span>`;
 
         actionCell.innerHTML = `
-            <button 
-                class="btn btn-sm track-btn" 
-                data-id="${ingredientId}" 
-                data-name="${itemData.name.fr}" 
-                data-tracked="false">
-                <i class="bi bi-bookmark"></i>
-            </button>
+        <button 
+            class="btn btn-sm track-btn" 
+            data-id="${ingredientId}" 
+            data-name="${itemData.name.fr}" 
+            data-tracked="false">
+            <i class="bi bi-bookmark"></i>
+        </button>
         `;
 
         const trackButton = actionCell.querySelector('.track-btn');
@@ -169,35 +169,33 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function displayRecipe(recipeData, itemId) {
         ingredientTableBody.innerHTML = "";
-
-        if (recipeData.img) {
-            itemImageContainer.innerHTML = `<img src="${recipeData.img}" alt="Image de l'objet" style="width:64px; height:auto;">`;
-        } else {
-            itemImageContainer.innerHTML = "";
+    
+        if (!recipeData.ingredients || recipeData.ingredients.length === 0) {
+            resultDiv.innerHTML = "Aucune recette disponible pour cet objet.";
+            ajouterButton.style.display = "none";
+            return;
         }
-
-        if (recipeData.ingredients && recipeData.quantities) {
-            const ingredientPromises = recipeData.ingredients.map((ingredient, index) => {
-                return fetch(`https://api.dofusdb.fr/items/${ingredient.id}?lang=fr`)
-                    .then(itemResponse => itemResponse.json())
-                    .then(itemData => {
-                        return fetch(`/api/last_component_price/${ingredient.id}`)
-                            .then(dbRes => dbRes.json())
-                            .then(dbData => {
-                                itemData.oldPrice = dbData.last_price || 0;
-                                createIngredientRow(itemData, recipeData.quantities[index], ingredient.id);
-                            });
-                    });
-            });
-
+    
+        const ingredientPromises = recipeData.ingredients.map((ingredient, index) => {
+            return fetch(`https://api.dofusdb.fr/items/${ingredient.id}?lang=fr`)
+                .then(itemResponse => itemResponse.json())
+                .then(itemData => {
+                    return fetch(`/api/last_component_price/${ingredient.id}`)
+                        .then(dbRes => dbRes.json())
+                        .then(dbData => {
+                            itemData.oldPrice = dbData.last_price || 0;
+                            createIngredientRow(itemData, recipeData.quantities[index], ingredient.id);
+                        });
+                });
+        });
+    
+        try {
             await Promise.all(ingredientPromises);
             ajouterButton.style.display = "block";
-            currentRecipeData = recipeData;
-        } else {
-            resultDiv.innerHTML = "Recette non trouvée ou données incorrectes.";
-            ajouterButton.style.display = "none";
+        } catch (error) {
+            console.error("Erreur lors du rendu des ingrédients :", error);
         }
-    }
+    }    
 
     async function handleItemId(itemId) {
         try {
