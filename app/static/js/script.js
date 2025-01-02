@@ -1,61 +1,17 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
     const searchInput = document.getElementById('search-input');
     const resultDiv = document.getElementById('result');
     const ingredientTableBody = document.getElementById('ingredient-table-body');
     const resetButton = document.getElementById('reset-button');
-    const hdvPriceInput = document.getElementById('hdv-price');
-    const craftTotalSpan = document.getElementById('craft-total');
-    const profitTtcSpan = document.getElementById('profit-ttc');
     const ajouterButton = document.getElementById('ajouter-recette');
-    const hiddenItemIdInput = document.getElementById('selected-item-id');
-    const historiqueTableBody = document.getElementById('historique-table-body');
     const itemImageContainer = document.getElementById('item-image-container');
-
-    const TAX_RATE = 0.02;
-    let currentRecipeData = null;
-    let autoCompleteTimeout;
-    const cache = new Map();
     let trackedIds = []; // Liste des IDs suivis
 
     // -------------------------------------------
     //  FONCTIONS UTILITAIRES
     // -------------------------------------------
 
-    function normalizeSearchTerm(searchTerm) {
-        return encodeURIComponent(
-            searchTerm.toLowerCase()
-                      .normalize("NFD")
-                      .replace(/[\u0300-\u036f]/g, "")
-        );
-    }
-
-    function formatNumber(number) {
-        return number.toLocaleString('fr-FR');
-    }
-
-    function clearResults() {
-        resultDiv.textContent = '';
-        ingredientTableBody.innerHTML = `
-            <tr>
-                <td colspan="6" class="text-center fst-italic text-muted">
-                    Veuillez rechercher un objet.
-                </td>
-            </tr>
-        `;
-        ajouterButton.style.display = "none";
-        currentRecipeData = null;
-        hiddenItemIdInput.value = "";
-        itemImageContainer.innerHTML = "";
-        historiqueTableBody.innerHTML = `
-            <tr>
-                <td colspan="4" class="text-center fst-italic text-muted">
-                    Aucun historique disponible.
-                </td>
-            </tr>
-        `;
-    }
-
-    async function fetchWithCache(url) {
+    async function fetchWithCache(url, cache) {
         if (cache.has(url)) {
             return cache.get(url);
         }
@@ -70,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             const response = await fetch('/api/tracked_ids');
             if (!response.ok) throw new Error(`Erreur HTTP ${response.status}`);
-            trackedIds = await response.json();
+            trackedIds = await response.json(); // Charge les IDs suivis
         } catch (error) {
             console.error('Erreur lors du chargement des IDs suivis :', error);
         }
@@ -105,6 +61,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.log(data.message);
                 updateTrackIcon(button, addToTrack);
 
+                // Mettez à jour localement les IDs suivis
                 if (addToTrack) {
                     trackedIds.push(parseInt(resourceId));
                 } else {
@@ -122,119 +79,110 @@ document.addEventListener('DOMContentLoaded', function () {
         const row = ingredientTableBody.insertRow();
         row.dataset.ingredientId = ingredientId;
 
+        // Cellules du tableau
         const imageCell = row.insertCell();
         const ingredientCell = row.insertCell();
         const quantityCell = row.insertCell();
-        const priceCell = row.insertCell();
-        const totalCell = row.insertCell();
-        const evoCell = row.insertCell();
         const actionCell = row.insertCell();
 
+        // Image de l'ingrédient
         if (itemData.img) {
             imageCell.innerHTML = `<img src="${itemData.img}" alt="${itemData.name.fr}" style="width:32px; height:auto;">`;
         } else {
             imageCell.textContent = "Pas d'image";
         }
 
+        // Nom de l'ingrédient
         ingredientCell.textContent = itemData.name.fr;
+
+        // Quantité
         quantityCell.textContent = quantity || "Quantité non définie";
 
-        const priceInput = document.createElement('input');
-        priceInput.type = 'number';
-        priceInput.className = 'form-control form-control-sm no-spinners price-input';
-        priceCell.appendChild(priceInput);
-
-        totalCell.textContent = "0";
-        evoCell.innerHTML = `<span style="color: gray;">N/A</span>`;
-
+        // Bouton de suivi
         actionCell.innerHTML = `
-        <button 
-            class="btn btn-sm track-btn" 
-            data-id="${ingredientId}" 
-            data-name="${itemData.name.fr}" 
-            data-tracked="false">
-            <i class="bi bi-bookmark"></i>
-        </button>
+            <button 
+                class="btn btn-sm track-btn" 
+                data-id="${ingredientId}" 
+                data-name="${itemData.name.fr}" 
+                data-tracked="false">
+                <i class="bi bi-bookmark"></i>
+            </button>
         `;
-
         const trackButton = actionCell.querySelector('.track-btn');
+
+        // Définir l'état initial du suivi
         const isTracked = trackedIds.includes(parseInt(ingredientId));
         updateTrackIcon(trackButton, isTracked);
 
+        // Gestion des clics sur le bouton
         trackButton.addEventListener('click', function () {
             const isTracked = this.getAttribute('data-tracked') === 'true';
             trackResource(ingredientId, itemData.name.fr, !isTracked, this);
         });
     }
 
-    async function displayRecipe(recipeData, itemId) {
+    async function displayRecipe(recipeData) {
         ingredientTableBody.innerHTML = "";
-    
+
         if (!recipeData.ingredients || recipeData.ingredients.length === 0) {
-            resultDiv.innerHTML = "Aucune recette disponible pour cet objet.";
-            ajouterButton.style.display = "none";
+            ingredientTableBody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-center fst-italic text-muted">
+                        Aucune recette disponible.
+                    </td>
+                </tr>
+            `;
             return;
         }
-    
-        const ingredientPromises = recipeData.ingredients.map((ingredient, index) => {
-            return fetch(`https://api.dofusdb.fr/items/${ingredient.id}?lang=fr`)
-                .then(itemResponse => itemResponse.json())
-                .then(itemData => {
-                    return fetch(`/api/last_component_price/${ingredient.id}`)
-                        .then(dbRes => dbRes.json())
-                        .then(dbData => {
-                            itemData.oldPrice = dbData.last_price || 0;
-                            createIngredientRow(itemData, recipeData.quantities[index], ingredient.id);
-                        });
-                });
-        });
-    
-        try {
-            await Promise.all(ingredientPromises);
-            ajouterButton.style.display = "block";
-        } catch (error) {
-            console.error("Erreur lors du rendu des ingrédients :", error);
-        }
-    }    
 
-    async function handleItemId(itemId) {
-        try {
-            const recipeData = await fetch(`https://api.dofusdb.fr/recipes/${itemId}?lang=fr`).then(res => res.json());
-            await displayRecipe(recipeData, itemId);
-        } catch (error) {
-            console.error("Erreur lors de la récupération de la recette :", error);
+        for (let i = 0; i < recipeData.ingredients.length; i++) {
+            const ingredient = recipeData.ingredients[i];
+            try {
+                const itemData = await fetch(`/api/item/${ingredient.id}`).then(res => res.json());
+                createIngredientRow(itemData, recipeData.quantities[i], ingredient.id);
+            } catch (error) {
+                console.error(`Erreur lors du chargement de l'ingrédient ${ingredient.id} :`, error);
+            }
         }
     }
 
-    searchInput.addEventListener('input', function (event) {
-        clearTimeout(autoCompleteTimeout);
-        const searchTerm = event.target.value.trim();
+    async function handleSearchResult(itemId) {
+        try {
+            const recipeData = await fetch(`/api/recipe/${itemId}`).then(res => res.json());
+            await displayRecipe(recipeData);
+        } catch (error) {
+            console.error("Erreur lors de la récupération des données :", error);
+        }
+    }
 
+    searchInput.addEventListener('input', function () {
+        const searchTerm = searchInput.value.trim();
         if (searchTerm.length < 3) {
-            clearResults();
+            resultDiv.innerHTML = "Tapez au moins 3 caractères pour rechercher.";
             return;
         }
 
-        autoCompleteTimeout = setTimeout(() => {
-            const normalizedSearchTerm = normalizeSearchTerm(searchTerm);
-            fetchWithCache(`https://api.beta.dofusdb.fr/items?slug.fr=${normalizedSearchTerm}`)
-                .then(itemsData => {
-                    resultDiv.innerHTML = '';
-                    itemsData.data.forEach(item => {
-                        const suggestion = document.createElement('div');
-                        suggestion.textContent = item.name.fr;
-                        suggestion.classList.add('autocomplete-item');
-                        suggestion.addEventListener('click', () => {
-                            searchInput.value = item.name.fr;
-                            hiddenItemIdInput.value = item.id;
-                            handleItemId(item.id);
-                        });
-                        resultDiv.appendChild(suggestion);
+        // Recherche asynchrone
+        fetch(`/api/search?term=${searchTerm}`)
+            .then(res => res.json())
+            .then(data => {
+                resultDiv.innerHTML = "";
+                data.forEach(item => {
+                    const suggestion = document.createElement('div');
+                    suggestion.className = "suggestion-item";
+                    suggestion.textContent = item.name;
+                    suggestion.addEventListener('click', () => {
+                        searchInput.value = item.name;
+                        handleSearchResult(item.id);
                     });
-                })
-                .catch(error => console.error("Erreur lors de l'autocomplétion :", error));
-        }, 300);
+                    resultDiv.appendChild(suggestion);
+                });
+            })
+            .catch(error => {
+                console.error("Erreur lors de la recherche :", error);
+            });
     });
 
-    loadTrackedIds();
+    // Chargez les IDs suivis au démarrage
+    await loadTrackedIds();
 });
