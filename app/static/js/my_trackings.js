@@ -48,6 +48,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 const labels = data.prices.map(p => new Date(p.date).toLocaleDateString('fr-FR'));
                 const prices = data.prices.map(p => p.price);
 
+                // Si un graphique existe déjà, le détruire
+                if (resourceChart) {
+                    resourceChart.destroy();
+                    resourceChart = null; // Réinitialiser la variable
+                }
+
                 // Créer ou mettre à jour le graphique
                 if (resourceChart) {
                     resourceChart.data.labels = labels;
