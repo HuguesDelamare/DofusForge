@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const resourceTitle = document.getElementById('resource-title');
     const resourceChartCanvas = document.getElementById('resource-chart');
     let resourceChart = null;
+    let isLoading = false;
 
     // Charger les suivis au démarrage
     function loadTrackings() {
@@ -29,6 +30,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function loadResourceData(componentId) {
+        if (isLoading) return; // Bloque les appels multiples
+        isLoading = true; // Marque le début du chargement
+    
         fetch(`/get_resource_data/${componentId}`)
             .then(response => {
                 if (!response.ok) throw new Error(`Erreur HTTP : ${response.status}`);
@@ -39,53 +43,47 @@ document.addEventListener("DOMContentLoaded", function () {
                     alert(data.error);
                     return;
                 }
-
-                // Afficher les détails de la ressource
+    
                 resourceInfoDiv.style.display = "block";
                 resourceTitle.textContent = `Ressource : ${data.component_name}`;
-
-                // Préparer les données pour le graphique
+    
                 const labels = data.prices.map(p => new Date(p.date).toLocaleDateString('fr-FR'));
                 const prices = data.prices.map(p => p.price);
-
-                // Si un graphique existe déjà, le détruire
-                if (resourceChart) {
+    
+                if (resourceChart !== null) {
                     resourceChart.destroy();
-                    resourceChart = null; // Réinitialiser la variable
+                    resourceChartCanvas.getContext('2d').clearRect(0, 0, resourceChartCanvas.width, resourceChartCanvas.height);
+                    resourceChart = null;
                 }
-
-                // Créer ou mettre à jour le graphique
-                if (resourceChart) {
-                    resourceChart.data.labels = labels;
-                    resourceChart.data.datasets[0].data = prices;
-                    resourceChart.update();
-                } else {
-                    resourceChart = new Chart(resourceChartCanvas, {
-                        type: 'line',
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                label: 'Prix',
-                                data: prices,
-                                borderColor: 'blue',
-                                tension: 0.2
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            plugins: {
-                                legend: { display: true }
-                            }
+    
+                resourceChart = new Chart(resourceChartCanvas, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Prix',
+                            data: prices,
+                            borderColor: 'blue',
+                            tension: 0.2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: true }
                         }
-                    });
-                }
+                    }
+                });
             })
             .catch(error => {
                 console.error("Erreur lors de la récupération des données :", error);
                 alert("Erreur lors de la récupération des données.");
+            })
+            .finally(() => {
+                isLoading = false; // Fin du chargement
             });
     }
-
+    
     // Gestion des clics sur les ressources suivies
     trackingTableBody.addEventListener('click', function (event) {
         const row = event.target.closest('tr');
