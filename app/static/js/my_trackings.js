@@ -2,8 +2,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const trackingTableBody = document.getElementById("tracking-table-body");
     const resourceInfoDiv = document.getElementById("resource-info");
     const resourceTitle = document.getElementById("resource-title");
-    const resourceChartContainer = document.getElementById("resource-chart-container"); // Conteneur pour le canvas
-    let resourceChart = null; // Instance du graphique
+    const resourceChartContainer = document.getElementById("resource-chart-container");
+    let resourceChart = null;
 
     // Charger les suivis au démarrage
     function loadTrackings() {
@@ -51,6 +51,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
                 const prices = data.prices.map((p) => p.price);
 
+                // Supprimer l'ancien graphique si existant
+                if (resourceChart) {
+                    resourceChart.destroy();
+                }
+
                 // Supprimer le canvas existant et en créer un nouveau
                 resourceChartContainer.innerHTML = '<canvas id="resource-chart"></canvas>';
                 const newCanvas = document.getElementById("resource-chart");
@@ -83,9 +88,45 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
+    // Fonction pour supprimer un suivi
+    function untrackResource(componentId) {
+        fetch("/untrack_component", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ component_id: componentId }),
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP : ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                console.log(data.message);
+                // Recharger la liste des suivis
+                loadTrackings();
+                // Cacher les informations de la ressource si elle est supprimée
+                resourceInfoDiv.style.display = "none";
+            })
+            .catch((error) => {
+                console.error("Erreur lors de la suppression du suivi :", error);
+            });
+    }
+
     // Gestion des clics sur les ressources suivies
     trackingTableBody.addEventListener("click", function (event) {
-        const row = event.target.closest("tr");
+        const target = event.target;
+
+        // Si clic sur le bouton "Supprimer"
+        if (target.classList.contains("untrack-btn")) {
+            event.stopPropagation(); // Empêcher la propagation vers la ligne
+            const componentId = target.dataset.id;
+            untrackResource(componentId);
+            return;
+        }
+
+        // Si clic sur une ligne (hors bouton "Supprimer")
+        const row = target.closest("tr");
         if (row) {
             const componentId = row.dataset.componentId;
             loadResourceData(componentId);

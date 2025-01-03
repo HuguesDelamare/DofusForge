@@ -160,23 +160,29 @@ def track_component():
 @routes.route("/untrack_component", methods=["POST"])
 @login_required
 def untrack_component():
-    data = request.get_json()
-    component_id = data.get("component_id")
+    try:
+        data = request.get_json()
+        component_id = data.get("component_id")
 
-    # Vérifiez que le composant existe pour cet utilisateur
-    tracked = TrackedResource.query.filter_by(
-        component_id=component_id,
-        user_id=current_user.id
-    ).first()
+        # Vérifiez que le composant existe pour cet utilisateur
+        tracked = TrackedResource.query.filter_by(
+            component_id=component_id,
+            user_id=current_user.id
+        ).first()
 
-    if not tracked:
-        return jsonify({"error": "Composant non trouvé"}), 404
+        if not tracked:
+            # Retourne un message au lieu d'une erreur HTTP
+            return jsonify({"message": "Ce composant n'est pas suivi."}), 200
 
-    # Supprimez le composant
-    db.session.delete(tracked)
-    db.session.commit()
+        # Supprimez le composant
+        db.session.delete(tracked)
+        db.session.commit()
 
-    return jsonify({"message": "Composant supprimé du suivi"}), 200
+        return jsonify({"message": "Composant supprimé du suivi"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
 
 @routes.route("/get_craft_data/<int:item_id>", methods=["GET"])
 @login_required
@@ -226,3 +232,4 @@ def get_resource_data(component_id):
         return jsonify(data), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
