@@ -19,15 +19,18 @@
         </tbody>
     </table>
 
-    <!-- Section pour afficher le graphique -->
-    <div id="resource-info" style="display: none; margin-top: 20px;">
-        <h3 id="resource-title">Informations sur la ressource</h3>
-        <canvas id="resource-chart" width="400" height="200"></canvas>
-    </div>    
+    <div id="resource-info" style="display: none;">
+        <h3 id="resource-title"></h3>
+        <div id="resource-chart-container">
+            <canvas id="resource-chart"></canvas>
+        </div>
+    </div>
+    
+      
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/my_trackings.js') }}"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Librairie pour le graphique -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% endblock %}
