@@ -223,9 +223,13 @@ def get_resource_data(component_id):
         if not prices:
             return jsonify({"error": "Aucune donnée trouvée pour ce composant."}), 404
 
+        # Récupérer le nom de la ressource depuis TrackedResource
+        tracked = TrackedResource.query.filter_by(component_id=component_id, user_id=current_user.id).first()
+        component_name = tracked.component_name if tracked else "Inconnu"
+
         data = {
             "component_id": component_id,
-            "component_name": prices[0].component_id if prices else "Inconnu",
+            "component_name": component_name,
             "prices": [{"date": p.date_recorded.isoformat(), "price": p.component_price} for p in prices]
         }
 

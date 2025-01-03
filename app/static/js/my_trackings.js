@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const resourceChartContainer = document.getElementById("resource-chart-container");
     let resourceChart = null;
 
+    
     // Charger les suivis au démarrage
     function loadTrackings() {
         fetch("/my_trackings", { headers: { "X-Requested-With": "XMLHttpRequest" } })
@@ -28,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch((error) => console.error("Erreur lors du chargement des suivis :", error));
     }
 
-    // Charger les données d'une ressource et afficher le graphique
+    
     function loadResourceData(componentId) {
         fetch(`/get_resource_data/${componentId}`)
             .then((response) => {
@@ -40,26 +41,35 @@ document.addEventListener("DOMContentLoaded", function () {
                     alert(data.error);
                     return;
                 }
-
+                console.log(data);
+    
                 // Afficher les détails de la ressource
                 resourceInfoDiv.style.display = "block";
                 resourceTitle.textContent = `Ressource : ${data.component_name}`;
-
+    
                 // Préparer les données pour le graphique
-                const labels = data.prices.map((p) =>
-                    new Date(p.date).toLocaleDateString("fr-FR")
-                );
+                const labels = data.prices.map((p) => {
+                    const date = new Date(p.date);
+                    const options = {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    };
+                    return date.toLocaleString("fr-FR", options); // Date et heure
+                });
                 const prices = data.prices.map((p) => p.price);
-
+    
                 // Supprimer l'ancien graphique si existant
                 if (resourceChart) {
                     resourceChart.destroy();
                 }
-
+    
                 // Supprimer le canvas existant et en créer un nouveau
                 resourceChartContainer.innerHTML = '<canvas id="resource-chart"></canvas>';
                 const newCanvas = document.getElementById("resource-chart");
-
+    
                 // Créer un nouveau graphique
                 resourceChart = new Chart(newCanvas, {
                     type: "line",
@@ -79,6 +89,20 @@ document.addEventListener("DOMContentLoaded", function () {
                         plugins: {
                             legend: { display: true },
                         },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: "Date et heure",
+                                },
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: "Prix (kamas)",
+                                },
+                            },
+                        },
                     },
                 });
             })
@@ -87,7 +111,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert("Erreur lors de la récupération des données.");
             });
     }
-
+    
     // Fonction pour supprimer un suivi
     function untrackResource(componentId) {
         fetch("/untrack_component", {
