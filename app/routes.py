@@ -237,3 +237,8 @@ def get_resource_data(component_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@routes.route("/wanted")
+@login_required
+def wanted():
+    return render_template("wanted.html")
+

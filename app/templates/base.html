@@ -17,10 +17,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <!-- Liens principaux -->
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/">Accueil</a>
-                </li>
+            <ul class="navbar-nav d-flex align-items-center">
                 {% if current_user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('routes.my_trackings') }}">My Trackings</a>
@@ -30,9 +27,11 @@
     
             <!-- Logo centré -->
             <div class="navbar-brand">
-                <img src="{{ url_for('static', filename='images/logo/logo.png') }}" alt="DofusForge Logo" class="navbar-logo">
+                <a href="{{ url_for('routes.index') }}">
+                    <img src="{{ url_for('static', filename='images/logo/logo.png') }}" alt="DofusForge Logo" class="navbar-logo">
+                </a>
             </div>
-    
+        
             <!-- Boutons d'utilisateur -->
             <ul class="navbar-nav ms-auto">
                 {% if current_user.is_authenticated %}
