@@ -1,139 +1,106 @@
-html,
+/* Couleurs globales */
 body {
-   height: 100%;
-   margin: 0;
-   padding: 0;
+    background-color: #21312E; /* Vert foncé */
+    color: #FDF5D8; /* Blanc cassé */
+    font-family: Arial, sans-serif;
 }
 
-main {
-    flex: 1;
+.navbar {
+    background-color: #21312E; /* Vert foncé */
+    border-bottom: 3px solid #A4D564; /* Bordure verte */
 }
 
-/* 
- * TABLEAU 
- */
+.navbar-nav .nav-link {
+    color: #FDF5D8 !important; /* Blanc cassé */
+}
+
+.navbar-nav .nav-link:hover {
+    color: #F5CB42 !important; /* Jaune doré */
+}
+
+/* Tableaux */
 .table-custom {
-    --bs-table-bg: #f8f9fa;
-    --bs-table-striped-bg: #e9ecef;
-    --bs-table-hover-bg: #dee2e6;
-    --bs-table-border-color: #ced4da;
+    background-color: #21312E; /* Vert foncé */
+    border-color: #A4D564; /* Vert clair */
+    color: #FDF5D8; /* Blanc cassé */
 }
 
-.table-custom th,
-.table-custom td {
-    border-color: var(--bs-table-border-color) !important;
-    padding: 12px !important;
+.table-custom th {
+    background-color: #A4D564; /* Vert clair */
+    color: #21312E; /* Texte vert foncé */
 }
 
-.table-custom thead th {
-    background-color: #0d6efd; 
-    color: #fff; 
-    padding: 15px 20px !important;
-    text-align: center;
+.table-custom tr:hover {
+    background-color: #F5CB42; /* Jaune doré */
 }
 
-.profit {
-    background-color: #c8e6c9 !important; /* Vert clair */
-}
-
-.loss {
-    background-color: #ffcdd2 !important; /* Rouge clair */
-}
-
-#ingredient-table {
-    text-align: center;
-}
-
-.no-spinners::-webkit-inner-spin-button,
-.no-spinners::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-.no-spinners {
-    -moz-appearance: textfield;
-}
-
-/* Alignement vertical des inputs si nécessaire */
-.align-middle-input input {
-    vertical-align: middle !important;
-}
-
-/* 
- * BOUTONS 
- */
-.button-row {
-    display: flex;
-    gap: 10px;               
-    justify-content: flex-end; 
-    margin-top: 1rem;
-}
-
-/* 
- * AUTOCOMPLETE 
- */
-#result {
-    position: absolute;
-    background-color: white;
-    border: 1px solid #ddd;
-    max-height: 200px;
-    overflow-y: auto;
-    z-index: 1000;
-    width: 100%;
-}
-
-.autocomplete-item {
-    padding: 8px;
-    cursor: pointer;
-    border-bottom: 1px solid #eee;
-}
-.autocomplete-item:hover {
-    background-color: #f0f0f0;
-}
-
-/* 
- * FOOTER 
- */
-.footer {
-    margin: 0 auto;      
-    text-align: center;  
-    padding: 10px;
-    background-color: #f8f9fa;
-    margin-top: 2rem;
-}
-
-.wrapper {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
-
-.track-btn.tracked {
-    color: green;
-    font-weight: bold;
-}
-
-.track-btn {
+/* Boutons */
+button, .btn {
+    background-color: #A4D564; /* Vert clair */
+    color: #21312E; /* Texte vert foncé */
     border: none;
-    background: none;
-    cursor: pointer;
-    padding: 0.5rem;
 }
 
-.track-btn i {
-    font-size: 1.2rem;
-    transition: color 0.2s ease, transform 0.2s ease;
+button:hover, .btn:hover {
+    background-color: #F5CB42; /* Jaune doré */
+    color: #21312E; /* Texte vert foncé */
 }
 
-.track-btn:hover i {
-    color: #ff0000;
-    transform: scale(1.2);
+/* Footer */
+.footer {
+    background-color: #21312E; /* Vert foncé */
+    color: #FDF5D8; /* Blanc cassé */
+    text-align: center;
+    padding: 10px;
+    margin-top: auto; /* Pousse le footer vers le bas */
 }
 
-#tracking-table-body tr {
-    cursor: pointer;
-    transition: background-color 0.2s; 
+/* Graphiques */
+#resource-chart {
+    border: 2px solid #A4D564; /* Bordure verte */
+    background-color: #21312E; /* Fond vert foncé */
 }
 
-#tracking-table-body tr:hover {
-    background-color: #f0f0f0;
+/* Ajustement du logo pour qu'il soit bien centré et ne dépasse pas */
+.navbar {
+    background-color: #21312E; /* Vert foncé */
+    border-bottom: 3px solid #A4D564; /* Bordure verte */
+    position: relative;
+}
+
+.navbar-brand {
+    position: absolute; /* Sort du flux normal */
+    top: -38px; /* Ajuste la position verticale */
+    left: 50%; /* Centre horizontalement */
+    transform: translate(-50%, 0); /* Centre par rapport à son conteneur */
+    z-index: 2; /* S'assure qu'il est visible au-dessus */
+}
+
+.navbar-brand img {
+    max-height: 240px; /* Taille ajustée pour ne pas dépasser */
+    width: auto; /* Garde les proportions */
+}
+
+/* Ajustement des liens pour éviter de toucher le logo */
+.navbar-nav {
+    margin-top: 20px; /* Ajoute de l'espace sous le logo */
+}
+
+div #result {
+    color: black;
+}
+
+div {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Ombre subtile */
+}
+
+#mainContainer {
+	margin-top: 8em;
+}
+
+/* Changement couleur du canvas */
+#resource-chart {
+    background-color: white; /* Fond blanc */
+    border: 2px solid #A4D564; /* Bordure verte */
 }
