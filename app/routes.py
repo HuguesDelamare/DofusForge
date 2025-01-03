@@ -8,7 +8,7 @@ routes = Blueprint('routes', __name__)
 
 @routes.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("crafting_equipement.html")
 
 @routes.route("/ingredient_prices", methods=['POST'])
 def save_ingredient_prices():
@@ -241,4 +241,11 @@ def get_resource_data(component_id):
 @login_required
 def wanted():
     return render_template("wanted.html")
+
+
+@routes.route("/crafting_equipement")
+@login_required
+def crafting_equipement():
+    return render_template("crafting_equipement.html")
+
 

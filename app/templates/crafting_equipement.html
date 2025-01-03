@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Calculateur de prix Dofus{% endblock %}
+{% block title %}DofusForge{% endblock %}
 
 {% block content %}
 <div class="wrapper d-flex flex-column">
@@ -52,16 +52,16 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="button-row mt-3">
-                    <button class="btn btn-danger" type="button" id="reset-button">Réinitialiser</button>
-                    <button class="btn btn-success" type="button" id="ajouter-recette" style="display:none;">
-                        Ajouter la recette
-                    </button>
-                </div>
             </div>
 
             <!-- Section des calculs -->
             <div class="col-lg-4">
+                <div class="button-row mb-3 d-flex">
+                    <button class="btn btn-danger" type="button" id="reset-button">Réinitialiser</button>
+                    <button class="btn btn-success" type="button" id="ajouter-recette" style="display:none;">
+                        Enregistrer le prix du craft
+                    </button>
+                </div>
                 <div class="card border-0 shadow-sm">
                     <div class="card-body">
                         <div class="mb-3">

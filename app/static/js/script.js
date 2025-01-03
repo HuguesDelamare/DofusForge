@@ -274,8 +274,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     
             Promise.all(ingredientPromises).then(() => {
-                resultDiv.innerHTML = `ID de l'objet : ${itemId} - OK`;
-                ajouterButton.style.display = "block";
                 currentRecipeData = recipeData;
             });
         } else {
