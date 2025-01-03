@@ -5,6 +5,11 @@ body {
     font-family: Arial, sans-serif;
 }
 
+/*-------------------------------------------
+//  Navbar
+// -------------------------------------------
+*/
+
 .navbar {
     background-color: #21312E; /* Vert foncé */
     border-bottom: 3px solid #A4D564; /* Bordure verte */
@@ -18,7 +23,29 @@ body {
     color: #F5CB42 !important; /* Jaune doré */
 }
 
-/* Tableaux */
+.navbar-brand {
+    position: absolute; /* Sort du flux normal */
+    top: -38px; /* Ajuste la position verticale */
+    left: 50%; /* Centre horizontalement */
+    transform: translate(-50%, 0); /* Centre par rapport à son conteneur */
+    z-index: 2; /* S'assure qu'il est visible au-dessus */
+}
+
+.navbar-brand img {
+    max-height: 240px; /* Taille ajustée pour ne pas dépasser */
+    width: auto; /* Garde les proportions */
+}
+
+/* Ajustement des liens pour éviter de toucher le logo */
+.navbar-nav {
+    margin-top: 20px; /* Ajoute de l'espace sous le logo */
+}
+
+/*-------------------------------------------
+//  Table
+// -------------------------------------------
+*/
+
 .table-custom {
     background-color: #21312E; /* Vert foncé */
     border-color: #A4D564; /* Vert clair */
@@ -34,7 +61,11 @@ body {
     background-color: #F5CB42; /* Jaune doré */
 }
 
-/* Boutons */
+/*-------------------------------------------
+//  Buttons
+// -------------------------------------------
+*/
+
 button, .btn {
     background-color: #A4D564; /* Vert clair */
     color: #21312E; /* Texte vert foncé */
@@ -46,7 +77,11 @@ button:hover, .btn:hover {
     color: #21312E; /* Texte vert foncé */
 }
 
-/* Footer */
+/*-------------------------------------------
+//  Footer
+// -------------------------------------------
+*/
+
 .footer {
     background-color: #21312E; /* Vert foncé */
     color: #FDF5D8; /* Blanc cassé */
@@ -68,24 +103,6 @@ button:hover, .btn:hover {
     position: relative;
 }
 
-.navbar-brand {
-    position: absolute; /* Sort du flux normal */
-    top: -38px; /* Ajuste la position verticale */
-    left: 50%; /* Centre horizontalement */
-    transform: translate(-50%, 0); /* Centre par rapport à son conteneur */
-    z-index: 2; /* S'assure qu'il est visible au-dessus */
-}
-
-.navbar-brand img {
-    max-height: 240px; /* Taille ajustée pour ne pas dépasser */
-    width: auto; /* Garde les proportions */
-}
-
-/* Ajustement des liens pour éviter de toucher le logo */
-.navbar-nav {
-    margin-top: 20px; /* Ajoute de l'espace sous le logo */
-}
-
 div #result {
     color: black;
 }
@@ -102,4 +119,8 @@ div {
 #resource-chart {
     background-color: white; /* Fond blanc */
     border: 2px solid #A4D564; /* Bordure verte */
+}
+
+.navbar-brand a {
+    text-decoration: none; /* Supprime le soulignement */
 }
