@@ -65,8 +65,11 @@ body {
 }
 
 .table-custom th {
-    background-color: #A4D564; /* Vert clair */
-    color: #21312E; /* Texte vert foncé */
+    background: linear-gradient(25deg, #A4D564 33%, #8DC354 50%, #76B044 75%); /* Transitions définies */
+    color: #21312E;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
 }
 
 .table-custom tr:hover {
@@ -82,6 +85,7 @@ button, .btn {
     background-color: #A4D564; /* Vert clair */
     color: #21312E; /* Texte vert foncé */
     border: none;
+    font-weight: bold;
 }
 
 button:hover, .btn:hover {
