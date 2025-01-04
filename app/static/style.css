@@ -4,7 +4,17 @@ body {
     font-family: Arial, sans-serif;
 }
 
+div #result {
+    color: black;
+}
 
+div {
+    border-radius: 10px;
+}
+
+#mainContainer {
+	margin-top: 8em;
+}
 
 /*-------------------------------------------
 //  Navbar
@@ -37,7 +47,6 @@ body {
     width: 310px; 
 }
 
-
 .navbar-nav {
     margin-top: 20px;
 }
@@ -46,11 +55,18 @@ body {
     text-decoration: none;
 }
 
+.navbar {
+    background-color: #21312E; /* Vert foncé */
+    border-bottom: 3px solid #A4D564; /* Bordure verte */
+    position: relative;
+}
+
 
 /*-------------------------------------------
-//  Table
+//  Tableau
 // -------------------------------------------
 */
+
 #tracking-table-body:hover {
     cursor: pointer;
 }
@@ -111,33 +127,35 @@ button:hover, .btn:hover {
 }
 
 /* Graphiques */
+#resource-chart-container {
+    width: 100%; /* Prendre toute la largeur disponible */
+    height: 400px; /* Augmenter la hauteur */
+}
+
 #resource-chart {
     border: 2px solid #A4D564; /* Bordure verte */
-    background-color: #21312E; /* Fond vert foncé */
+    background-color: #ffff; /* Fond vert foncé */
+    width: 100% !important;
+    height: 100% !important;
 }
 
 
-.navbar {
-    background-color: #21312E; /* Vert foncé */
-    border-bottom: 3px solid #A4D564; /* Bordure verte */
-    position: relative;
+
+/*-------------------------------------------
+//  Tracking - Last crafts container
+// -------------------------------------------
+*/
+
+#last-crafts-list .list-group-item {
+    padding: 1rem;
 }
 
-div #result {
-    color: black;
+#last-crafts-list .list-group-item h5 {
+    margin: 0;
+    font-size: 1.2rem;
 }
 
-div {
-    border-radius: 10px;
+#last-crafts-list .list-group-item small {
+    display: block;
+    font-size: 0.9rem;
 }
-
-#mainContainer {
-	margin-top: 8em;
-}
-
-/* Changement couleur du canvas */
-#resource-chart {
-    background-color: white; /* Fond blanc */
-    border: 2px solid #A4D564; /* Bordure verte */
-}
-

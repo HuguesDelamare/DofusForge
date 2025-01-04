@@ -4,28 +4,63 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h1>Mes Suivis</h1>
+    <h1 class="mb-4">Mes Suivis</h1>
     <p>Vous pouvez suivre jusqu'à <strong>15 composants</strong>.</p>
 
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>Nom du Composant</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="tracking-table-body">
-        </tbody>
-    </table>
+    <div class="row">
+        <!-- Table des suivis -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4>Composants Suivis</h4>
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tracking-table-body">
+                            <tr>
+                                <td colspan="2" class="text-center text-muted">Chargement...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-    <div id="resource-info" style="display: none;">
-        <h3 id="resource-title"></h3>
-        <div id="resource-chart-container">
-            <canvas id="resource-chart"></canvas>
+        <!-- Info ressource -->
+        <div class="col-lg-8"> <!-- Augmenter la largeur -->
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 id="resource-title" class="mb-3">Détails Ressource</h4>
+                    <div id="resource-info" style="display: none;">
+                        <div id="resource-chart-container" style="width: 100%; height: 400px;"> <!-- Style agrandi -->
+                            <canvas id="resource-chart"></canvas>
+                        </div>
+                    </div>
+                    <div id="resource-placeholder" class="text-center text-muted" style="display: block;">
+                        Sélectionnez un composant pour voir ses détails.
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    
+
+    <!-- Conteneur pour les anciens crafts -->
+    <div class="mt-5">
+        <h2>Derniers Crafts</h2>
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <ul class="list-group" id="last-crafts-list">
+                    <li class="list-group-item text-center text-muted">Chargement...</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>
+
 {% endblock %}
 
 {% block scripts %}
