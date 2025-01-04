@@ -142,6 +142,68 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
+    // Charger les 10 derniers crafts de l'utlisateur
+    function loadUserLastCrafts() {
+        fetch("/api/user_last_recipes")
+            .then((response) => {
+                if (!response.ok) throw new Error(`Erreur HTTP : ${response.status}`);
+                return response.json();
+            })
+            .then((data) => {
+                const lastCraftsContainer = document.getElementById("last-crafts-container");
+                lastCraftsContainer.innerHTML = ""; // Vider l'existant
+    
+                if (data.length === 0) {
+                    lastCraftsContainer.innerHTML = `
+                        <div class="col text-center text-muted">
+                            Aucun craft récent trouvé.
+                        </div>
+                    `;
+                    return;
+                }
+    
+                data.forEach((craft) => {
+                    const date = new Date(craft.date_recorded).toLocaleString("fr-FR", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    });
+    
+                    const card = document.createElement("div");
+                    card.className = "col";
+    
+                    card.innerHTML = `
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">${craft.item_name}</h5>
+                                <p class="card-text">
+                                    <strong>Prix du Craft :</strong> ${craft.item_craft_price.toLocaleString("fr-FR")} kamas<br>
+                                    <strong>Prix HDV :</strong> ${craft.item_price.toLocaleString("fr-FR")} kamas
+                                </p>
+                            </div>
+                            <div class="card-footer">
+                                <small class="text-muted">Crafté le : ${date}</small>
+                            </div>
+                        </div>
+                    `;
+    
+                    lastCraftsContainer.appendChild(card);
+                });
+            })
+            .catch((error) => {
+                console.error("Erreur lors du chargement des derniers crafts :", error);
+                const lastCraftsContainer = document.getElementById("last-crafts-container");
+                lastCraftsContainer.innerHTML = `
+                    <div class="col text-center text-muted">
+                        Une erreur s'est produite lors du chargement des crafts.
+                    </div>
+                `;
+            });
+    }
+    
+    
     // Gestion des clics sur la table des suivis
     trackingTableBody.addEventListener("click", function (event) {
         const target = event.target;
@@ -164,4 +226,5 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Charger les suivis au démarrage
     loadTrackings();
+    loadUserLastCrafts();
 });

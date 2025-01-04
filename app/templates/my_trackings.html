@@ -9,7 +9,7 @@
 
     <div class="row">
         <!-- Table des suivis -->
-        <div class="col-lg-4">
+        <div class="col-lg-3">
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h4>Composants Suivis</h4>
@@ -50,17 +50,12 @@
 
     <!-- Conteneur pour les anciens crafts -->
     <div class="mt-5">
-        <h2>Derniers Crafts</h2>
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <ul class="list-group" id="last-crafts-list">
-                    <li class="list-group-item text-center text-muted">Chargement...</li>
-                </ul>
-            </div>
+        <h2 class="text-center">Derniers Crafts</h2>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3" id="last-crafts-container">
+            <!-- Les cartes des crafts seront générées dynamiquement ici -->
         </div>
-    </div>
+    </div>    
 </div>
-
 {% endblock %}
 
 {% block scripts %}

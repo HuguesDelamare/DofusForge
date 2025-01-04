@@ -103,6 +103,37 @@ def get_last_recipes(item_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@routes.route("/api/user_last_recipes", methods=['GET'])
+def get_user_last_recipes():
+    try:
+        # Vérifier si l'utilisateur est connecté
+        if not current_user.is_authenticated:
+            return jsonify({"error": "Utilisateur non connecté."}), 401
+
+        # Récupérer les 10 derniers crafts de l'utilisateur connecté
+        recipes = (Recipe.query
+                   .filter_by(user_id=current_user.id)
+                   .order_by(Recipe.date_recorded.desc())
+                   .limit(10)
+                   .all())
+
+        # Construire une réponse JSON
+        data = []
+        for r in recipes:
+            data.append({
+                "id": r.id,
+                "item_id": r.item_id,
+                "item_name": r.item_name,
+                "item_craft_price": r.item_craft_price,
+                "item_price": r.item_price,
+                "date_recorded": r.date_recorded.isoformat()
+            })
+
+        return jsonify(data), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @routes.route("/my_trackings", methods=["GET"])
 @login_required
 def my_trackings():
