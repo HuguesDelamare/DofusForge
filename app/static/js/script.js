@@ -97,8 +97,13 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    // Récupère l’historique en DB
+    // Fonction pour récupérer l'historique en DB
     function getLastRecipesFromDB(itemId) {
+        if (!itemId) {
+            console.error('ID de l\'objet non fourni.');
+            return;
+        }
+
         fetch(`/api/last_recipes/${itemId}`)
             .then(response => {
                 if (!response.ok) {
@@ -107,12 +112,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 return response.json();
             })
             .then(data => {
+                const historiqueTableBody = document.getElementById('historique-table-body');
                 historiqueTableBody.innerHTML = '';
 
                 if (data.length === 0) {
                     historiqueTableBody.innerHTML = `
                         <tr>
-                            <td colspan="4" class="text-center fst-italic text-muted">
+                            <td colspan="5" class="text-center fst-italic text-muted">
                                 Aucun historique disponible pour cet objet.
                             </td>
                         </tr>
@@ -134,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <td>${recipe.item_name}</td>
                         <td>${formatNumber(recipe.item_craft_price)} kamas</td>
                         <td>${formatNumber(recipe.item_price)} kamas</td>
-                        <td>${recipe.added_by || "Inconu"}</td>
+                        <td>${recipe.added_by || "Inconnu"}</td>
                         <td>${dateLocale}</td>
                     `;
                     historiqueTableBody.appendChild(row);
@@ -144,6 +150,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Erreur lors de la récupération de l\'historique :', error);
             });
     }
+
+    // Fonction pour formater les nombres
+    function formatNumber(number) {
+        return new Intl.NumberFormat('fr-FR').format(number);
+    }
+
 
     // -------------------------------------------
     //  EVENEMENTS DE RECHERCHE
@@ -231,7 +243,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         <td colspan="6" class="text-center">Cet objet n'a pas de recette.</td>
                     </tr>
                 `;
-                ajouterButton.style.display = "none";
                 currentRecipeData = null;
                 return;
             }

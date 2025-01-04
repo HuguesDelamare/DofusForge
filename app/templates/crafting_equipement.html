@@ -58,7 +58,7 @@
             <div class="col-lg-4">
                 <div class="button-row mb-3 d-flex">
                     <button class="btn btn-danger" type="button" id="reset-button">Réinitialiser</button>
-                    <button class="btn btn-success" type="button" id="ajouter-recette" style="display:none;">
+                    <button class="btn btn-success" type="button" id="ajouter-recette">
                         Enregistrer le prix du craft
                     </button>
                 </div>
@@ -88,6 +88,29 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Section des objets crafter -->
+        <div class="mt-5">
+            <h4>Objets crafter récents</h4>
+            <div class="table-responsive">
+                <table class="table table-custom" id="historique-table">
+                    <thead>
+                        <tr>
+                            <th>Nom de l'objet</th>
+                            <th>Prix du craft</th>
+                            <th>Prix HDV</th>
+                            <th>Ajouté par</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historique-table-body">
+                        <tr>
+                            <td colspan="5" class="text-center fst-italic text-muted">Chargement...</td>
+                        </tr>
+                    </tbody>
+                </table>                
             </div>
         </div>
     </main>
