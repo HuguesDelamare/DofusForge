@@ -64,7 +64,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 </td>
             </tr>
         `;
-        ajouterButton.style.display = "none";
         currentRecipeData = null;
         hiddenItemIdInput.value = "";
 
@@ -294,7 +293,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td colspan='6' class='text-center'>Recette non trouvée ou données incorrectes.</td>
                 </tr>
             `;
-            ajouterButton.style.display = "none";
             currentRecipeData = null;
         }
     }
