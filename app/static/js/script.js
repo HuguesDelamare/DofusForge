@@ -19,8 +19,51 @@ document.addEventListener('DOMContentLoaded', function() {
     // -------------------------------------------
     //  Chargement des données de suivi au chargement de la page
     // -------------------------------------------
-
+    
     const itemId = hiddenItemIdInput.value; // Récupère l'ID de l'item sélectionné
+    // Événement délégué pour les boutons de suivi
+    ingredientTableBody.addEventListener('click', function (event) {
+        const button = event.target.closest('.track-btn');
+        if (!button) return;
+
+        const ingredientId = button.dataset.id;
+        const ingredientName = button.dataset.name;
+        const isTracked = button.dataset.tracked === "true";
+        const icon = button.querySelector('i');
+
+        if (isTracked) {
+            untrackComponent(ingredientId, ingredientName, button, icon);
+        } else {
+            trackComponent(ingredientId, ingredientName, button, icon);
+        }
+    });
+
+    // Événement pour les survols (mouseenter et mouseleave)
+    ingredientTableBody.addEventListener('mouseenter', function (event) {
+        const button = event.target.closest('.track-btn');
+        if (!button) return;
+
+        const isTracked = button.dataset.tracked === "true";
+        const icon = button.querySelector('i');
+
+        if (isTracked) {
+            icon.className = "bi bi-bookmark-x-fill";
+            button.title = "Supprimer du suivi";
+        }
+    }, true);
+
+    ingredientTableBody.addEventListener('mouseleave', function (event) {
+        const button = event.target.closest('.track-btn');
+        if (!button) return;
+
+        const isTracked = button.dataset.tracked === "true";
+        const icon = button.querySelector('i');
+
+        if (isTracked) {
+            icon.className = "bi bi-bookmark-check-fill";
+            button.title = "Suivi activé";
+        }
+    }, true);
 
     if (itemId) {
         fetch(`/get_craft_data/${itemId}`)
@@ -301,10 +344,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function createIngredientRow(itemData, quantity, ingredientId, isTracked) {
         const row = ingredientTableBody.insertRow();
         row.dataset.ingredientId = ingredientId;
+        row.dataset.oldPrice = itemData.oldPrice || 0;
 
-        row.dataset.oldPrice = itemData.oldPrice || 0; // Dernier prix en DB
-
-        // 7 cellules
+        // Création des cellules
         const imageCell = row.insertCell();
         const ingredientCell = row.insertCell();
         const quantityCell = row.insertCell();
@@ -313,76 +355,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const evoCell = row.insertCell();
         const actionCell = row.insertCell();
 
-        // Ajout du bouton Track
-        actionCell.innerHTML = `
-            <button 
-                class="btn btn-sm track-btn" 
-                data-id="${ingredientId}" 
-                data-name="${itemData.name.fr}" 
-                data-tracked="${isTracked}" 
-                title="${isTracked ? "Suivi activé" : "Ajouter au suivi"}">
-                <i class="${isTracked ? "bi bi-bookmark-check-fill" : "bi bi-bookmark"}"></i>
-            </button>
-        `;
-
-        const trackButton = actionCell.querySelector('.track-btn');
-
-        // Gestion des clics
-        trackButton.addEventListener('click', function () {
-            const isCurrentlyTracked = this.getAttribute("data-tracked") === "true";
-            const icon = this.querySelector("i");
-
-            if (isCurrentlyTracked) {
-                console.log(`Untracking component: ${ingredientId}, ${itemData.name.fr}`);
-                // Enlever le suivi
-                untrackComponent(
-                    ingredientId,
-                    itemData.name.fr,
-                    this,
-                    icon
-                );
-            } else {
-                console.log(`Tracking component: ${ingredientId}, ${itemData.name.fr}`);
-                // Ajouter au suivi
-                trackComponent(
-                    ingredientId,
-                    itemData.name.fr,
-                    this,
-                    icon
-                );
-            }
-        });
-
-        // Gestion du survol
-        trackButton.addEventListener('mouseenter', function () {
-            const isCurrentlyTracked = this.getAttribute("data-tracked") === "true";
-            const icon = this.querySelector("i");
-
-            if (isCurrentlyTracked) {
-                icon.className = "bi bi-bookmark-x-fill"; // Icône pour indiquer qu'on peut enlever
-                this.setAttribute("title", "Supprimer du suivi");
-            }
-        });
-
-        trackButton.addEventListener('mouseleave', function () {
-            const isCurrentlyTracked = this.getAttribute("data-tracked") === "true";
-            const icon = this.querySelector("i");
-
-            if (isCurrentlyTracked) {
-                icon.className = "bi bi-bookmark-check-fill"; // Retour à l'icône de suivi activé
-                this.setAttribute("title", "Suivi activé");
-            }
-        });
-
         // IMAGE
         if (itemData.img) {
-            imageCell.innerHTML = `
-                <img 
-                    src="${itemData.img}" 
-                    alt="${itemData.name.fr}" 
-                    style="width:32px; height:auto;"
-                >
-            `;
+            imageCell.innerHTML = `<img src="${itemData.img}" alt="${itemData.name.fr}" style="width:32px; height:auto;">`;
         } else {
             imageCell.textContent = "Pas d'image";
         }
@@ -397,6 +372,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const priceInput = document.createElement('input');
         priceInput.type = 'number';
         priceInput.className = 'form-control form-control-sm no-spinners price-input';
+        priceInput.min = 0;
+        priceInput.value = 0;
         priceCell.appendChild(priceInput);
 
         // TOTAL
@@ -405,49 +382,61 @@ document.addEventListener('DOMContentLoaded', function() {
         // ÉVOLUTION
         evoCell.innerHTML = `<span style="color: gray;">N/A</span>`;
 
-        priceInput.addEventListener('input', updateRowTotal);
+        // ACTION
+        actionCell.innerHTML = `
+            <button 
+                class="btn btn-sm track-btn" 
+                data-id="${ingredientId}" 
+                data-name="${itemData.name.fr}" 
+                data-tracked="${isTracked}" 
+                title="${isTracked ? "Suivi activé" : "Ajouter au suivi"}">
+                <i class="${isTracked ? "bi bi-bookmark-check-fill" : "bi bi-bookmark"}"></i>
+            </button>
+        `;
+
+        // Event listener pour l'input prix
+        priceInput.addEventListener('input', function () {
+            updateRowTotal(priceInput, quantity, row);
+        });
+
+        // Récupérer le dernier prix depuis l'API
+        fetch(`/api/last_component_price/${ingredientId}`)
+            .then(response => {
+                if (!response.ok) throw new Error(`Erreur HTTP ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                const lastPrice = data.last_price || 0;
+                priceInput.value = lastPrice; 
+                updateRowTotal(priceInput, quantity, row);
+            })
+            .catch(error => {
+                console.error("Erreur lors de la récupération du prix :", error);
+            });
     }
 
     // Recalcule total de la ligne + flèche
-    function updateRowTotal(event) {
-        const row = event.target.parentNode.parentNode;
-        const quantity = parseInt(row.cells[2].textContent) || 0;
-        let price = parseInt(event.target.value) || 0;
+    function updateRowTotal(priceInput, quantity, row) {
         const oldPrice = parseFloat(row.dataset.oldPrice) || 0;
-        const totalCellIndex = 4;
-        const evoCellIndex   = 5;
+        const newPrice = parseFloat(priceInput.value) || 0;
+        const totalCell = row.cells[4];
+        const evoCell = row.cells[5];
 
-        if (isNaN(price)) {
-            price = 0;
-        }
-        const total = quantity * price;
-        row.cells[totalCellIndex].textContent = formatNumber(total);
+        // Mise à jour du total
+        const total = newPrice * quantity;
+        totalCell.textContent = formatNumber(total);
 
-        // Comparaison
-        const evoCell = row.cells[evoCellIndex];
+        // Mise à jour de l'évolution
         if (oldPrice > 0) {
-            const diff = price - oldPrice;
-            const percent = (diff / oldPrice) * 100;
-            const roundedPercent = Math.round(percent * 10) / 10;
+            const diff = newPrice - oldPrice;
+            const percentChange = ((diff / oldPrice) * 100).toFixed(1);
 
             if (diff > 0) {
-                evoCell.innerHTML = `
-                    <span style="color:red;">
-                        Ancien prix: ${oldPrice} | ↑ +${roundedPercent}%
-                    </span>
-                `;
+                evoCell.innerHTML = `<span style="color:red;">↑ +${percentChange}%</span>`;
             } else if (diff < 0) {
-                evoCell.innerHTML = `
-                    <span style="color:green;">
-                        Ancien prix: ${oldPrice} | ↓ ${roundedPercent}%
-                    </span>
-                `;
+                evoCell.innerHTML = `<span style="color:green;">↓ ${percentChange}%</span>`;
             } else {
-                evoCell.innerHTML = `
-                    <span style="color:gray;">
-                        Ancien prix: ${oldPrice} | = 0%
-                    </span>
-                `;
+                evoCell.innerHTML = `<span style="color:gray;">0%</span>`;
             }
         } else {
             evoCell.innerHTML = `<span style="color:gray;">N/A</span>`;
@@ -469,18 +458,11 @@ document.addEventListener('DOMContentLoaded', function() {
         craftTotalSpan.textContent = formatNumber(craftTotal);
 
         const hdvPrice = parseInt(hdvPriceInput.value) || 0;
-        let profitAvantTaxe = hdvPrice - craftTotal;
-        let profitTtc = profitAvantTaxe * (1 - TAX_RATE);
+        const profitAvantTaxe = hdvPrice - craftTotal;
+        const profitTtc = profitAvantTaxe * (1 - TAX_RATE);
 
-        if (profitAvantTaxe > 0) {
-            profitTtcSpan.textContent = "+" + formatNumber(Math.round(profitTtc));
-            profitTtcSpan.classList.remove('loss');
-            profitTtcSpan.classList.add('profit');
-        } else {
-            profitTtcSpan.textContent = formatNumber(Math.round(profitTtc));
-            profitTtcSpan.classList.add('loss');
-            profitTtcSpan.classList.remove('profit');
-        }
+        profitTtcSpan.textContent = (profitAvantTaxe > 0 ? "+" : "") + formatNumber(Math.round(profitTtc));
+        profitTtcSpan.className = profitAvantTaxe > 0 ? "profit" : "loss";
     }
 
     // -------------------------------------------------
@@ -539,8 +521,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const payload = {
             item_id: parseInt(storedItemId, 10),
             item_name: itemName,
-            item_price: itemPrice,             // Prix HDV
-            item_craft_price: craftTotalValue, // Prix du craft
+            item_price: itemPrice,
+            item_craft_price: craftTotalValue,
             components: ingredientPrices
         };
 
@@ -630,8 +612,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .catch(error => console.error('Erreur lors du suivi :', error));
-    } 
-
+    }
+    
     function untrackComponent(id, name, button, icon) {
         fetch('/untrack_component', {
             method: 'POST',
@@ -650,4 +632,5 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => console.error('Erreur lors de la suppression :', error));
     }
+    
 });
