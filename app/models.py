@@ -4,37 +4,60 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
-class ComponentsPrice(db.Model):
-    __tablename__ = 'component_price'
-    id = db.Column(db.Integer, primary_key=True)
-    component_id = db.Column(db.Integer, nullable=False)
-    component_price = db.Column(db.Integer)
-    date_recorded = db.Column(
-        db.DateTime,
-        default=lambda: datetime.now(timezone.utc).replace(second=0, microsecond=0)
-    )
+
+class Item(db.Model):
+    __tablename__ = 'items'
+    id = db.Column(db.Integer, primary_key=True)  # ID unique de l'item
+    name = db.Column(db.String(255), nullable=False)  # Nom de l'objet
+    level = db.Column(db.Integer, nullable=False)  # Niveau de l'objet
+    type = db.Column(db.String(255), nullable=False)  # Type (localisé)
+    description = db.Column(db.Text, nullable=True)  # Description
+    image_url = db.Column(db.String(512), nullable=True)  # URL de l'image
+    item_set = db.Column(db.String(255), nullable=True)  # Nom de la panoplie (slug)
 
     def __repr__(self):
-        return (
-            f"<ComponentsPrice "
-            f"id={self.id}, "
-            f"component_id={self.component_id}, "
-            f"component_price={self.component_price}, "
-            f"date={self.date_recorded}>"
-        )
+        return f"<Item {self.name}, level={self.level}, type={self.type}, set={self.item_set}>"
+
+# Décrit le composant indépendamment de Item ou Recette, Composant Unique
+class Component(db.Model):
+    __tablename__ = 'components'
+    id = db.Column(db.Integer, primary_key=True)  # ID unique du composant
+    name = db.Column(db.String(255), nullable=False)  # Nom du composant
+    image_url = db.Column(db.String(512), nullable=True)  # URL de l'image du composant
+    description = db.Column(db.Text, nullable=True)  # Description du composant
+    type = db.Column(db.String(255), nullable=True)  # Type du composant (optionnel)
+
+    def __repr__(self):
+        return f"<Component {self.name}, type={self.type}>"
+
+# Fait le lien entre un item et ses composants (recette).
+class RecipeComponent(db.Model):
+    __tablename__ = 'recipe_components'
+    id = db.Column(db.Integer, primary_key=True)
+    recipe_id = db.Column(db.Integer, db.ForeignKey('items.id'), nullable=False)
+    component_id = db.Column(db.Integer, db.ForeignKey('components.id'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+
+    # Relations
+    component = db.relationship('Component', backref='recipe_components', lazy=True)
+
+    def __repr__(self):
+        return f"<RecipeComponent recipe_id={self.recipe_id}, component_id={self.component_id}, quantity={self.quantity}>"
+
 
 class Recipe(db.Model):
     __tablename__ = 'recipes'
     id = db.Column(db.Integer, primary_key=True)
-    item_id = db.Column(db.Integer, nullable=False)
+    item_id = db.Column(db.Integer, db.ForeignKey('items.id'), nullable=False)
     item_name = db.Column(db.String(255), nullable=False)
-    item_price = db.Column(db.Integer, nullable=False)
-    item_craft_price = db.Column(db.Integer, nullable=False, default=0)
+    item_price = db.Column(db.Integer, nullable=False)  # Prix HDV renseigné
+    item_craft_price = db.Column(db.Integer, nullable=False, default=0)  # Coût total du craft
     date_recorded = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
-    # Relation avec User
+    # Relation avec User et Item
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship('User', backref='recipes', lazy=True)
+    item = db.relationship('Item', backref='recipes', lazy=True)
 
     def __repr__(self):
         return (
@@ -42,6 +65,27 @@ class Recipe(db.Model):
             f"item_price={self.item_price}, craft_price={self.item_craft_price}, "
             f"date={self.date_recorded}>"
         )
+
+
+class ComponentsPrice(db.Model):
+    __tablename__ = 'component_price'
+    id = db.Column(db.Integer, primary_key=True)
+    component_id = db.Column(db.Integer, db.ForeignKey('components.id'), nullable=False)
+    component_price = db.Column(db.Integer)
+    date_recorded = db.Column(
+        db.DateTime,
+        default=lambda: datetime.now(timezone.utc).replace(second=0, microsecond=0)
+    )
+
+    component = db.relationship('Component', backref='prices', lazy=True)
+
+    def __repr__(self):
+        return (
+            f"<ComponentsPrice "
+            f"id={self.id}, component_id={self.component_id}, "
+            f"component_price={self.component_price}, date={self.date_recorded}>"
+        )
+
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -58,15 +102,16 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return f'<User {self.username}>'
-    
+
+
 class TrackedResource(db.Model):
     __tablename__ = 'tracked_resources'
-    id = db.Column(db.Integer, primary_key=True)  # Identifiant unique
-    component_id = db.Column(db.Integer, nullable=False)  # Identifiant du composant (lié à l'API ou à votre BD)
-    component_name = db.Column(db.String(255), nullable=False)  # Nom du composant
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # ID de l'utilisateur
-    user = db.relationship('User', backref='tracked_resources', lazy=True)  # Relation avec le modèle User
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)  # Date de suivi
+    id = db.Column(db.Integer, primary_key=True)
+    component_id = db.Column(db.Integer, db.ForeignKey('components.id'), nullable=False)
+    component_name = db.Column(db.String(255), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user = db.relationship('User', backref='tracked_resources', lazy=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
         return f"<TrackedResource {self.component_name} (User: {self.user_id})>"
