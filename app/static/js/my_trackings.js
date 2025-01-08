@@ -1,10 +1,17 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const trackingTableBody = document.getElementById("tracking-table-body");
+    const trackingTableBody = document.getElementById('tracking-table-body');
     const resourceInfoDiv = document.getElementById("resource-info");
     const resourceTitle = document.getElementById("resource-title");
     const resourceChartContainer = document.getElementById("resource-chart-container");
+    const lastCraftsContainer = document.getElementById("last-crafts-container");
     let resourceChart = null;
+    let trackedComponents = []; // Centralisation des suivis
 
+
+    if (!trackingTableBody) {
+        console.error("L'élément trackingTableBody est introuvable.");
+        return;
+    }
     // Charger les suivis au démarrage
     function loadTrackings() {
         fetch("/my_trackings", { headers: { "X-Requested-With": "XMLHttpRequest" } })
@@ -13,6 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return response.json();
             })
             .then((data) => {
+                trackedComponents = data; // Stocker les suivis
                 trackingTableBody.innerHTML = "";
                 if (data.length === 0) {
                     trackingTableBody.innerHTML = `
@@ -38,7 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch((error) => {
                 console.error("Erreur lors du chargement des suivis :", error);
-                alert("Erreur lors du chargement des suivis.");
+                showError("Erreur lors du chargement des suivis.");
             });
     }
 
@@ -51,13 +59,14 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .then((data) => {
                 if (data.error) {
-                    alert(data.error);
+                    showError(data.error);
+                    console.log("Données de la ressource :", data);
                     return;
                 }
 
                 // Afficher les détails de la ressource
                 resourceInfoDiv.style.display = "block";
-                resourceTitle.textContent = `Ressource : ${data.component_name}`;
+                resourceTitle.textContent = `Ressource : ${data.component.name}`;
 
                 // Préparer les données pour le graphique
                 const labels = data.prices.map((p) => {
@@ -98,21 +107,32 @@ document.addEventListener("DOMContentLoaded", function () {
                     },
                     options: {
                         responsive: true,
-                        maintainAspectRatio: false, // Permet au graphique de s'adapter à la hauteur
+                        maintainAspectRatio: false,
                         plugins: {
                             legend: { display: true },
+                            tooltip: {
+                                enabled: true,
+                                callbacks: {
+                                    label: function (context) {
+                                        return `Prix : ${context.raw.toLocaleString('fr-FR')} kamas`;
+                                    },
+                                    title: function (tooltipItems) {
+                                        return `Date : ${tooltipItems[0].label}`
+                                    }
+                                },
+                                displayColors: false,
+                            },
                         },
                         scales: {
                             x: { title: { display: true, text: "Date et heure" } },
                             y: { title: { display: true, text: "Prix (kamas)" } },
                         },
-                    },
+                    },                    
                 });
-                
             })
             .catch((error) => {
                 console.error("Erreur lors de la récupération des données :", error);
-                alert("Erreur lors de la récupération des données.");
+                showError("Erreur lors de la récupération des données.");
             });
     }
 
@@ -138,11 +158,11 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch((error) => {
                 console.error("Erreur lors de la suppression du suivi :", error);
-                alert("Erreur lors de la suppression du suivi.");
+                showError("Erreur lors de la suppression du suivi.");
             });
     }
 
-    // Charger les 10 derniers crafts de l'utlisateur
+    // Charger les 10 derniers crafts de l'utilisateur
     function loadUserLastCrafts() {
         fetch("/api/user_last_recipes")
             .then((response) => {
@@ -150,9 +170,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 return response.json();
             })
             .then((data) => {
-                const lastCraftsContainer = document.getElementById("last-crafts-container");
                 lastCraftsContainer.innerHTML = ""; // Vider l'existant
-    
+
                 if (data.length === 0) {
                     lastCraftsContainer.innerHTML = `
                         <div class="col text-center text-muted">
@@ -161,8 +180,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     `;
                     return;
                 }
-    
+
                 data.forEach((craft) => {
+                    console.log(data)
+                    console.log(craft)
                     const date = new Date(craft.date_recorded).toLocaleString("fr-FR", {
                         day: "2-digit",
                         month: "2-digit",
@@ -170,17 +191,30 @@ document.addEventListener("DOMContentLoaded", function () {
                         hour: "2-digit",
                         minute: "2-digit",
                     });
-    
+
+                    // Calcul du profit TTC
+                    const profitTTC = Math.round((craft.item_price - craft.item_craft_price) * 0.98);
+                    const profitClass = profitTTC > 0 ? "profit-positive" : "profit-negative";
+
+                    // Création de la carte
                     const card = document.createElement("div");
                     card.className = "col";
-    
+
                     card.innerHTML = `
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <h5 class="card-title">${craft.item_name}</h5>
+                        <div class="card h-100 ${profitClass}">
+                            <div class="text-center mt-2">
+                                ${
+                                    craft.image_url
+                                        ? `<img src="${craft.image_url}" alt="${craft.item_name}" class="card-img-top-small">`
+                                        : `<div class="card-img-placeholder-small">Image indisponible</div>`
+                                }
+                            </div>
+                            <div class="card-body text-center">
+                                <h5 class="card-title mb-2">${craft.item_name}</h5>
                                 <p class="card-text">
                                     <strong>Prix du Craft :</strong> ${craft.item_craft_price.toLocaleString("fr-FR")} kamas<br>
-                                    <strong>Prix HDV :</strong> ${craft.item_price.toLocaleString("fr-FR")} kamas
+                                    <strong>Prix HDV :</strong> ${craft.item_price.toLocaleString("fr-FR")} kamas<br>
+                                    <strong class="profit ${profitTTC > 0 ? 'profit-positive' : 'profit-negative'}">Profit TTC :</strong> ${profitTTC.toLocaleString("fr-FR")} kamas
                                 </p>
                             </div>
                             <div class="card-footer">
@@ -188,13 +222,12 @@ document.addEventListener("DOMContentLoaded", function () {
                             </div>
                         </div>
                     `;
-    
+
                     lastCraftsContainer.appendChild(card);
                 });
             })
             .catch((error) => {
                 console.error("Erreur lors du chargement des derniers crafts :", error);
-                const lastCraftsContainer = document.getElementById("last-crafts-container");
                 lastCraftsContainer.innerHTML = `
                     <div class="col text-center text-muted">
                         Une erreur s'est produite lors du chargement des crafts.
@@ -202,8 +235,67 @@ document.addEventListener("DOMContentLoaded", function () {
                 `;
             });
     }
+
+    // -------------------------------------------
+    //  METTRE À JOUR LE GRAPHIQUE POUR LES COMPOSANTS SUIVIS
+    // -------------------------------------------
+    function updateTrackingGraph(componentId) {
+        fetch(`/api/last_component_price/${componentId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error || !data.prices || data.prices.length === 0) {
+                    console.warn("Aucune donnée trouvée pour ce composant :", componentId);
+                    const ctx = document.getElementById('tracking-graph').getContext('2d');
+                    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                    ctx.fillText("Pas de données disponibles", 10, 50); // Message si aucune donnée
+                    return;
+                }
     
-    
+                // Création du graphique avec les données
+                const ctx = document.getElementById('tracking-graph').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.prices.map(p => new Date(p.date).toLocaleDateString('fr-FR')), // Dates formatées
+                        datasets: [{
+                            label: "Prix (kamas)",
+                            data: data.prices.map(p => p.price), // Prix associés
+                            borderColor: "blue",
+                            backgroundColor: "rgba(0,0,255,0.1)",
+                            tension: 0.2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'top' },
+                            title: { display: true, text: `Ressource : ${data.component_name}` }
+                        }
+                    }
+                });
+            })
+            .catch(error => {
+                console.error("Erreur lors de la récupération des données pour le graphique :", error);
+                const ctx = document.getElementById('tracking-graph').getContext('2d');
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                ctx.fillText("Erreur lors du chargement des données", 10, 50);
+            });
+    }    
+
+    // Afficher une erreur utilisateur
+    function showError(message) {
+        const errorBanner = document.getElementById("error-banner");
+        if (errorBanner) {
+            errorBanner.textContent = message;
+            errorBanner.style.display = "block";
+            setTimeout(() => {
+                errorBanner.style.display = "none";
+            }, 5000); // Masquer après 5 secondes
+        } else {
+            alert(message); // Fallback si aucune bannière n'est définie
+        }
+    }
+
     // Gestion des clics sur la table des suivis
     trackingTableBody.addEventListener("click", function (event) {
         const target = event.target;
@@ -224,7 +316,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Charger les suivis au démarrage
+    // Charger les suivis et les derniers crafts au démarrage
     loadTrackings();
     loadUserLastCrafts();
 });
