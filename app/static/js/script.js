@@ -352,6 +352,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 return response.json();
             })
             .then(data => {
+                console.log("Données retournées pour l'autocomplétion :", data);
                 if (!Array.isArray(data) || data.length === 0) {
                     resultDiv.innerHTML = "<div class='text-muted p-2'>Aucun résultat trouvé.</div>";
                     return;
@@ -373,17 +374,34 @@ document.addEventListener('DOMContentLoaded', function () {
 
     searchInput.addEventListener("input", function (event) {
         clearTimeout(autoCompleteTimeout);
+    
         const searchTerm = event.target.value.trim();
         if (searchTerm.length < 3) {
             resultDiv.innerHTML = ""; // Vide les suggestions si la saisie est trop courte
             return;
         }
-
+    
         autoCompleteTimeout = setTimeout(() => {
-            const normalizedTerm = normalizeSearchTerm(searchInput.value.trim());
+            const normalizedTerm = normalizeSearchTerm(searchTerm);
             fetchAutocomplete(normalizedTerm);
-        }, 300);        
+    
+            // Vérifie si le terme complet correspond directement à un élément
+            fetch(`/api/autocomplete_items?term=${searchTerm}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length === 1 && data[0].name.toLowerCase() === searchTerm.toLowerCase()) {
+                        console.log("Correspondance exacte trouvée :", data[0]);
+                        hiddenItemIdInput.value = data[0].id; // ID de l'objet
+                        fetchRecentCrafts(data[0].id);
+                        fetchComponentPrices(data[0].id);
+                    }
+                })
+                .catch(error => {
+                    console.error("Erreur lors de la recherche :", error);
+                });
+        }, 300);
     });
+    
 
     // Gestion des clics dans la liste des suggestions
     resultDiv.addEventListener("click", function (event) {
@@ -409,6 +427,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     function handleItemSlug(slug) {
+        console.log("Slug reçu :", slug);
         if (!slug) {
             console.error("Le slug est manquant ou invalide.");
             return;
