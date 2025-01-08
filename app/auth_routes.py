@@ -40,7 +40,7 @@ def login():
         if user and user.check_password(password):
             login_user(user)
             flash('Connexion réussie.', 'success')
-            return redirect(url_for('routes.index'))
+            return redirect(url_for('routes.homepage'))
 
         flash('Email ou mot de passe incorrect.', 'danger')
 
