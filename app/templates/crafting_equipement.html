@@ -7,7 +7,7 @@
         <h3 class="mb-4 text-center">Calculateur de prix Dofus</h3>
 
         <!-- Recherche Input -->
-        <div class="mb-4">
+        <div class="mb-4 position-relative">
             <div class="input-group">
                 <input 
                     type="text" 
@@ -16,14 +16,13 @@
                     class="form-control" 
                     aria-label="Rechercher un objet">
             </div>
-            <div id="result" class="autocomplete-container mt-2 shadow-sm rounded bg-white border"></div>
+            <!-- Suggestions d'autocomplétion -->
+            <div id="result" class="autocomplete-container mt-2 shadow-sm rounded"></div>
         </div>
+
 
         <!-- INPUT CACHE pour stocker l'ID de l'item sélectionné -->
         <input type="hidden" id="selected-item-id" value="">
-
-        <!-- Container pour l'image de l'objet principal -->
-        <div id="item-image-container" class="my-3 text-center"></div>
 
         <div class="row g-4">
             <!-- Tableau des ingrédients -->
@@ -40,7 +39,7 @@
                                 <th scope="col">Prix /u</th>
                                 <th scope="col">Total</th>
                                 <th scope="col">Évolution</th>
-                                <th scope="col">Suivi(s)</th>
+                                <th scope="col">Suivi</th>
                             </tr>
                         </thead>
                         <tbody id="ingredient-table-body">

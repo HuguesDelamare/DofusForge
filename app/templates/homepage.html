@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Bienvenue sur DofusForge{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h3 class="display-4">Bienvenue sur <span class="text-success">DofusForge</span></h3>
+        <p class="lead">Gérez vos crafts, suivez vos composants et plus encore.</p>
+    </div>
+
+    {% if not current_user.is_authenticated %}
+    <!-- Boutons pour les visiteurs non connectés -->
+    <div class="text-center mt-4">
+        <a href="/auth/login" class="btn btn-success btn-lg me-3">Se connecter</a>
+        <a href="/auth/register" class="btn btn-outline-success btn-lg">Créer un compte</a>
+    </div>
+    {% else %}
+    <!-- Cards pour les utilisateurs connectés -->
+    <div class="row mt-4">
+        <!-- Card 1: Crafter un équipement -->
+        <div class="col-md-4 mb-4">
+            <a href="{{ url_for('routes.crafting_equipement') }}" class="text-decoration-none">
+                <div class="card h-100 text-center shadow-sm bg-card" style="background-image: url('/static/images/illustrations/artisanat1.jpg');">
+                    <div class="card-body d-flex flex-column justify-content-end text-white">
+                        <h5 class="card-title text-white">Crafter un équipement</h5>
+                        <p class="card-text">Calculez les coûts de craft et gérez vos recettes efficacement.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Card 2: Mes suivis -->
+        <div class="col-md-4 mb-4">
+            <a href="{{ url_for('routes.my_trackings') }}" class="text-decoration-none">
+                <div class="card h-100 text-center shadow-sm bg-card" style="background-image: url('/static/images/illustrations/suivis.jpg');">
+                    <div class="card-body d-flex flex-column justify-content-end text-white">
+                        <h5 class="card-title text-white">Mes suivis</h5>
+                        <p class="card-text">Suivez vos composants en temps réel et restez informé.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Card 3: Contrats recherchés -->
+        <div class="col-md-4 mb-4">
+            <a href="{{ url_for('routes.wanted') }}" class="text-decoration-none">
+                <div class="card h-100 text-center shadow-sm bg-card" style="background-image: url('/static/images/illustrations/recherchés.jpg')">
+                    <div class="card-body d-flex flex-column justify-content-end text-white">
+                        <h5 class="card-title text-white">Contrats recherchés</h5>
+                        <p class="card-text">Découvrez les ressources les plus demandées sur le marché.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
