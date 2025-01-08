@@ -160,28 +160,242 @@ button:hover, .btn:hover {
     font-size: 0.9rem;
 }
 
-.card {
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
+/* Alignement du texte dans la barre de recherche */
+#search-input {
+    text-align: left;
+    padding: 8px 10px;
+    font-size: 14px;
+    line-height: 1.5;
+    border: 1px solid #A4D564;
+    border-radius: 5px;
 }
 
-.card:hover {
-    transform: scale(1.03);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+/* Amélioration de l'affichage des suggestions */
+.autocomplete-container {
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: white;
+    border: 1px solid #A4D564;
+    border-radius: 5px;
+    position: absolute;
+    z-index: 1000;
+    width: 100%;
 }
 
-.card .card-title {
-    font-size: 1.1rem;
-    font-weight: bold;
+.autocomplete-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    background-color: white;
+    border-bottom: 1px solid #f1f1f1;
+    font-size: 14px;
 }
 
-.card .card-text {
-    font-size: 0.9rem;
+.autocomplete-item:hover {
+    background-color: #A4D564;
+    color: white;
 }
 
-.card-footer {
-    background-color: #f8f9fa;
-    font-size: 0.8rem;
+/* Transition fluide pour hover */
+button, .btn {
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Amélioration des éléments de tableau */
+.table-custom td, .table-custom th {
+    padding: 12px;
+    vertical-align: middle;
+}
+
+.table-custom td img {
+    border-radius: 5px;
+}
+
+/* Meilleure visibilité pour les inputs */
+.price-input {
+    width: 70px;
+    margin: 0 auto;
     text-align: right;
+}
+
+/* Amélioration du conteneur graphique */
+#evolutionChart {
+    border: 1px solid #A4D564;
+    border-radius: 5px;
+    background: white;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield; /* Firefox */
+    appearance: textfield; /* Chrome, Edge */
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none; /* Safari */
+    margin: 0;
+}
+/*-------------------------------------------
+// Cards
+// -------------------------------------------
+*/
+
+/*-------------------------------------------
+// Cards - Réduction de la taille
+// -------------------------------------------
+*/
+
+#last-crafts-container .card {
+    max-width: 300px; /* Réduction de la largeur maximale */
+    border-radius: 10px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    overflow: hidden;
+    background-color: #f9f9f9; /* Couleur douce */
+    margin: auto; /* Centrer la carte */
+}
+
+#last-crafts-container .card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+
+#last-crafts-container .card .card-title {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #343a40;
+    text-align: center; /* Centrer le titre */
+}
+
+
+#last-crafts-container .card .card-text {
+    font-size: 0.85rem; /* Réduction de la taille de la police */
+    text-align: center; /* Centrer le texte */
+    margin: 0; /* Supprime les marges */
+}
+
+
+#last-crafts-container .card-footer {
+    background-color: #e9ecef;
+    font-size: 0.75rem; /* Réduction de la taille de la police */
+    text-align: center; /* Centrer le footer */
+}
+
+/* Image réduite et centrée */
+
+#last-crafts-container .card-img-top-small {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    margin: auto;
+    display: block;
+    border-radius: 5px;
+}
+
+
+#last-crafts-container .card-img-placeholder-small {
+    width: 50px;
+    height: 50px;
+    background-color: #dee2e6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.7rem;
+    color: #6c757d;
+    border-radius: 2px;
+}
+
+/* Ajustement des marges */
+#last-crafts-container .card-body {
+    padding: 10px; /* Réduction des espaces internes */
+}
+
+/* Styles pour les cards avec une image de fond */
+.bg-card {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 15px;
+    color: white; /* Couleur du texte */
+    transition: transform 0.3s, box-shadow 0.3s;
+    overflow: hidden;
+    height: 350px;
+    position: relative;
+}
+
+/* Texte plus visible avec un dégradé sombre */
+.bg-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
+    z-index: 1;
+}
+
+.bg-card .card-body {
+    position: relative;
+    z-index: 2;
+    text-shadow: 5px 5px 5px rgba(0, 0, 0, 1); /* Ombre pour le texte */
+    padding: 2rem 1.5rem;
+    background: rgba(0, 0, 0, 0.1); border-radius: 5px;
+}
+
+/* Effet au survol */
+.bg-card:hover {
+    transform: scale(1.08);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Titre et texte */
+.bg-card .card-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.bg-card .card-text {
+    font-size: 1.1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    color: #ffff;
+    margin: 0;
+}
+
+
+.card {
+    position: relative;
+    overflow: hidden;
+    height: 350px; /* Hauteur personnalisée */
+}
+
+.card-img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    filter: brightness(0.7); /* Assombrir légèrement l'image */
+}
+
+.card-img-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.4); /* Overlay sombre */
+    color: white;
+    text-align: center;
+    padding: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+/* Largeur des colonnes ajustée sur grand écran */
+@media (min-width: 992px) {
+    .col-lg-4 {
+        max-width: 33%;
+    }
 }
