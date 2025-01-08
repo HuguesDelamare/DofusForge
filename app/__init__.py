@@ -28,7 +28,7 @@ def create_app():
     login_manager.init_app(app)
 
     # Importer les modèles
-    from .models import User, ComponentsPrice, Recipe
+    from .models import TrackedResource, Item, Component,Recipe,RecipeComponent,ComponentsPrice, User
 
     # Enregistrer les routes
     from .routes import routes
