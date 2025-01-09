@@ -327,13 +327,29 @@ document.addEventListener('DOMContentLoaded', function () {
         const item = event.target.closest(".autocomplete-item");
         if (!item) return;
     
+        const itemId = item.dataset.id; // Récupère l'ID de l'élément sélectionné
+        const slug = item.dataset.slug; // Slug pour les requêtes supplémentaires
+    
+        if (!itemId) {
+            console.error("Aucun ID trouvé pour l'élément sélectionné.");
+            return;
+        }
+    
+        // Mise à jour de l'entrée et de l'ID caché
         searchInput.value = item.textContent.trim();
-        hiddenItemIdInput.value = item.dataset.id;
+        hiddenItemIdInput.value = itemId;
+    
+        // Efface les suggestions
         resultDiv.innerHTML = "";
     
-        fetchRecentCrafts(item.dataset.id);
-        fetchComponentPrices(item.dataset.id); // Pré-remplir les prix des composants
+        console.log("ID sélectionné :", itemId);
+    
+        // Appelle les fonctions nécessaires pour mettre à jour les données
+        fetchRecentCrafts(itemId); // Charge les anciens crafts
+        fetchComponentPrices(itemId); // Charge les prix des composants
+        handleItemSlug(slug); // Charge les composants pour le slug
     });
+    
     
 
     // -------------------------------------------
@@ -371,7 +387,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
     
-
     searchInput.addEventListener("input", function (event) {
         clearTimeout(autoCompleteTimeout);
     
@@ -401,30 +416,34 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
         }, 300);
     });
-    
 
     // Gestion des clics dans la liste des suggestions
     resultDiv.addEventListener("click", function (event) {
         const item = event.target.closest(".autocomplete-item");
         if (!item) return;
-
+    
         const itemId = item.dataset.id; // Récupère l'ID de l'élément sélectionné
+        const slug = item.dataset.slug; // Slug pour les requêtes supplémentaires
+    
         if (!itemId) {
             console.error("Aucun ID trouvé pour l'élément sélectionné.");
             return;
         }
-
-        searchInput.value = item.textContent.trim();
-        hiddenItemIdInput.value = itemId; // Met à jour avec l'ID
-        resultDiv.innerHTML = ""; // Efface les suggestions
-
-        console.log("ID sélectionné :", itemId);
-        handleItemSlug(item.dataset.slug); // Utilise le slug pour récupérer les détails
-        fetchRecentCrafts(itemId); // Passe l'ID à fetchRecentCrafts
-    });
-
     
-
+        // Mise à jour de l'entrée et de l'ID caché
+        searchInput.value = item.textContent.trim();
+        hiddenItemIdInput.value = itemId;
+    
+        // Efface les suggestions
+        resultDiv.innerHTML = "";
+    
+        console.log("ID sélectionné :", itemId);
+    
+        // Appelle les fonctions nécessaires pour mettre à jour les données
+        handleItemSlug(slug); // Charge les composants pour le slug
+        fetchRecentCrafts(itemId); // Charge les anciens crafts
+        fetchComponentPrices(itemId); // Charge les prix des composants
+    });
 
     function handleItemSlug(slug) {
         console.log("Slug reçu :", slug);
