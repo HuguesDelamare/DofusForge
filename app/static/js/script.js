@@ -265,9 +265,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
     
-    
-    
-    
     // Fonction pour récupérer l'historique en DB
     function getLastRecipesFromDB(itemId) {
         if (!itemId) {
@@ -508,14 +505,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function createIngredientRow(component, quantity, componentId, lastPrice) {
         const row = ingredientTableBody.insertRow();
-        row.setAttribute('data-id', componentId); // ID du composant
+        row.setAttribute('data-id', componentId);
         row.setAttribute('data-old-price', lastPrice || 0); // Dernier prix enregistré
     
         row.innerHTML = `
             <td><img src="${component.image_url || ''}" alt="${component.component_name || 'Inconnu'}" style="width:32px;"></td>
             <td>${component.component_name || 'Nom non disponible'}</td>
             <td>${quantity}</td>
-            <td><input type="number" class="form-control price-input" value="${lastPrice || 0}" min="0"></td>
+            <td><input type="number" class="form-control  w-75 text-center price-input" value="${lastPrice || 0}" min="0"></td>
             <td>0</td>
             <td><span class="text-muted">N/A</span></td>
             <td>
@@ -744,5 +741,5 @@ document.addEventListener('DOMContentLoaded', function () {
         if (componentId) {
             updateTrackingGraph(componentId);
         }
-    });    
+    });
 });

@@ -67,6 +67,13 @@ div {
 // -------------------------------------------
 */
 
+#historique-table-body tr td {
+    text-align: center; /* Centre horizontalement */
+    vertical-align: middle; /* Centre verticalement */
+    padding: 10px; /* Ajout d'espace pour améliorer l'affichage */
+}
+
+
 #tracking-table-body:hover {
     cursor: pointer;
 }
