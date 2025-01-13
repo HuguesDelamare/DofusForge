@@ -1,8 +1,10 @@
-from datetime import datetime, timezone
-from app import db
+from datetime import datetime, timedelta, timezone
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask import current_app
+import jwt
+from app import db
 
 
 class Item(db.Model):
@@ -30,7 +32,6 @@ class Component(db.Model):
     def __repr__(self):
         return f"<Component {self.name}, type={self.type}>"
 
-# Fait le lien entre un item et ses composants (recette).
 class RecipeComponent(db.Model):
     __tablename__ = 'recipe_components'
     id = db.Column(db.Integer, primary_key=True)
@@ -41,9 +42,13 @@ class RecipeComponent(db.Model):
     # Relations
     component = db.relationship('Component', backref='recipe_components', lazy=True)
 
+    # Contrainte d'unicité
+    __table_args__ = (
+        db.UniqueConstraint('recipe_id', 'component_id', name='unique_recipe_component'),
+    )
+
     def __repr__(self):
         return f"<RecipeComponent recipe_id={self.recipe_id}, component_id={self.component_id}, quantity={self.quantity}>"
-
 
 class Recipe(db.Model):
     __tablename__ = 'recipes'
@@ -66,7 +71,6 @@ class Recipe(db.Model):
             f"date={self.date_recorded}>"
         )
 
-
 class ComponentsPrice(db.Model):
     __tablename__ = 'component_price'
     id = db.Column(db.Integer, primary_key=True)
@@ -86,22 +90,43 @@ class ComponentsPrice(db.Model):
             f"component_price={self.component_price}, date={self.date_recorded}>"
         )
 
-
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
+    is_confirmed = db.Column(db.Boolean, default=False)
 
     def set_password(self, password):
+        """Hash le mot de passe et le stocke."""
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
+        """Vérifie le mot de passe en le comparant au hash stocké."""
         return check_password_hash(self.password_hash, password)
 
-    def __repr__(self):
-        return f'<User {self.username}>'
+    def generate_confirmation_token(self, expires_in=3600):
+        payload = {
+            'user_id': self.id,  # Utilise l'ID de l'utilisateur
+            'exp': datetime.utcnow() + timedelta(seconds=expires_in)
+        }
+        return jwt.encode(payload, current_app.config['SECRET_KEY'], algorithm='HS256')
+
+
+    @staticmethod
+    def verify_confirmation_token(token):
+        try:
+            secret_key = current_app.config['SECRET_KEY']
+            payload = jwt.decode(token, secret_key, algorithms=['HS256'])
+            print(f"Payload décodé : {payload}")  # Log pour debug
+            return User.query.get(payload['user_id'])
+        except jwt.ExpiredSignatureError:
+            print("Le jeton a expiré.")
+            return None
+        except jwt.InvalidTokenError:
+            print("Le jeton est invalide.")
+            return None
 
 
 class TrackedResource(db.Model):

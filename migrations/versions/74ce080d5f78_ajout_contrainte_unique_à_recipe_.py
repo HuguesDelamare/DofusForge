@@ -1,8 +1,8 @@
-"""Initial migration
+"""Ajout contrainte unique à recipe_components
 
-Revision ID: 010804f01ffb
+Revision ID: 74ce080d5f78
 Revises: 
-Create Date: 2025-01-08 22:56:32.565334
+Create Date: 2025-01-12 20:12:03.806219
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '010804f01ffb'
+revision = '74ce080d5f78'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -41,6 +41,7 @@ def upgrade():
     sa.Column('username', sa.String(length=80), nullable=False),
     sa.Column('email', sa.String(length=120), nullable=False),
     sa.Column('password_hash', sa.String(length=128), nullable=False),
+    sa.Column('is_confirmed', sa.Boolean(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email'),
     sa.UniqueConstraint('username')
@@ -60,7 +61,8 @@ def upgrade():
     sa.Column('quantity', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['component_id'], ['components.id'], ),
     sa.ForeignKeyConstraint(['recipe_id'], ['items.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('recipe_id', 'component_id', name='unique_recipe_component')
     )
     op.create_table('recipes',
     sa.Column('id', sa.Integer(), nullable=False),

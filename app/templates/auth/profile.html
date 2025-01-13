@@ -2,8 +2,8 @@
 {% block title %}Profil{% endblock %}
 {% block content %}
 <div class="container mt-4">
-    <h1>Profil de {{ user.username }}</h1>
-    <p>Email : {{ user.email }}</p>
-    <p>Nombre de recettes enregistrées : {{ user.recipes|length }}</p>
+    <h1>Profil de {{ current_user.username }}</h1>
+    <p>Email : {{ current_user.email }}</p>
+    <p>Nombre de recettes enregistrées : {{ current_user.recipes|length }}</p>
 </div>
 {% endblock %}

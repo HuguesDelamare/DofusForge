@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmation de compte</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6;">
+    <h2>Bienvenue sur DofusForge !</h2>
+    <p>Merci de vous être inscrit. Veuillez confirmer votre compte en cliquant sur le lien ci-dessous :</p>
+    <p>
+        <a href="{{ confirmation_url }}" 
+           style="display: inline-block; padding: 10px 20px; background-color: #28a745; color: #ffffff; text-decoration: none; border-radius: 5px;">
+           Confirmer mon compte
+        </a>
+    </p>
+    <p>Si le bouton ne fonctionne pas, copiez et collez le lien suivant dans votre navigateur :</p>
+    <p>{{ confirmation_url }}</p>
+    <p>Merci,<br>L'équipe de DofusForge</p>
+</body>
+</html>

@@ -5,6 +5,7 @@ from app import db
 from app.models import Item, Component, Recipe, RecipeComponent, ComponentsPrice, User, TrackedResource
 from flask_login import current_user, login_required
 from urllib.parse import quote, unquote
+import unicodedata
 
 routes = Blueprint('routes', __name__)
 
@@ -12,6 +13,10 @@ routes = Blueprint('routes', __name__)
 def homepage():
     return render_template("homepage.html")
 
+@routes.route("/auth/profile")
+@login_required
+def profile():
+    return render_template("auth/profile.html")
 
 @routes.route("/get_component_prices/<int:item_id>", methods=["GET"])
 @login_required
@@ -40,6 +45,15 @@ def get_component_prices(item_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+def normalize_slug(slug):
+    """
+    Normalise un slug : supprime les accents et met en minuscule,
+    tout en conservant les espaces pour qu'ils soient encodés en %20.
+    """
+    slug = slug.replace("œ", "oe").replace("Œ", "Oe")
+    slug_normalized = unicodedata.normalize('NFD', slug).encode('ascii', 'ignore').decode('utf-8')
+    slug_normalized = slug_normalized.lower()  # Convertir en minuscule
+    return slug_normalized
 
 @routes.route("/get_resource_data/<int:component_id>", methods=["GET"])
 @login_required
@@ -73,7 +87,6 @@ def get_resource_data(component_id):
         }), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
 
 @routes.route("/ingredient_prices", methods=['POST'])
 def save_ingredient_prices():
@@ -115,7 +128,6 @@ def save_ingredient_prices():
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
-
 @routes.route("/api/last_component_price/<int:component_id>", methods=["GET"])
 def last_component_price(component_id):
     try:
@@ -140,7 +152,6 @@ def last_component_price(component_id):
 
     except Exception as e:
         return jsonify({"error": f"Erreur serveur : {str(e)}"}), 500
-
 
 @routes.route("/api/last_recipes/<int:item_id>", methods=["GET"])
 def get_last_recipes(item_id):
@@ -192,7 +203,6 @@ def get_last_recipes(item_id):
         print(f"Erreur lors de la récupération des anciens crafts : {e}")
         return jsonify({"error": str(e)}), 500
 
-
 @routes.route("/api/user_last_recipes", methods=['GET'])
 def get_user_last_recipes():
     try:
@@ -219,45 +229,75 @@ def get_user_last_recipes():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
 @routes.route("/wanted")
 @login_required
 def wanted():
     return render_template("wanted.html")
-
 
 @routes.route("/crafting_equipement")
 @login_required
 def crafting_equipement():
     return render_template("crafting_equipement.html")
 
+def get_or_create_item(item_data):
+    try:
+        # Vérifier si l'item existe déjà
+        existing_item = Item.query.get(item_data["id"])
+        if existing_item:
+            return existing_item
+
+        # Créer un nouvel item s'il n'existe pas
+        item = Item(
+            id=item_data["id"],
+            name=item_data.get("name", {}).get("fr", "Nom inconnu"),
+            level=item_data.get("level"),
+            type=item_data.get("type", {}).get("name", {}).get("fr", "Type inconnu"),
+            description=item_data.get("description", {}).get("fr", ""),
+            image_url=item_data.get("img", ""),
+            item_set=item_data.get("itemSet", {}).get("name", {}).get("fr") if item_data.get("itemSet") else None
+        )
+        db.session.add(item)
+        db.session.commit()
+        return item
+    except Exception as e:
+        db.session.rollback()
+        print(f"Erreur lors de la création de l'item : {e}")
+        return Item.query.get(item_data["id"])  # Requête de secours
+
+def get_or_create_component(ingredient_id, ingredient_data):
+    print(f"Vérification du composant avec ID : {ingredient_id}")
+    existing_component = Component.query.get(ingredient_id)
+    if existing_component:
+        print(f"Composant déjà existant : {existing_component}")
+        return existing_component
+
+    print(f"Création d'un nouveau composant : {ingredient_data}")
+    component = Component(
+        id=ingredient_id,
+        name=ingredient_data["name"]["fr"],
+        image_url=ingredient_data.get("img", ""),
+        description=ingredient_data.get("description", {}).get("fr", ""),
+        type=ingredient_data.get("type", {}).get("name", {}).get("fr", "Type inconnu")
+    )
+    db.session.add(component)
+    db.session.commit()
+    return component
+
+
 
 @routes.route("/get_craft_data/<slug>", methods=["GET"])
 @login_required
 def get_craft_data(slug):
     try:
-        decoded_slug = unquote(slug)
-        print(f"Slug décodé : {decoded_slug}")
+        # Décodage et normalisation du slug
+        decoded_slug = unquote(slug).strip()
+        normalized_slug = normalize_slug(decoded_slug)
+        print(f"Slug décodé : {decoded_slug}, Slug normalisé : {normalized_slug}")
 
+        # Vérifiez si l'item existe dans la base locale
         item = Item.query.filter(Item.name.ilike(f"%{decoded_slug}%")).first()
-        print(f"Item trouvé dans la base locale : {item}")
-
         if item:
-            components = RecipeComponent.query.filter_by(recipe_id=item.id).all()
-            print(f"Composants trouvés pour l'item {item.name} : {components}")
-            component_data = [
-                {
-                    "component_id": component.id,
-                    "component_name": component.name,
-                    "quantity": rc.quantity,
-                    "type": component.type,
-                    "image_url": component.image_url,
-                    "description": component.description
-                }
-                for rc in components if (component := Component.query.get(rc.component_id))
-            ]
-            print("Données des composants :", component_data)
-
+            print(f"Item trouvé dans la base locale : {item}")
             return jsonify({
                 "item": {
                     "id": item.id,
@@ -268,81 +308,50 @@ def get_craft_data(slug):
                     "image_url": item.image_url,
                     "item_set": item.item_set
                 },
-                "components": component_data
+                "components": get_recipe_components(item.id)
             }), 200
 
-        api_items_url = f"https://api.dofusdb.fr/items?slug.fr={quote(decoded_slug.lower())}"
+        # Requête API avec le slug normalisé et encodé
+        api_items_url = f"https://api.dofusdb.fr/items?slug.fr={quote(normalized_slug)}"
         items_response = requests.get(api_items_url)
         if items_response.status_code != 200:
             return jsonify({"error": "Objet introuvable dans l'API."}), 404
 
         items_data = items_response.json()
-
         if not items_data.get("data"):
             return jsonify({"error": "Aucun objet trouvé pour ce slug."}), 404
 
+        # Traitement de l'item récupéré depuis l'API
         item_data = items_data["data"][0]
+        item = get_or_create_item(item_data)
 
-        item = Item(
-            id=item_data["id"],
-            name=item_data.get("name", {}).get("fr", "Nom inconnu"),
-            level=item_data.get("level"),
-            type=item_data.get("type", {}).get("name", {}).get("fr", "Type inconnu"),
-            description=item_data.get("description", {}).get("fr", ""),
-            image_url=item_data.get("img", ""),
-            item_set=item_data.get("itemSet", {}).get("name", {}).get("fr") if item_data.get("itemSet") else None
-        )
-
-        db.session.add(item)
-        db.session.commit()
-        print(f"Item inséré dans la base : {item}")
-
-        # Appel à l'API externe pour les recettes
+        # Récupérer les recettes associées
         api_recipes_url = f"https://api.dofusdb.fr/recipes/{item.id}?lang=fr"
-        print(f"Appel API Recipes : {api_recipes_url}")
         recipes_response = requests.get(api_recipes_url)
-
         if recipes_response.status_code != 200:
             return jsonify({"error": "Recette introuvable pour cet item."}), 404
 
         recipes_data = recipes_response.json()
-        print("Données des recettes depuis l'API :", recipes_data)
-
-        # Traitement des ingrédients
         for ingredient_id, quantity in zip(recipes_data.get("ingredientIds", []), recipes_data.get("quantities", [])):
-            print(f"Ingrédient ID : {ingredient_id}, Quantité : {quantity}")
-            db_component = Component.query.filter_by(id=ingredient_id).first()
-            if not db_component:
-                ingredient_data = next((comp for comp in recipes_data.get("ingredients", []) if comp["id"] == ingredient_id), None)
-                print(f"Données ingrédient depuis l'API : {ingredient_data}")
-                if ingredient_data:
-                    db_component = Component(
-                        id=ingredient_id,
-                        name=ingredient_data["name"]["fr"],
-                        image_url=ingredient_data.get("img", ""),
-                        description=ingredient_data.get("description", {}).get("fr", ""),
-                        type=ingredient_data.get("type", {}).get("name", {}).get("fr", "Type inconnu")
-                    )
-                    db.session.add(db_component)
+            ingredient_data = next((comp for comp in recipes_data.get("ingredients", []) if comp["id"] == ingredient_id), None)
+            db_component = get_or_create_component(ingredient_id, ingredient_data)
 
+            # Vérifiez si la relation existe déjà
+            existing_recipe_component = RecipeComponent.query.filter_by(
+                recipe_id=item.id,
+                component_id=db_component.id
+            ).first()
+
+            if existing_recipe_component:
+                print(f"Relation déjà existante : recipe_id={item.id}, component_id={db_component.id}")
+                continue  # Passez au composant suivant
+
+            # Ajouter la relation composant-recette uniquement si elle n'existe pas
             recipe_component = RecipeComponent(recipe_id=item.id, component_id=db_component.id, quantity=quantity)
             db.session.add(recipe_component)
 
-        db.session.commit()
-        print("Recette et composants insérés avec succès.")
 
-        components = RecipeComponent.query.filter_by(recipe_id=item.id).all()
-        component_data = [
-            {
-                "component_id": component.id,
-                "component_name": component.name,
-                "quantity": rc.quantity,
-                "type": component.type,
-                "image_url": component.image_url,
-                "description": component.description
-            }
-            for rc in components if (component := Component.query.get(rc.component_id))
-        ]
+        db.session.commit()
 
         return jsonify({
             "item": {
@@ -354,13 +363,27 @@ def get_craft_data(slug):
                 "image_url": item.image_url,
                 "item_set": item.item_set
             },
-            "components": component_data
+            "components": get_recipe_components(item.id)
         }), 200
 
     except Exception as e:
         db.session.rollback()
         print(f"Erreur : {e}")
         return jsonify({"error": str(e)}), 500
+
+def get_recipe_components(recipe_id):
+    components = RecipeComponent.query.filter_by(recipe_id=recipe_id).all()
+    return [
+        {
+            "component_id": component.id,
+            "component_name": component.name,
+            "quantity": rc.quantity,
+            "type": component.type,
+            "image_url": component.image_url,
+            "description": component.description
+        }
+        for rc in components if (component := Component.query.get(rc.component_id))
+    ]
 
 @routes.route("/api/autocomplete_items", methods=["GET"])
 @login_required
@@ -451,4 +474,3 @@ def untrack_component():
     except Exception as e:
         db.session.rollback()
         return jsonify({"success": False, "message": f"Erreur : {str(e)}"}), 500
-
