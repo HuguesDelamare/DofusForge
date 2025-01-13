@@ -367,7 +367,6 @@ input[type="number"]::-webkit-outer-spin-button {
 .card {
     position: relative;
     overflow: hidden;
-    height: 350px;
     --bs-card-border-width: none;
 }
 
