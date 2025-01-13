@@ -1,6 +1,6 @@
 body {
-    background-color: #21312E; /* Vert foncé */
-    color: #FDF5D8; /* Blanc cassé */
+    background-color: #21312E;
+    color: #FDF5D8; 
     font-family: Arial, sans-serif;
 }
 
@@ -22,16 +22,16 @@ div {
 */
 
 .navbar {
-    background-color: #21312E; /* Vert foncé */
-    border-bottom: 3px solid #A4D564; /* Bordure verte */
+    background-color: #21312E;
+    border-bottom: 3px solid #A4D564;
 }
 
 .navbar-nav .nav-link {
-    color: #FDF5D8 !important; /* Blanc cassé */
+    color: #FDF5D8 !important;
 }
 
 .navbar-nav .nav-link:hover {
-    color: #F5CB42 !important; /* Jaune doré */
+    color: #F5CB42 !important;
 }
 
 .navbar-brand {
@@ -56,8 +56,8 @@ div {
 }
 
 .navbar {
-    background-color: #21312E; /* Vert foncé */
-    border-bottom: 3px solid #A4D564; /* Bordure verte */
+    background-color: #21312E;
+    border-bottom: 3px solid #A4D564;
     position: relative;
 }
 
@@ -82,13 +82,13 @@ div {
 }
 
 .table-custom {
-    background-color: #21312E; /* Vert foncé */
-    border-color: #A4D564; /* Vert clair */
-    color: #FDF5D8; /* Blanc cassé */
+    background-color: #21312E;
+    border-color: #A4D564;
+    color: #FDF5D8;
 }
 
 .table-custom th {
-    background: linear-gradient(25deg, #A4D564 33%, #8DC354 50%, #76B044 75%); /* Transitions définies */
+    background: linear-gradient(25deg, #A4D564 33%, #8DC354 50%, #76B044 75%);
     color: #21312E;
     padding: 10px;
     text-align: center;
@@ -96,7 +96,7 @@ div {
 }
 
 .table-custom tr:hover {
-    background-color: #F5CB42; /* Jaune doré */
+    background-color: #F5CB42;
 }
 
 /*-------------------------------------------
@@ -105,15 +105,15 @@ div {
 */
 
 button, .btn {
-    background-color: #A4D564; /* Vert clair */
-    color: #21312E; /* Texte vert foncé */
+    background-color: #A4D564;
+    color: #21312E;
     border: none;
     font-weight: bold;
 }
 
 button:hover, .btn:hover {
-    background-color: #F5CB42; /* Jaune doré */
-    color: #21312E; /* Texte vert foncé */
+    background-color: #F5CB42;
+    color: #21312E;
 }
 
 #reset-button, #ajouter-recette {
@@ -126,8 +126,8 @@ button:hover, .btn:hover {
 */
 
 .footer {
-    background-color: #21312E; /* Vert foncé */
-    color: #FDF5D8; /* Blanc cassé */
+    background-color: #21312E;
+    color: #FDF5D8;
     text-align: center;
     padding: 10px;
     margin-top: auto;
@@ -135,13 +135,13 @@ button:hover, .btn:hover {
 
 /* Graphiques */
 #resource-chart-container {
-    width: 100%; /* Prendre toute la largeur disponible */
-    height: 400px; /* Augmenter la hauteur */
+    width: 100%;
+    height: 400px;
 }
 
 #resource-chart {
-    border: 2px solid #A4D564; /* Bordure verte */
-    background-color: #ffff; /* Fond vert foncé */
+    border: 2px solid #A4D564;
+    background-color: #ffff;
     width: 100% !important;
     height: 100% !important;
 }
@@ -250,13 +250,13 @@ input[type="number"]::-webkit-outer-spin-button {
 */
 
 #last-crafts-container .card {
-    max-width: 300px; /* Réduction de la largeur maximale */
+    max-width: 300px;
     border-radius: 10px;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s, box-shadow 0.2s;
     overflow: hidden;
-    background-color: #f9f9f9; /* Couleur douce */
-    margin: auto; /* Centrer la carte */
+    background-color: #f9f9f9; 
+    margin: auto;
 }
 
 #last-crafts-container .card:hover {
@@ -284,7 +284,6 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 /* Image réduite et centrée */
-
 #last-crafts-container .card-img-top-small {
     width: 50px;
     height: 50px;
@@ -307,7 +306,7 @@ input[type="number"]::-webkit-outer-spin-button {
     border-radius: 2px;
 }
 
-/* Ajustement des marges */
+
 #last-crafts-container .card-body {
     padding: 10px; /* Réduction des espaces internes */
 }
