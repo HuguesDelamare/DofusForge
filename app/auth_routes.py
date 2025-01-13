@@ -146,6 +146,13 @@ def resend_confirmation():
 
     return render_template('auth/resend_confirmation.html')
 
+@auth.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('Vous avez été déconnecté avec succès.', 'info')
+    return redirect(url_for('auth.login'))
+
 
 test_email = Blueprint('test_email', __name__)
 
