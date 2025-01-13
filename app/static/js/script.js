@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let autoCompleteTimeout;
     let currentRecipeData = null;
     const cache = new Map();
+    let isFetching = false;
 
     // -------------------------------------------
     //  UTILITAIRES
@@ -442,44 +443,56 @@ document.addEventListener('DOMContentLoaded', function () {
         fetchComponentPrices(itemId); // Charge les prix des composants
     });
 
-    function handleItemSlug(slug) {
-        console.log("Slug reçu :", slug);
-        if (!slug) {
-            console.error("Le slug est manquant ou invalide.");
-            return;
-        }
-    
-        fetch(`/get_craft_data/${slug}`)
-        .then(response => response.json())
-        .then(data => {
-            console.log("Données reçues pour l'objet :", data);
-            if (data.error) {
-                ingredientTableBody.innerHTML = `
-                    <tr>
-                        <td colspan="7" class="text-center text-danger">${data.error}</td>
-                    </tr>
-                `;
-                return;
-            }
-
-            ingredientTableBody.innerHTML = "";
-
-            data.components.forEach(component => {
-                console.log("Composant traité :", component);
-                createIngredientRow(
-                    component,
-                    component.quantity,
-                    component.component_id,
-                    component.last_price || 0
-                );
-            });
-        })
-        .catch(error => {
-            console.error("Erreur lors de la récupération de l'objet :", error);
-        });
+    function normalizeSlug(slug) {
+        // Supprimer les accents
+        slug = slug.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        // Convertir en minuscule
+        return slug.toLowerCase();
     }
-    
 
+    function handleItemSlug(slug) {
+        if (isFetching) return; // Empêche les appels multiples
+        isFetching = true;
+    
+        console.log("Slug reçu :", slug);
+    
+        const normalizedSlug = normalizeSlug(slug);
+        const encodedSlug = encodeURIComponent(normalizedSlug);
+    
+        fetch(`/get_craft_data/${encodedSlug}`)
+            .then(response => response.json())
+            .then(data => {
+                isFetching = false; // Réinitialiser le drapeau
+    
+                console.log("Données reçues pour l'objet :", data);
+                if (data.error) {
+                    ingredientTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="text-center text-danger">${data.error}</td>
+                        </tr>
+                    `;
+                    return;
+                }
+    
+                // Réinitialiser la table des ingrédients
+                ingredientTableBody.innerHTML = "";
+    
+                // Ajouter les composants
+                data.components.forEach(component => {
+                    createIngredientRow(
+                        component,
+                        component.quantity,
+                        component.component_id,
+                        component.last_price || 0
+                    );
+                });
+            })
+            .catch(error => {
+                isFetching = false; // Réinitialiser le drapeau même en cas d'erreur
+                console.error("Erreur lors de la récupération de l'objet :", error);
+            });
+    } 
+    
     // -------------------------------------------
     //  CHARGEMENT DES DONNÉES D'UN OBJET
     // -------------------------------------------
@@ -595,9 +608,6 @@ document.addEventListener('DOMContentLoaded', function () {
         updateCraftTotal();
     }
     
-    
-    
-
     function handleTrackButton(button) {
         const componentId = button.dataset.id;
         const isTracked = button.dataset.tracked === 'true';

@@ -73,10 +73,10 @@ div {
     padding: 10px; /* Ajout d'espace pour améliorer l'affichage */
 }
 
-
 #tracking-table-body:hover {
     cursor: pointer;
 }
+
 #tracking-table-body:hover {
     cursor: pointer;
 }
@@ -145,7 +145,6 @@ button:hover, .btn:hover {
     width: 100% !important;
     height: 100% !important;
 }
-
 
 
 /*-------------------------------------------
@@ -265,7 +264,6 @@ input[type="number"]::-webkit-outer-spin-button {
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
-
 #last-crafts-container .card .card-title {
     font-size: 1rem;
     font-weight: bold;
@@ -273,13 +271,11 @@ input[type="number"]::-webkit-outer-spin-button {
     text-align: center; /* Centrer le titre */
 }
 
-
 #last-crafts-container .card .card-text {
     font-size: 0.85rem; /* Réduction de la taille de la police */
     text-align: center; /* Centrer le texte */
     margin: 0; /* Supprime les marges */
 }
-
 
 #last-crafts-container .card-footer {
     background-color: #e9ecef;
@@ -369,11 +365,11 @@ input[type="number"]::-webkit-outer-spin-button {
     margin: 0;
 }
 
-
 .card {
     position: relative;
     overflow: hidden;
-    height: 350px; /* Hauteur personnalisée */
+    height: 350px;
+    --bs-card-border-width: none;
 }
 
 .card-img {
