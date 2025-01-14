@@ -49,5 +49,7 @@ def create_app():
     with app.app_context():
         from app.commands import create_servers
         app.cli.add_command(create_servers)
+        from app.commands import load_bounties
+        app.cli.add_command(load_bounties)
 
     return app

@@ -152,20 +152,3 @@ def logout():
     logout_user()
     flash('Vous avez été déconnecté avec succès.', 'info')
     return redirect(url_for('auth.login'))
-
-
-test_email = Blueprint('test_email', __name__)
-
-@test_email.route('/send_test_email')
-def send_test_email():
-    try:
-        send_email(
-            subject="Test Email",
-            recipients=["bluekikiller74@gmail.com"], 
-            template="emails/confirm_email.html",
-            confirmation_url="https://example.com/test-confirmation"
-        )
-        return jsonify({"message": "Email envoyé avec succès !"}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
