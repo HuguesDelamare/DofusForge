@@ -1,0 +1,19 @@
+[
+    {
+        "name": "Fouduglen l'écureuil",
+        "respawn_time": 24,
+        "image_url": "/static/images/bounties_illustrations/fouduglen-l-ecureuil.png",
+        "infos_image": "/static/images/bounties_infos/fouduglen-l-ecureuil.jpg",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-fouduglen-l-ecureuil.html#strategie",
+        "reward": {
+            "amount": 120,
+            "type": "Doplon"
+        },
+        "difficulty": 20,
+        "location": {
+            "image": "/static/images/bounties_maps/fouduglen-l-ecureuil.jpg",
+            "map_name": "Cité d'Astrub"
+        },
+        "server_id": 1
+    }
+]
