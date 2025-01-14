@@ -16,6 +16,7 @@ div {
 	margin-top: 8em;
 }
 
+
 /*-------------------------------------------
 //  Navbar
 // -------------------------------------------
@@ -99,6 +100,104 @@ div {
     background-color: #F5CB42;
 }
 
+.table td, .table th {
+    vertical-align: middle;
+    text-align: center;
+}
+
+#bounties-container.table {
+    background-color: #1b1b1b;
+    color: #ffffff;
+}
+
+#bounties-container.table th {
+    background-color: #282828;
+    text-align: center;
+}
+
+#bounties-container.table td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+#bounties-container.progress {
+    height: 20px;
+}
+
+#bounties-container.progress-bar {
+    background-color: #00aaff;
+    font-size: 14px;
+    color: #fff;
+    text-align: center;
+}
+
+.progress-bar.bg-success {
+    background-color: #28a745 !important;
+}
+
+.progress-bar.bg-primary {
+    background-color: #007bff !important;
+}
+
+.progress-bar.bg-secondary {
+    background-color: #6c757d !important;
+}
+
+.progress-bar {
+    transition: width 0.6s ease, background-color 0.6s ease;
+    font-size: 14px;
+    line-height: 25px;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    animation: progress-animation 1s linear infinite;
+    background-image: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.1) 75%);
+    background-size: 200% 100%;
+    animation: progress-animation 1.5s linear infinite, fill-animation 2s ease-in-out forwards;
+}
+
+@keyframes progress-animation {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 100% 0%; }
+}
+
+@keyframes fill-animation {
+    0% { width: 0; }
+    100% { width: 100%; }
+}
+
+.progress-bar.bg-success {
+    background-color: #28a745 !important;
+}
+
+.progress-bar.bg-primary {
+    background-color: #007bff !important;
+}
+
+.progress-bar.bg-secondary {
+    background-color: #6c757d !important;
+}
+
+.progress-bar.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+.progress-section {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background-color: #fff;
+}
+
+.progress-section-3h {
+    left: 33.33%;
+}
+
+.progress-section-9h {
+    left: 100%;
+}
+
 /*-------------------------------------------
 //  Buttons
 // -------------------------------------------
@@ -119,6 +218,7 @@ button:hover, .btn:hover {
 #reset-button, #ajouter-recette {
     margin-right: 1rem;
 }
+
 
 /*-------------------------------------------
 //  Footer
@@ -239,13 +339,10 @@ input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none; /* Safari */
     margin: 0;
 }
-/*-------------------------------------------
-// Cards
-// -------------------------------------------
-*/
+
 
 /*-------------------------------------------
-// Cards - Réduction de la taille
+// Cards
 // -------------------------------------------
 */
 
@@ -293,7 +390,6 @@ input[type="number"]::-webkit-outer-spin-button {
     border-radius: 5px;
 }
 
-
 #last-crafts-container .card-img-placeholder-small {
     width: 50px;
     height: 50px;
@@ -305,7 +401,6 @@ input[type="number"]::-webkit-outer-spin-button {
     color: #6c757d;
     border-radius: 2px;
 }
-
 
 #last-crafts-container .card-body {
     padding: 10px; /* Réduction des espaces internes */
@@ -339,7 +434,7 @@ input[type="number"]::-webkit-outer-spin-button {
 .bg-card .card-body {
     position: relative;
     z-index: 2;
-    text-shadow: 5px 5px 5px rgba(0, 0, 0, 1); /* Ombre pour le texte */
+    text-shadow: 5px 5px 5px rgba(0, 0, 0, 1);
     padding: 2rem 1.5rem;
     background: rgba(0, 0, 0, 0.1); border-radius: 5px;
 }
@@ -370,6 +465,59 @@ input[type="number"]::-webkit-outer-spin-button {
     --bs-card-border-width: none;
 }
 
+/* Styles généraux pour les cartes */
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Style pour les cartes avec un profit positif */
+.profit-positive {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    border: 2px solid #28a745;
+    color: #155724;
+}
+
+/* Style pour les cartes avec un profit négatif */
+.profit-negative {
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    border: 2px solid #dc3545;
+    color: #721c24;
+}
+
+/* Icône pour les profits */
+.card .profit-positive .profit-icon {
+    color: #28a745;
+    font-size: 1.5rem;
+}
+
+.card .profit-negative .profit-icon {
+    color: #dc3545;
+    font-size: 1.5rem;
+}
+
+.card-img-placeholder-small {
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e9ecef;
+    color: #6c757d;
+    font-size: 14px;
+    border-radius: 8px;
+}
+
+.card-footer {
+    background-color: rgba(0, 0, 0, 0.05);
+    font-weight: bold;
+}
+
 .card-img {
     height: 100%;
     width: 100%;
@@ -394,9 +542,219 @@ input[type="number"]::-webkit-outer-spin-button {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
 }
 
-/* Largeur des colonnes ajustée sur grand écran */
-@media (min-width: 992px) {
-    .col-lg-4 {
-        max-width: 33%;
+/* Styles pour les petits écrans */
+@media (max-width: 576px) {
+    .navbar-brand img {
+        max-height: 150px;
+        width: 150px;
     }
+
+    #mainContainer {
+        margin-top: 4em;
+    }
+
+    .footer {
+        font-size: 0.8rem;
+    }
+}
+
+/* Styles pour les écrans moyens */
+@media (min-width: 768px) and (max-width: 992px) {
+    .navbar-brand img {
+        max-height: 200px;
+        width: 200px;
+    }
+
+    #mainContainer {
+        margin-top: 6em;
+    }
+
+    .footer {
+        font-size: 0.9rem;
+    }
+}
+
+/* Styles pour le conteneur de détails */
+.details-container {
+    display: flex;
+    background-color: #2c2c2c;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.details-container img {
+    max-width: 300px; /* Augmenter la largeur maximale */
+    max-height: 300px;
+    margin-right: 20px;
+    border-radius: 5px;
+}
+
+.details-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Aligner les éléments en haut */
+    align-items: flex-start; /* Aligner les éléments à gauche */
+}
+
+.details-info p {
+    margin: 2px 0; /* Réduire l'espace entre les paragraphes */
+}
+
+.details-info .infos-image {
+    align-self: flex-start;
+    max-width: 100%;
+    height: auto;
+    margin-top: 10px;
+    border-radius: 5px;
+}
+
+.details-info .info-row {
+    display: flex;
+    flex-direction: column; /* Aligner les éléments en colonne */
+    align-items: flex-start; /* Aligner les éléments à gauche */
+    gap: 5px; /* Ajouter un espace entre les éléments */
+}
+
+/* Tooltip */
+.tooltip {
+    position: absolute;
+    background-color: #333;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+/* Supprimer les styles personnalisés pour la barre de progression */
+.progress {
+    height: 25px;
+    background-color: #2c2c2c;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+.progress-bar {
+    transition: width 0.6s ease, background-color 0.6s ease;
+    font-size: 14px;
+    line-height: 25px;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    background-image: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.1) 75%);
+    background-size: 200% 100%;
+    animation: progress-animation 1.5s linear infinite;
+}
+
+@keyframes progress-animation {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 100% 0%; }
+}
+
+.progress-bar.bg-success {
+    background-color: #28a745 !important;
+}
+
+.progress-bar.bg-primary {
+    background-color: #007bff !important;
+}
+
+.progress-bar.bg-secondary {
+    background-color: #6c757d !important;
+}
+
+.progress-bar.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+/* Styles pour les petits écrans */
+@media (max-width: 576px) {
+    .navbar-brand img {
+        max-height: 150px;
+        width: 150px;
+    }
+
+    #mainContainer {
+        margin-top: 4em;
+    }
+
+    .footer {
+        font-size: 0.8rem;
+    }
+}
+
+/* Styles pour les écrans moyens */
+@media (min-width: 768px) and (max-width: 992px) {
+    .navbar-brand img {
+        max-height: 200px;
+        width: 200px;
+    }
+
+    #mainContainer {
+        margin-top: 6em;
+    }
+
+    .footer {
+        font-size: 0.9rem;
+    }
+}
+
+/* Styles pour le conteneur de détails */
+.details-container {
+    display: flex;
+    background-color: #2c2c2c;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.details-container img {
+    max-width: 300px; /* Augmenter la largeur maximale */
+    max-height: 300px;
+    margin-right: 20px;
+    border-radius: 5px;
+}
+
+.details-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Aligner les éléments en haut */
+    align-items: flex-start; /* Aligner les éléments à gauche */
+}
+
+.details-info p {
+    margin: 2px 0; /* Réduire l'espace entre les paragraphes */
+}
+
+.details-info .infos-image {
+    align-self: flex-start;
+    max-width: 100%;
+    height: auto;
+    margin-top: 10px;
+    border-radius: 5px;
+}
+
+.details-info .info-row {
+    display: flex;
+    flex-direction: column; /* Aligner les éléments en colonne */
+    align-items: flex-start; /* Aligner les éléments à gauche */
+    gap: 5px; /* Ajouter un espace entre les éléments */
+}
+
+/* Tooltip */
+.tooltip {
+    position: absolute;
+    background-color: #333;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    z-index: 1000;
+    pointer-events: none;
 }
