@@ -27,7 +27,8 @@ def upgrade():
         batch_op.alter_column('difficulty',
                existing_type=sa.VARCHAR(length=50),
                type_=sa.Integer(),
-               existing_nullable=True)
+               existing_nullable=True,
+               postgresql_using='difficulty::integer')
         batch_op.alter_column('server_id',
                existing_type=sa.INTEGER(),
                nullable=True)
