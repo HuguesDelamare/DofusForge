@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import current_app
+from sqlalchemy.exc import IntegrityError
 import jwt
 from app import db
 
@@ -113,7 +114,6 @@ class User(UserMixin, db.Model):
         }
         return jwt.encode(payload, current_app.config['SECRET_KEY'], algorithm='HS256')
 
-
     @staticmethod
     def verify_confirmation_token(token):
         try:
@@ -128,7 +128,6 @@ class User(UserMixin, db.Model):
             print("Le jeton est invalide.")
             return None
 
-
 class TrackedResource(db.Model):
     __tablename__ = 'tracked_resources'
     id = db.Column(db.Integer, primary_key=True)
@@ -140,3 +139,61 @@ class TrackedResource(db.Model):
 
     def __repr__(self):
         return f"<TrackedResource {self.component_name} (User: {self.user_id})>"
+
+class Server(db.Model):
+    """
+    Table représentant les serveurs (DAKAL, etc.).
+    """
+    __tablename__ = 'servers'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False, unique=True)
+    server_type = db.Column(db.String(100), nullable=False)
+    language = db.Column(db.String(50), nullable=False)
+
+    @staticmethod
+    def validate_server_data(server_data):
+        if not server_data.get('name'):
+            raise ValueError("Le nom du serveur est obligatoire.")
+        if not server_data.get('server_type'):
+            raise ValueError("Le type du serveur est obligatoire.")
+        if not server_data.get('language'):
+            raise ValueError("La langue du serveur est obligatoire.")
+
+    def __repr__(self):
+        return f"<Server {self.name} ({self.server_type}, {self.language})>"
+
+class Bounty(db.Model):
+    __tablename__ = 'bounties'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    respawn_time = db.Column(db.Integer, nullable=False)
+    image_url = db.Column(db.String(512), nullable=True)  # URL complète de l'image
+    infos_image = db.Column(db.String(512), nullable=True)  # URL complète de l'image d'information
+    links = db.Column(db.String(512), nullable=True)
+    reward_amount = db.Column(db.Integer, nullable=True)
+    reward_type = db.Column(db.String(50), nullable=True)
+    difficulty = db.Column(db.Integer, nullable=True)
+    location_image = db.Column(db.String(512), nullable=True)  # URL complète de l'image de localisation
+    location_map_name = db.Column(db.String(255), nullable=True)
+    server_id = db.Column(db.Integer, db.ForeignKey('servers.id'), nullable=True)
+    last_killed_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    server = db.relationship('Server', backref='bounties', lazy=True)
+
+class UserBountyStatus(db.Model):
+    """
+    Table reliant les utilisateurs aux recherchés pour gérer leur état de progression.
+    """
+    __tablename__ = 'user_bounty_status'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    bounty_id = db.Column(db.Integer, db.ForeignKey('bounties.id'), nullable=False)
+    server_id = db.Column(db.Integer, db.ForeignKey('servers.id'), nullable=False)
+    status = db.Column(db.Boolean, default=False)
+    is_hunted = db.Column(db.Boolean, default=False)  # Nouveau champ pour le suivi
+    user = db.relationship('User', backref='bounty_statuses', lazy=True)
+    bounty = db.relationship('Bounty', backref='user_statuses', lazy=True)
+    server = db.relationship('Server', backref='user_statuses', lazy=True)
+
+    def __repr__(self):
+        return f"<UserBountyStatus user={self.user_id} bounty={self.bounty.name} server={self.server.name} status={self.status} is_hunted={self.is_hunted}>"

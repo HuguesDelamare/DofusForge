@@ -229,11 +229,6 @@ def get_user_last_recipes():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@routes.route("/wanted")
-@login_required
-def wanted():
-    return render_template("wanted.html")
-
 @routes.route("/crafting_equipement")
 @login_required
 def crafting_equipement():
@@ -282,8 +277,6 @@ def get_or_create_component(ingredient_id, ingredient_data):
     db.session.add(component)
     db.session.commit()
     return component
-
-
 
 @routes.route("/get_craft_data/<slug>", methods=["GET"])
 @login_required
