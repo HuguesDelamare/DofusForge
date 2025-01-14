@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Recherchés Dofus{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center">Recherchés Dofus</h1>
+    
+    <!-- Menu déroulant des serveurs -->
+    <div class="my-4">
+        <label for="server-select" class="form-label">Sélectionnez votre serveur :</label>
+        <select id="server-dropdown" class="form-select">
+            <option value="">Sélectionnez un serveur</option>
+        </select>        
+    </div>
+    
+    <!-- Tableau des recherchés -->
+    <div id="bounties-container" class="d-none">
+        <h2 id="server-name" class="mt-4"></h2>
+        <table class="table table-striped mt-3">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Description</th>
+                    <th>Récompense</th>
+                    <th>Dernière Mort</th>
+                    <th>Image</th>
+                </tr>
+            </thead>
+            <tbody id="bounties-table-body"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const serverDropdown = document.getElementById("server-dropdown");
+        const bountiesContainer = document.getElementById("bounties-container");
+        const serverNameHeader = document.getElementById("server-name");
+        const bountiesTableBody = document.getElementById("bounties-table-body");
+
+        // Charger les serveurs pour le menu déroulant
+        fetch("/bounties/servers")
+            .then(response => response.json())
+            .then(servers => {
+                servers.forEach(server => {
+                    const option = document.createElement("option");
+                    option.value = server.id;
+                    option.textContent = `${server.name} (${server.type} - ${server.language})`;
+                    serverDropdown.appendChild(option);
+                });
+            })
+            .catch(error => console.error("Erreur lors du chargement des serveurs :", error));
+
+        // Charger les recherchés pour le serveur sélectionné
+        serverDropdown.addEventListener("change", () => {
+            const serverId = serverDropdown.value;
+
+            if (!serverId) {
+                bountiesContainer.classList.add("d-none");
+                return;
+            }
+
+            fetch(`/bounties/${serverId}`)
+                .then(response => response.json())
+                .then(bounties => {
+                    bountiesTableBody.innerHTML = ""; // Vider le tableau existant
+                    serverNameHeader.textContent = serverDropdown.options[serverDropdown.selectedIndex].text;
+
+                    if (bounties.length === 0) {
+                        bountiesTableBody.innerHTML = `
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">Aucun recherché trouvé pour ce serveur.</td>
+                            </tr>
+                        `;
+                    } else {
+                        bounties.forEach(bounty => {
+                            const row = document.createElement("tr");
+                            row.innerHTML = `
+                                <td>${bounty.name}</td>
+                                <td>${bounty.description}</td>
+                                <td>${bounty.reward || "N/A"}</td>
+                                <td>${bounty.last_killed_at ? new Date(bounty.last_killed_at).toLocaleString("fr-FR") : "Inconnu"}</td>
+                                <td>
+                                    ${bounty.image_url ? `<img src="${bounty.image_url}" alt="${bounty.name}" class="img-thumbnail" style="max-width: 100px;">` : "Aucune image"}
+                                </td>
+                            `;
+                            bountiesTableBody.appendChild(row);
+                        });
+                    }
+
+                    bountiesContainer.classList.remove("d-none");
+                })
+                .catch(error => {
+                    console.error("Erreur lors du chargement des recherchés :", error);
+                    bountiesContainer.classList.add("d-none");
+                });
+        });
+    });
+</script>
+{% endblock %}
