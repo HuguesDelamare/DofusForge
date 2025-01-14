@@ -182,8 +182,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
                 data.forEach((craft) => {
-                    console.log(data)
-                    console.log(craft)
                     const date = new Date(craft.date_recorded).toLocaleString("fr-FR", {
                         day: "2-digit",
                         month: "2-digit",
@@ -191,15 +189,17 @@ document.addEventListener("DOMContentLoaded", function () {
                         hour: "2-digit",
                         minute: "2-digit",
                     });
-
+                
                     // Calcul du profit TTC
                     const profitTTC = Math.round((craft.item_price - craft.item_craft_price) * 0.98);
                     const profitClass = profitTTC > 0 ? "profit-positive" : "profit-negative";
-
+                    const profitIcon = profitTTC > 0 ? "⬆️" : "⬇️";
+                    const profitLabel = profitTTC > 0 ? "Profit TTC" : "Perte TTC";
+                
                     // Création de la carte
                     const card = document.createElement("div");
-                    card.className = "col";
-
+                    card.className = `col`;
+                
                     card.innerHTML = `
                         <div class="card h-100 ${profitClass}">
                             <div class="text-center mt-2">
@@ -210,19 +210,27 @@ document.addEventListener("DOMContentLoaded", function () {
                                 }
                             </div>
                             <div class="card-body text-center">
-                                <h5 class="card-title mb-2">${craft.item_name}</h5>
-                                <p class="card-text">
-                                    <strong>Prix du Craft :</strong> ${craft.item_craft_price.toLocaleString("fr-FR")} kamas<br>
-                                    <strong>Prix HDV :</strong> ${craft.item_price.toLocaleString("fr-FR")} kamas<br>
-                                    <strong class="profit ${profitTTC > 0 ? 'profit-positive' : 'profit-negative'}">Profit TTC :</strong> ${profitTTC.toLocaleString("fr-FR")} kamas
-                                </p>
+                                <h5 class="card-title mb-3">${craft.item_name}</h5>
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <strong>Prix du Craft :</strong> ${craft.item_craft_price.toLocaleString("fr-FR")} kamas
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>Prix HDV :</strong> ${craft.item_price.toLocaleString("fr-FR")} kamas
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span><strong>${profitLabel} :</strong></span>
+                                        <span class="profit-icon">${profitIcon}</span>
+                                        <span>${profitTTC.toLocaleString("fr-FR")} kamas</span>
+                                    </li>
+                                </ul>
                             </div>
-                            <div class="card-footer">
+                            <div class="card-footer text-center">
                                 <small class="text-muted">Crafté le : ${date}</small>
                             </div>
                         </div>
                     `;
-
+                
                     lastCraftsContainer.appendChild(card);
                 });
             })
