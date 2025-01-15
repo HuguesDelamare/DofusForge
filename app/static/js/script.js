@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function formatNumber(number) {
-        return number.toLocaleString('fr-FR');
+        return number.toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
     }
 
     function clearResults() {
@@ -389,7 +389,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <td><img src="${component.image_url || ''}" alt="${component.component_name || 'Inconnu'}" style="width:32px;"></td>
             <td>${component.component_name || 'Nom non disponible'}</td>
             <td>${quantity}</td>
-            <td><input type="number" class="form-control  w-75 text-center price-input" value="${lastPrice || 0}" min="0"></td>
+            <td><input type="text" class="form-control w-75 text-center price-input" value="${formatNumber(lastPrice || 0)}" min="0"></td>
             <td>0</td>
             <td><span class="text-muted">N/A</span></td>
             <td>
@@ -406,4 +406,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
         updateRowTotal(priceInput, quantity, row);
     }
+    
+    document.getElementById('hdv-price').addEventListener('input', function() {
+        this.value = formatNumber(this.value.replace(/\s/g, ''));
+        updateProfit();
+    });
+    
+    function updateProfit() {
+        const hdvPrice = parseFloat(document.getElementById('hdv-price').value.replace(/\s/g, '')) || 0;
+        const craftTotal = parseFloat(document.getElementById('craft-total').textContent.replace(/\s/g, '')) || 0;
+        const profit = hdvPrice - craftTotal - (hdvPrice * 0.02);
+        document.getElementById('profit-ttc').textContent = formatNumber(profit);
+    }
+
 });
