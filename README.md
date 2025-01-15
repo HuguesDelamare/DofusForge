@@ -12,7 +12,7 @@ DofusCraft est une application web pour gérer et optimiser les crafts dans le j
 
 1. Clonez le dépôt :
     ```sh
-    git clone https://github.com/votre-utilisateur/DofusCraft.git
+    git clone https://github.com/votre-utilisateur/DofusForge.git
     cd DofusCraft
     ```
 
