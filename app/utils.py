@@ -12,6 +12,11 @@ def send_email(mail, subject, recipients, template, **kwargs):
     :param kwargs: Variables à injecter dans le modèle HTML
     """
     try:
+        # Update the confirmation URL to use the Heroku base URL
+        base_url = "https://dofuscalc-0462d071f79d.herokuapp.com"
+        if 'confirmation_url' in kwargs:
+            kwargs['confirmation_url'] = base_url + kwargs['confirmation_url']
+        
         html_body = render_template(template, **kwargs)
         msg = Message(
             subject=subject,
