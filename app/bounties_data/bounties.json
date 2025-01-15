@@ -1,10 +1,10 @@
 [
     {
         "name": "Fouduglen l'écureuil",
-        "respawn_time": 24,
+        "respawn_time": 9,
         "image_url": "/static/images/bounties_illustrations/fouduglen-l-ecureuil.png",
         "infos_image": "/static/images/bounties_infos/fouduglen-l-ecureuil.jpg",
-        "links": "https://www.dofuspourlesnoobs.com/on-recherche-fouduglen-l-ecureuil.html#strategie",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-fouduglen-l-ecureuil.html",
         "reward": {
             "amount": 120,
             "type": "Doplon"
@@ -13,6 +13,74 @@
         "location": {
             "image": "/static/images/bounties_maps/fouduglen-l-ecureuil.jpg",
             "map_name": "Cité d'Astrub"
+        },
+        "server_id": 1
+    },
+    {
+        "name": "Sam Sagaz",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/sam-sagaz.png",
+        "infos_image": "/static/images/bounties_infos/sam-sagaz.jpg",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-sam-sagaz.html",
+        "reward": {
+            "amount": 2,
+            "type": "Aliton"
+        },
+        "difficulty": 20,
+        "location": {
+            "image": "/static/images/bounties_maps/sam-sagaz.jpg",
+            "map_name": "Prairies d'Astrub"
+        },
+        "server_id": 1
+    },
+    {
+        "name": "Frakacia leukocytine",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/frakacia-leukocytine.png",
+        "infos_image": "/static/images/bounties_infos/frakacia-leukocytine.jpg",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-frakacia-leukocytine.html",
+        "reward": {
+            "amount": 30,
+            "type": "Doplon"
+        },
+        "difficulty": 30,
+        "location": {
+            "image": "/static/images/bounties_maps/frakacia-leukocytine.jpg",
+            "map_name": "Forêt d'Astrub"
+        },
+        "server_id": 1
+    },
+    {
+        "name": "Guman",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/guman.png",
+        "infos_image": "/static/images/bounties_infos/guman.jpg",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-les-guman.html",
+        "reward": {
+            "amount": 180,
+            "type": "Doplon"
+        },
+        "difficulty": 30,
+        "location": {
+            "image": "/static/images/bounties_maps/guman.jpg",
+            "map_name": "Champs des Ingalsse"
+        },
+        "server_id": 1
+    },
+    {
+        "name": "Maître Boulet",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/maitre-boulet.png",
+        "infos_image": "/static/images/bounties_infos/maitre-boulet.jpg",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-maitre-boulet.html",
+        "reward": {
+            "amount": 3,
+            "type": "Aliton"
+        },
+        "difficulty": 30,
+        "location": {
+            "image": "/static/images/bounties_maps/maitre-bolet.jpg",
+            "map_name": "Bord de la forêt maléfique"
         },
         "server_id": 1
     }
