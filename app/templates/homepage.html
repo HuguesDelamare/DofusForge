@@ -2,15 +2,15 @@
 {% block title %}Bienvenue sur DofusForge{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="text-center mb-4">
+<div class="container mt-5 text-center custom-margin-top">
+    <div class="mb-4">
         <h3 class="display-4">Bienvenue sur <span class="text-success">DofusForge</span></h3>
         <p class="lead">Gérez vos crafts, suivez vos composants et plus encore.</p>
     </div>
 
     {% if not current_user.is_authenticated %}
     <!-- Boutons pour les visiteurs non connectés -->
-    <div class="text-center mt-4">
+    <div class="mt-4">
         <a href="/auth/login" class="btn btn-success btn-lg me-3">Se connecter</a>
         <a href="/auth/register" class="btn btn-outline-success btn-lg">Créer un compte</a>
     </div>
@@ -78,5 +78,16 @@
         </div>
     </div>
     {% endif %}
+
+    <!-- Section GitHub et remerciements -->
+    <div class="mt-5">
+        {% if not current_user.is_authenticated %}
+        <!-- Lien vers GitHub -->
+        <a href="https://github.com/HuguesDelamare/DofusForge" class="btn btn-outline-light mb-3 text-dark" target="_blank">
+            <img src="https://cdn.jsdelivr.net/npm/bootstrap-icons/icons/github.svg" alt="GitHub" width="20" height="20"> Lien GitHub
+        </a>
+        {% endif %}
+        <p class="text-white">Vous pouvez trouver via le lien github l'entiereté du code, l'application est host sur Heroku.com</p>
+    </div>
 </div>
 {% endblock %}

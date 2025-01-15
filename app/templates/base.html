@@ -56,10 +56,17 @@
                 <ul class="navbar-nav ms-auto">
                     {% if current_user.is_authenticated %}
                         <li class="nav-item">
+                            <a class="nav-link" href="https://github.com/HuguesDelamare/DofusForge" target="_blank">
+                                <img src="https://cdn.jsdelivr.net/npm/bootstrap-icons/icons/github.svg" alt="GitHub" width="20" height="20"> GitHub
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="/auth/profile">{{ current_user.username }}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/auth/logout">Se déconnecter</a>
+                            <a class="nav-link" href="/auth/logout">
+                                <i class="bi bi-box-arrow-right"></i> Se déconnecter
+                            </a>
                         </li>
                     {% else %}
                         <li class="nav-item">
@@ -74,8 +81,6 @@
         </div>
     </nav>
     
-    
-
     <!-- Contenu principal -->
     <div class="container flex-grow-1" id="mainContainer">
         {% block content %}{% endblock %}

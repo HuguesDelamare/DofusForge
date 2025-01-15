@@ -1,7 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
 body {
     background-color: #21312E;
     color: #FDF5D8; 
-    font-family: Arial, sans-serif;
+    font-family: 'Roboto', sans-serif;
+}
+
+.custom-margin-top {
+    margin-top: 100px;
 }
 
 div #result {
@@ -41,6 +47,7 @@ div {
     left: 50%; 
     transform: translate(-50%, 0); 
     z-index: 2;
+    pointer-events: none; /* Empêche le logo d'interférer avec les clics */
 }
 
 .navbar-brand img {
@@ -54,6 +61,7 @@ div {
 
 .navbar-brand a {
     text-decoration: none;
+    pointer-events: auto; /* Permet les clics sur le lien du logo */
 }
 
 .navbar {
@@ -757,4 +765,12 @@ input[type="number"]::-webkit-outer-spin-button {
     font-size: 12px;
     z-index: 1000;
     pointer-events: none;
+}
+
+.text-white {
+    color: #ffffff !important;
+}
+
+.btn-outline-light.text-dark {
+    color: #000000 !important;
 }
