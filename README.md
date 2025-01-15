@@ -59,4 +59,4 @@ MAIL_DEFAULT_SENDER=votre-email@gmail.com
 
 ## Contribuer
 
-Les contributions sont les bienvenues ! Veuillez soumettre une pull request pour toute amélioration ou correction de bug.
+Les contributions sont les bienvenues ! Veuillez soumettre une pull request pour toute amélioration ou correction de bug
