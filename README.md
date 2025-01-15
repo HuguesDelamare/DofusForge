@@ -56,7 +56,27 @@ MAIL_DEFAULT_SENDER=votre-email@gmail.com
 
 3. Accédez à l'application dans votre navigateur à l'adresse `http://127.0.0.1:5000`.
 
+## Fonctionnalités
+
+- **Gestion des crafts** : Calculez les coûts de craft et gérez vos recettes efficacement.
+- **Suivi des composants** : Suivez vos composants en temps réel et restez informé.
+- **Contrats recherchés** : Découvrez les ressources les plus demandées sur le marché.
+- **Élevage** : Suivez votre élevage de dragodindes ou montiliers.
+- **Forgemagie** : Suivez vos composants en temps réel et restez informé.
+
+## Menus
+
+- **Accueil** : Page d'accueil avec un aperçu des fonctionnalités.
+- **Crafter un équipement** : Page pour gérer les crafts d'équipements.
+- **Mes suivis** : Page pour suivre les composants.
+- **Contrats recherchés** : Page pour voir les ressources les plus demandées.
+- **Élevage** : Page pour gérer l'élevage de dragodindes ou montiliers.
+- **Forgemagie** : Page pour gérer la forgemagie.
 
 ## Contribuer
 
-Les contributions sont les bienvenues ! Veuillez soumettre une pull request pour toute amélioration ou correction de bug
+Les contributions sont les bienvenues ! Veuillez soumettre une pull request pour toute amélioration ou correction de bug.
+
+## Licence
+
+Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
