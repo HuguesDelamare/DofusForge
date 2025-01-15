@@ -68,10 +68,10 @@
         "server_id": 1
     },
     {
-        "name": "Maître Boulet",
+        "name": "Maître Bolet",
         "respawn_time": 9,
         "image_url": "/static/images/bounties_illustrations/maitre-bolet.png",
-        "infos_image": "/static/images/bounties_infos/maitre-boulet.jpg",
+        "infos_image": "/static/images/bounties_infos/maitre-bolet.jpg",
         "links": "https://www.dofuspourlesnoobs.com/on-recherche-maitre-bolet.html",
         "reward": {
             "amount": 3,
