@@ -70,9 +70,9 @@
     {
         "name": "Maître Boulet",
         "respawn_time": 9,
-        "image_url": "/static/images/bounties_illustrations/maitre-boulet.png",
+        "image_url": "/static/images/bounties_illustrations/maitre-bolet.png",
         "infos_image": "/static/images/bounties_infos/maitre-boulet.jpg",
-        "links": "https://www.dofuspourlesnoobs.com/on-recherche-maitre-boulet.html",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-maitre-bolet.html",
         "reward": {
             "amount": 3,
             "type": "Aliton"
