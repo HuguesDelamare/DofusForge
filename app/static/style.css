@@ -70,6 +70,53 @@ div {
     position: relative;
 }
 
+/* Styles pour les petits écrans */
+@media (max-width: 576px) {
+    .navbar-brand img {
+        max-height: 150px;
+        width: 150px;
+    }
+
+    .navbar-nav {
+        text-align: center;
+    }
+
+    .navbar-nav .nav-item {
+        margin-bottom: 10px;
+    }
+
+    .navbar-collapse {
+        text-align: center;
+    }
+
+    .navbar-toggler {
+        margin-left: auto;
+    }
+
+    #mainContainer {
+        margin-top: 4em;
+    }
+
+    .footer {
+        font-size: 0.8rem;
+    }
+}
+
+/* Styles pour les écrans moyens */
+@media (min-width: 768px) and (max-width: 992px) {
+    .navbar-brand img {
+        max-height: 200px;
+        width: 200px;
+    }
+
+    #mainContainer {
+        margin-top: 6em;
+    }
+
+    .footer {
+        font-size: 0.9rem;
+    }
+}
 
 /*-------------------------------------------
 //  Tableau
@@ -557,6 +604,14 @@ input[type="number"]::-webkit-outer-spin-button {
         width: 150px;
     }
 
+    .navbar-nav {
+        text-align: center;
+    }
+
+    .navbar-nav .nav-item {
+        margin-bottom: 10px;
+    }
+
     #mainContainer {
         margin-top: 4em;
     }
@@ -685,6 +740,22 @@ input[type="number"]::-webkit-outer-spin-button {
     .navbar-brand img {
         max-height: 150px;
         width: 150px;
+    }
+
+    .navbar-nav {
+        text-align: center;
+    }
+
+    .navbar-nav .nav-item {
+        margin-bottom: 10px;
+    }
+
+    .navbar-collapse {
+        text-align: center;
+    }
+
+    .navbar-toggler {
+        margin-left: auto;
     }
 
     #mainContainer {
