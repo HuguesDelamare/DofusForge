@@ -14,8 +14,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // Constantes globales
     const TAX_RATE = 0.02; // Taux de taxe pour le calcul des profits
     let autoCompleteTimeout;
-    let currentRecipeData = null;
-    const cache = new Map();
     let isFetching = false;
 
     // -------------------------------------------
@@ -56,38 +54,26 @@ document.addEventListener('DOMContentLoaded', function () {
         `;
     }
 
-    // Mettre à jour le profit lorsqu'on change le prix HDV
-    hdvPriceInput.addEventListener("input", function () {
-        updateCraftTotal();
-    });
-
-
     function updateCraftTotal() {
         let craftTotal = 0;
-    
-        // Additionne tous les totaux des lignes
         const totalCells = ingredientTableBody.querySelectorAll('td:nth-child(5)');
         totalCells.forEach(cell => {
             const cellValue = parseInt(cell.textContent.replace(/\s/g, '')) || 0;
             craftTotal += cellValue;
         });
-    
         craftTotalSpan.textContent = formatNumber(craftTotal);
-    
-        // Calcul du profit TTC
+
         const hdvPrice = parseInt(hdvPriceInput.value) || 0;
         const profitAvantTaxe = hdvPrice - craftTotal;
         const profitTtc = profitAvantTaxe * (1 - TAX_RATE);
-    
         profitTtcSpan.textContent = (profitAvantTaxe > 0 ? "+" : "") + formatNumber(Math.round(profitTtc));
         profitTtcSpan.className = profitAvantTaxe > 0 ? "profit" : "loss";
     }
-      
 
     // -------------------------------------------
     //  RÉCUPÉRER LES OBJETS CRAFTÉS RÉCEMMENT
     // -------------------------------------------
-    
+
     function fetchRecentCrafts(itemId) {
         if (!itemId) {
             console.error("fetchRecentCrafts : Aucun itemId fourni !");
@@ -100,20 +86,15 @@ document.addEventListener('DOMContentLoaded', function () {
             `;
             return;
         }
-    
-        console.log("fetchRecentCrafts : Appel avec itemId :", itemId);
-    
+
         fetch(`/api/last_recipes/${itemId}`)
             .then(response => {
-                console.log("Statut de la réponse API :", response.status);
                 if (!response.ok) {
                     throw new Error(`Erreur HTTP ${response.status}`);
                 }
                 return response.json();
             })
             .then(data => {
-                console.log("Données reçues pour les anciens crafts :", data);
-    
                 if (!data || data.length === 0) {
                     historiqueTableBody.innerHTML = `
                         <tr>
@@ -124,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     `;
                     return;
                 }
-    
+
                 historiqueTableBody.innerHTML = data.map(recipe => `
                     <tr>
                         <td>${recipe.item_name}</td>
@@ -139,96 +120,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error("Erreur lors de la récupération des anciens crafts :", error);
             });
     }
-
-    
-    ingredientTableBody.addEventListener("click", function (event) {
-    const button = event.target.closest(".track-btn");
-    if (!button) return;
-
-    const componentId = button.dataset.id;
-    if (!componentId) {
-        console.error("Aucun ID de composant trouvé sur le bouton.");
-        return;
-    }
-
-    const isTracked = button.dataset.tracked === "true";
-    const url = isTracked ? "/untrack_component" : `/track/${componentId}`;
-    const method = isTracked ? "POST" : "POST";
-    const body = isTracked ? JSON.stringify({ component_id: componentId }) : null;
-
-    fetch(url, {
-        method: method,
-        headers: { "Content-Type": "application/json" },
-        body: body,
-    })
-        .then(response => response.json())
-        .then(data => {
-            alert(data.message);
-
-            // Mise à jour des attributs et de l'icône du bouton
-            button.dataset.tracked = isTracked ? "false" : "true";
-            button.innerHTML = isTracked 
-                ? `<i class="bi bi-bookmark"></i>` 
-                : `<i class="bi bi-bookmark-fill"></i>`;
-        })
-        .catch(error => {
-            console.error(`Erreur lors de la ${isTracked ? "désactivation" : "activation"} du suivi :`, error);
-        });
-    });
-
-
-    function fetchRecentCrafts(itemId) {
-        if (!itemId) {
-            historiqueTableBody.innerHTML = `
-                <tr>
-                    <td colspan="5" class="text-center fst-italic text-muted">
-                        Aucun historique disponible.
-                    </td>
-                </tr>
-            `;
-            console.error("fetchRecentCrafts : Aucun itemId fourni !");
-            return;
-        }
-    
-        console.log("fetchRecentCrafts : Appel avec itemId :", itemId);
-    
-        fetch(`/api/last_recipes/${itemId}`)
-            .then(response => {
-                console.log("Statut de la réponse API :", response.status);
-                if (!response.ok) {
-                    throw new Error(`Erreur HTTP ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log("Données reçues pour les anciens crafts :", data);
-    
-                if (!data || data.length === 0) {
-                    historiqueTableBody.innerHTML = `
-                        <tr>
-                            <td colspan="5" class="text-center fst-italic text-muted">
-                                Aucun historique disponible.
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
-    
-                historiqueTableBody.innerHTML = data.map(recipe => `
-                    <tr>
-                        <td>${recipe.item_name}</td>
-                        <td>${formatNumber(recipe.item_craft_price)} kamas</td>
-                        <td>${formatNumber(recipe.item_price)} kamas</td>
-                        <td>${recipe.added_by || "Inconnu"}</td>
-                        <td>${new Date(recipe.date_recorded).toLocaleString('fr-FR')}</td>
-                    </tr>
-                `).join('');
-            })
-            .catch(error => {
-                console.error("Erreur lors de la récupération des anciens crafts :", error);
-            });
-    }
-    
 
     function fetchComponentPrices(itemId) {
         fetch(`/get_component_prices/${itemId}`)
@@ -237,26 +128,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 data.forEach(component => {
                     const row = ingredientTableBody.querySelector(`[data-id="${component.component_id}"]`);
                     if (!row) return;
-    
+
                     const priceInput = row.querySelector(".price-input");
                     priceInput.value = component.last_price || 0;
-    
-                    // Mettre à jour l'ancien prix
                     row.dataset.oldPrice = component.last_price || 0;
-    
-                    // Mettre à jour l'icone de suivi
+
                     const trackButton = row.querySelector(".track-btn");
                     if (trackButton) {
-                        if (component.is_tracked) {
-                            trackButton.dataset.tracked = "true";
-                            trackButton.innerHTML = '<i class="bi bi-bookmark-fill"></i>';
-                        } else {
-                            trackButton.dataset.tracked = "false";
-                            trackButton.innerHTML = '<i class="bi bi-bookmark"></i>';
-                        }
+                        trackButton.dataset.tracked = component.is_tracked ? "true" : "false";
+                        trackButton.innerHTML = component.is_tracked ? '<i class="bi bi-bookmark-fill"></i>' : '<i class="bi bi-bookmark"></i>';
                     }
 
-                    // Mettre à jour les totaux
                     updateRowTotal(priceInput, row.querySelector("td:nth-child(3)").textContent, row);
                 });
                 updateCraftTotal();
@@ -265,349 +147,27 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error("Erreur lors de la récupération des prix des composants :", error);
             });
     }
-    
-    // Fonction pour récupérer l'historique en DB
-    function getLastRecipesFromDB(itemId) {
-        if (!itemId) {
-            console.error('ID de l\'objet non fourni.');
-            return;
-        }
-
-        fetch(`/api/last_recipes/${itemId}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Erreur HTTP ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                const historiqueTableBody = document.getElementById('historique-table-body');
-                historiqueTableBody.innerHTML = '';
-
-                if (data.length === 0) {
-                    historiqueTableBody.innerHTML = `
-                        <tr>
-                            <td colspan="5" class="text-center fst-italic text-muted">
-                                Aucun historique disponible pour cet objet.
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
-
-                data.forEach(recipe => {
-                    const row = document.createElement('tr');
-                    const dateLocale = new Date(recipe.date_recorded).toLocaleString('fr-FR', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
-
-                    row.innerHTML = `
-                        <td>${recipe.item_name}</td>
-                        <td>${formatNumber(recipe.item_craft_price)} kamas</td>
-                        <td>${formatNumber(recipe.item_price)} kamas</td>
-                        <td>${recipe.added_by || "Inconnu"}</td>
-                        <td>${dateLocale}</td>
-                    `;
-                    historiqueTableBody.appendChild(row);
-                });
-            })
-            .catch(error => {
-                console.error('Erreur lors de la récupération de l\'historique :', error);
-            });
-    }
-
-    // Appelez fetchComponentPrices après avoir sélectionné un item
-    resultDiv.addEventListener("click", function (event) {
-        const item = event.target.closest(".autocomplete-item");
-        if (!item) return;
-    
-        const itemId = item.dataset.id; // Récupère l'ID de l'élément sélectionné
-        const slug = item.dataset.slug; // Slug pour les requêtes supplémentaires
-    
-        if (!itemId) {
-            console.error("Aucun ID trouvé pour l'élément sélectionné.");
-            return;
-        }
-    
-        // Mise à jour de l'entrée et de l'ID caché
-        searchInput.value = item.textContent.trim();
-        hiddenItemIdInput.value = itemId;
-    
-        // Efface les suggestions
-        resultDiv.innerHTML = "";
-    
-        console.log("ID sélectionné :", itemId);
-    
-        // Appelle les fonctions nécessaires pour mettre à jour les données
-        fetchRecentCrafts(itemId); // Charge les anciens crafts
-        fetchComponentPrices(itemId); // Charge les prix des composants
-        handleItemSlug(slug); // Charge les composants pour le slug
-    });
-    
-    
-
-    // -------------------------------------------
-    //  RECHERCHE ET AUTOCOMPLÉTION
-    // -------------------------------------------
-
-    // Mise à jour de l'autocomplétion
-    function fetchAutocomplete(term) {
-        console.log("Recherche d'autocomplétion pour le terme :", term);
-    
-        fetch(`/api/autocomplete_items?term=${term}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Erreur HTTP ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log("Données retournées pour l'autocomplétion :", data);
-                if (!Array.isArray(data) || data.length === 0) {
-                    resultDiv.innerHTML = "<div class='text-muted p-2'>Aucun résultat trouvé.</div>";
-                    return;
-                }
-    
-                // Met à jour les suggestions avec `data-id` et `data-slug`
-                resultDiv.innerHTML = data.map(item => `
-                    <div class="autocomplete-item" data-id="${item.id}" data-slug="${item.slug}">
-                        ${item.name} (Niveau ${item.level})
-                    </div>
-                `).join("");
-            })
-            .catch(error => {
-                console.error("Erreur lors de l'autocomplétion :", error);
-                resultDiv.innerHTML = "<div class='text-danger p-2'>Erreur lors de l'autocomplétion.</div>";
-            });
-    }
-    
-    searchInput.addEventListener("input", function (event) {
-        clearTimeout(autoCompleteTimeout);
-    
-        const searchTerm = event.target.value.trim();
-        if (searchTerm.length < 3) {
-            resultDiv.innerHTML = ""; // Vide les suggestions si la saisie est trop courte
-            return;
-        }
-    
-        autoCompleteTimeout = setTimeout(() => {
-            const normalizedTerm = normalizeSearchTerm(searchTerm);
-            fetchAutocomplete(normalizedTerm);
-    
-            // Vérifie si le terme complet correspond directement à un élément
-            fetch(`/api/autocomplete_items?term=${searchTerm}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.length === 1 && data[0].name.toLowerCase() === searchTerm.toLowerCase()) {
-                        console.log("Correspondance exacte trouvée :", data[0]);
-                        hiddenItemIdInput.value = data[0].id; // ID de l'objet
-                        fetchRecentCrafts(data[0].id);
-                        fetchComponentPrices(data[0].id);
-                    }
-                })
-                .catch(error => {
-                    console.error("Erreur lors de la recherche :", error);
-                });
-        }, 300);
-    });
-
-    // Gestion des clics dans la liste des suggestions
-    resultDiv.addEventListener("click", function (event) {
-        const item = event.target.closest(".autocomplete-item");
-        if (!item) return;
-    
-        const itemId = item.dataset.id; // Récupère l'ID de l'élément sélectionné
-        const slug = item.dataset.slug; // Slug pour les requêtes supplémentaires
-    
-        if (!itemId) {
-            console.error("Aucun ID trouvé pour l'élément sélectionné.");
-            return;
-        }
-    
-        // Mise à jour de l'entrée et de l'ID caché
-        searchInput.value = item.textContent.trim();
-        hiddenItemIdInput.value = itemId;
-    
-        // Efface les suggestions
-        resultDiv.innerHTML = "";
-    
-        console.log("ID sélectionné :", itemId);
-    
-        // Appelle les fonctions nécessaires pour mettre à jour les données
-        handleItemSlug(slug); // Charge les composants pour le slug
-        fetchRecentCrafts(itemId); // Charge les anciens crafts
-        fetchComponentPrices(itemId); // Charge les prix des composants
-    });
-
-    function normalizeSlug(slug) {
-        // Supprimer les accents
-        slug = slug.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        // Convertir en minuscule
-        return slug.toLowerCase();
-    }
-
-    function handleItemSlug(slug) {
-        if (isFetching) return; // Empêche les appels multiples
-        isFetching = true;
-    
-        console.log("Slug reçu :", slug);
-    
-        const normalizedSlug = normalizeSlug(slug);
-        const encodedSlug = encodeURIComponent(normalizedSlug);
-    
-        fetch(`/get_craft_data/${encodedSlug}`)
-            .then(response => response.json())
-            .then(data => {
-                isFetching = false; // Réinitialiser le drapeau
-    
-                console.log("Données reçues pour l'objet :", data);
-                if (data.error) {
-                    ingredientTableBody.innerHTML = `
-                        <tr>
-                            <td colspan="7" class="text-center text-danger">${data.error}</td>
-                        </tr>
-                    `;
-                    return;
-                }
-    
-                // Réinitialiser la table des ingrédients
-                ingredientTableBody.innerHTML = "";
-    
-                // Ajouter les composants
-                data.components.forEach(component => {
-                    createIngredientRow(
-                        component,
-                        component.quantity,
-                        component.component_id,
-                        component.last_price || 0
-                    );
-                });
-            })
-            .catch(error => {
-                isFetching = false; // Réinitialiser le drapeau même en cas d'erreur
-                console.error("Erreur lors de la récupération de l'objet :", error);
-            });
-    } 
-    
-    // -------------------------------------------
-    //  CHARGEMENT DES DONNÉES D'UN OBJET
-    // -------------------------------------------
-
-    function fillIngredientTable(components) {
-        console.log("Remplissage de la table des ingrédients avec :", components);
-        ingredientTableBody.innerHTML = "";
-        if (components.length === 0) {
-            ingredientTableBody.innerHTML = `
-                <tr>
-                    <td colspan="7" class="text-center fst-italic text-muted">
-                        Aucun composant trouvé pour cette recette.
-                    </td>
-                </tr>
-            `;
-            return;
-        }
-
-        components.forEach(component => {
-            createIngredientRow(component);
-        });
-    }
-
-    function createIngredientRow(component, quantity, componentId, lastPrice) {
-        const row = ingredientTableBody.insertRow();
-        row.setAttribute('data-id', componentId);
-        row.setAttribute('data-old-price', lastPrice || 0); // Dernier prix enregistré
-    
-        row.innerHTML = `
-            <td><img src="${component.image_url || ''}" alt="${component.component_name || 'Inconnu'}" style="width:32px;"></td>
-            <td>${component.component_name || 'Nom non disponible'}</td>
-            <td>${quantity}</td>
-            <td><input type="number" class="form-control  w-75 text-center price-input" value="${lastPrice || 0}" min="0"></td>
-            <td>0</td>
-            <td><span class="text-muted">N/A</span></td>
-            <td>
-                <button class="btn btn-sm track-btn" data-id="${componentId}" data-name="${component.component_name || ''}">
-                    <i class="bi bi-bookmark"></i>
-                </button>
-            </td>
-        `;
-    
-        const priceInput = row.querySelector('.price-input');
-        priceInput.addEventListener('input', function () {
-            updateRowTotal(priceInput, quantity, row);
-        });
-    
-        // Mise à jour initiale du total et de l'évolution
-        updateRowTotal(priceInput, quantity, row);
-    }
-
-    function getLastRecipesFromDB(itemId) {
-    fetch(`/api/last_recipes/${itemId}`)
-        .then(response => response.json())
-        .then(data => {
-            historiqueTableBody.innerHTML = "";
-
-            if (!data || data.length === 0) {
-                historiqueTableBody.innerHTML = `
-                    <tr>
-                        <td colspan="5" class="text-center fst-italic text-muted">
-                            Aucun historique disponible.
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            data.forEach(recipe => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${recipe.item_name}</td>
-                    <td>${formatNumber(recipe.item_craft_price)} kamas</td>
-                    <td>${formatNumber(recipe.item_price)} kamas</td>
-                    <td>${recipe.added_by || "Inconnu"}</td>
-                    <td>${new Date(recipe.date_recorded).toLocaleDateString('fr-FR')}</td>
-                `;
-                historiqueTableBody.appendChild(row);
-            });
-        })
-        .catch(error => {
-            console.error("Erreur lors de la récupération des objets craftés récents :", error);
-        });
-    }
 
     function updateRowTotal(priceInput, quantity, row) {
         const oldPrice = parseFloat(row.dataset.oldPrice) || 0;
         const newPrice = parseFloat(priceInput.value) || 0;
         const totalCell = row.cells[4];
         const evoCell = row.cells[5];
-    
-        // Mise à jour du total
+
         const total = newPrice * quantity;
         totalCell.textContent = formatNumber(total);
-    
-        // Mise à jour de l'évolution
+
         if (oldPrice > 0) {
             const diff = newPrice - oldPrice;
             const percentChange = ((diff / oldPrice) * 100).toFixed(1);
-    
-            if (diff > 0) {
-                evoCell.innerHTML = `<span style="color:red;">↑ +${percentChange}%</span>`;
-            } else if (diff < 0) {
-                evoCell.innerHTML = `<span style="color:green;">↓ ${percentChange}%</span>`;
-            } else {
-                evoCell.innerHTML = `<span style="color:gray;">0%</span>`;
-            }
+            evoCell.innerHTML = diff > 0 ? `<span style="color:red;">↑ +${percentChange}%</span>` : diff < 0 ? `<span style="color:green;">↓ ${percentChange}%</span>` : `<span style="color:gray;">0%</span>`;
         } else {
             evoCell.innerHTML = `<span style="color:gray;">N/A</span>`;
         }
-    
-        // Met à jour le total général du craft
+
         updateCraftTotal();
     }
-    
+
     function handleTrackButton(button) {
         const componentId = button.dataset.id;
         const isTracked = button.dataset.tracked === 'true';
@@ -638,46 +198,51 @@ document.addEventListener('DOMContentLoaded', function () {
         clearResults();
     });
 
+    function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type} alert-dismissible fade show`;
+        notification.role = 'alert';
+        notification.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        document.body.appendChild(notification);
+        setTimeout(() => {
+            notification.classList.remove('show');
+            notification.classList.add('hide');
+            setTimeout(() => notification.remove(), 500);
+        }, 3000);
+    }
 
     ajouterButton.addEventListener("click", function () {
-        console.log("Bouton Enregistrer cliqué"); // Debug
-    
-        // Récupération des données du formulaire
         const hdvPrice = parseInt(hdvPriceInput.value);
         if (isNaN(hdvPrice) || hdvPrice <= 0) {
             alert("Veuillez entrer un prix HDV valide avant d'enregistrer.");
             return;
         }
-    
-        // Collecte des composants
+
         const components = [];
         ingredientTableBody.querySelectorAll('tr').forEach(row => {
             const componentId = row.querySelector('.track-btn')?.dataset.id;
             const price = parseInt(row.querySelector('.price-input')?.value) || 0;
-    
             if (componentId && price) {
                 components.push({ componentId, price });
             }
         });
-    
-        // Vérification : s'assurer que des composants ont été ajoutés
+
         if (components.length === 0) {
             alert("Aucun composant sélectionné ou prix de composant manquant.");
             return;
         }
-    
-        // Préparer les données pour l'envoi
+
         const data = {
-            item_id: hiddenItemIdInput.value, // Vérifiez que cette valeur est bien définie dans votre HTML
+            item_id: hiddenItemIdInput.value,
             item_name: searchInput.value.trim(),
             item_price: hdvPrice,
             item_craft_price: parseInt(craftTotalSpan.textContent.replace(/\s/g, '')) || 0,
             components,
         };
-    
-        console.log("Données envoyées pour l'enregistrement :", data); // Debug
-    
-        // Envoi des données au serveur
+
         fetch('/ingredient_prices', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -686,70 +251,159 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => response.json())
             .then(data => {
                 if (data.error) {
-                    alert(`Erreur : ${data.error}`);
-                    console.error(data.error); // Debug
+                    showNotification(`Erreur : ${data.error}`, 'danger');
                 } else {
-                    alert(data.message);
-                    resetButton.click(); // Réinitialise le formulaire après un succès
+                    showNotification(data.message, 'success');
+                    resetButton.click();
                 }
             })
             .catch(error => {
                 console.error("Erreur lors de l'enregistrement :", error);
-                alert("Une erreur est survenue lors de l'enregistrement.");
+                showNotification("Une erreur est survenue lors de l'enregistrement.", 'danger');
             });
     });
-    
 
-    function updateTrackingGraph(componentId) {
-        fetch(`/get_resource_data/${componentId}`)
-            .then(response => response.json())
+    function fetchAutocomplete(term) {
+        fetch(`/api/autocomplete_items?term=${term}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
-                if (data.error) {
-                    console.error("Erreur lors de la récupération des données :", data.error);
+                if (!Array.isArray(data) || data.length === 0) {
+                    resultDiv.innerHTML = "<div class='text-muted p-2'>Aucun résultat trouvé.</div>";
                     return;
                 }
-    
-                const ctx = document.getElementById('tracking-graph').getContext('2d');
-    
-                // Détruire le graphique existant avant d'en créer un nouveau
-                if (window.trackingChart) {
-                    window.trackingChart.destroy();
-                }
-    
-                window.trackingChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: data.prices.map(p => new Date(p.date).toLocaleDateString('fr-FR')),
-                        datasets: [{
-                            label: `Prix de ${data.component.name}`,
-                            data: data.prices.map(p => p.price),
-                            borderColor: 'blue',
-                            borderWidth: 2,
-                            tension: 0.2
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: { position: 'top' },
-                            title: { display: true, text: `Historique des prix pour ${data.component.name}` }
-                        }
+
+                resultDiv.innerHTML = data.map(item => `
+                    <div class="autocomplete-item" data-id="${item.id}" data-slug="${item.slug}">
+                        ${item.name} (Niveau ${item.level})
+                    </div>
+                `).join("");
+            })
+            .catch(error => {
+                console.error("Erreur lors de l'autocomplétion :", error);
+                resultDiv.innerHTML = "<div class='text-danger p-2'>Erreur lors de l'autocomplétion.</div>";
+            });
+    }
+
+    searchInput.addEventListener("input", function (event) {
+        clearTimeout(autoCompleteTimeout);
+
+        const searchTerm = event.target.value.trim();
+        if (searchTerm.length < 3) {
+            resultDiv.innerHTML = "";
+            return;
+        }
+
+        autoCompleteTimeout = setTimeout(() => {
+            const normalizedTerm = normalizeSearchTerm(searchTerm);
+            fetchAutocomplete(normalizedTerm);
+
+            fetch(`/api/autocomplete_items?term=${searchTerm}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length === 1 && data[0].name.toLowerCase() === searchTerm.toLowerCase()) {
+                        hiddenItemIdInput.value = data[0].id;
+                        fetchRecentCrafts(data[0].id);
+                        fetchComponentPrices(data[0].id);
                     }
+                })
+                .catch(error => {
+                    console.error("Erreur lors de la recherche :", error);
+                });
+        }, 300);
+    });
+
+    resultDiv.addEventListener("click", function (event) {
+        const item = event.target.closest(".autocomplete-item");
+        if (!item) return;
+
+        const itemId = item.dataset.id;
+        const slug = item.dataset.slug;
+
+        if (!itemId) {
+            console.error("Aucun ID trouvé pour l'élément sélectionné.");
+            return;
+        }
+
+        searchInput.value = item.textContent.trim();
+        hiddenItemIdInput.value = itemId;
+        resultDiv.innerHTML = "";
+
+        fetchRecentCrafts(itemId);
+        fetchComponentPrices(itemId);
+        handleItemSlug(slug);
+    });
+
+    function normalizeSlug(slug) {
+        slug = slug.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        return slug.toLowerCase();
+    }
+
+    function handleItemSlug(slug) {
+        if (isFetching) return;
+        isFetching = true;
+
+        const normalizedSlug = normalizeSlug(slug);
+        const encodedSlug = encodeURIComponent(normalizedSlug);
+
+        fetch(`/get_craft_data/${encodedSlug}`)
+            .then(response => response.json())
+            .then(data => {
+                isFetching = false;
+
+                if (data.error) {
+                    ingredientTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="text-center text-danger">${data.error}</td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                ingredientTableBody.innerHTML = "";
+                data.components.forEach(component => {
+                    createIngredientRow(
+                        component,
+                        component.quantity,
+                        component.component_id,
+                        component.last_price || 0
+                    );
                 });
             })
             .catch(error => {
-                console.error("Erreur lors de la mise à jour du graphique :", error);
+                isFetching = false;
+                console.error("Erreur lors de la récupération de l'objet :", error);
             });
     }
-    
-    // Gestion du clic sur un composant dans la liste des suivis
-    trackingTableBody.addEventListener("click", function (event) {
-        const button = event.target.closest(".track-btn");
-        if (!button) return;
-    
-        const componentId = button.dataset.id;
-        if (componentId) {
-            updateTrackingGraph(componentId);
-        }
-    });
+
+    function createIngredientRow(component, quantity, componentId, lastPrice) {
+        const row = ingredientTableBody.insertRow();
+        row.setAttribute('data-id', componentId);
+        row.setAttribute('data-old-price', lastPrice || 0);
+
+        row.innerHTML = `
+            <td><img src="${component.image_url || ''}" alt="${component.component_name || 'Inconnu'}" style="width:32px;"></td>
+            <td>${component.component_name || 'Nom non disponible'}</td>
+            <td>${quantity}</td>
+            <td><input type="number" class="form-control  w-75 text-center price-input" value="${lastPrice || 0}" min="0"></td>
+            <td>0</td>
+            <td><span class="text-muted">N/A</span></td>
+            <td>
+                <button class="btn btn-sm track-btn" data-id="${componentId}" data-name="${component.component_name || ''}">
+                    <i class="bi bi-bookmark"></i>
+                </button>
+            </td>
+        `;
+
+        const priceInput = row.querySelector('.price-input');
+        priceInput.addEventListener('input', function () {
+            updateRowTotal(priceInput, quantity, row);
+        });
+
+        updateRowTotal(priceInput, quantity, row);
+    }
 });
