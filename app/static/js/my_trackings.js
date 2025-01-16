@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", function () {
     let resourceChart = null;
     let trackedComponents = []; // Centralisation des suivis
 
-
     if (!trackingTableBody) {
         console.error("L'élément trackingTableBody est introuvable.");
         return;
@@ -102,6 +101,9 @@ document.addEventListener("DOMContentLoaded", function () {
                                 borderColor: "blue",
                                 backgroundColor: "rgba(0, 123, 255, 0.2)",
                                 tension: 0.2,
+                                pointRadius: 5,
+                                pointHoverRadius: 7,
+                                pointBackgroundColor: "blue",
                             },
                         ],
                     },
@@ -143,13 +145,11 @@ document.addEventListener("DOMContentLoaded", function () {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ component_id: componentId }),
         })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error(`Erreur HTTP : ${response.status}`);
-                }
+            .then(response => {
+                if (!response.ok) throw new Error(`Erreur HTTP : ${response.status}`);
                 return response.json();
             })
-            .then((data) => {
+            .then(data => {
                 console.log(data.message);
                 // Recharger la liste des suivis
                 loadTrackings();
@@ -244,52 +244,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
-    // -------------------------------------------
-    //  METTRE À JOUR LE GRAPHIQUE POUR LES COMPOSANTS SUIVIS
-    // -------------------------------------------
-    function updateTrackingGraph(componentId) {
-        fetch(`/api/last_component_price/${componentId}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.error || !data.prices || data.prices.length === 0) {
-                    console.warn("Aucune donnée trouvée pour ce composant :", componentId);
-                    const ctx = document.getElementById('tracking-graph').getContext('2d');
-                    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                    ctx.fillText("Pas de données disponibles", 10, 50); // Message si aucune donnée
-                    return;
-                }
-    
-                // Création du graphique avec les données
-                const ctx = document.getElementById('tracking-graph').getContext('2d');
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: data.prices.map(p => new Date(p.date).toLocaleDateString('fr-FR')), // Dates formatées
-                        datasets: [{
-                            label: "Prix (kamas)",
-                            data: data.prices.map(p => p.price), // Prix associés
-                            borderColor: "blue",
-                            backgroundColor: "rgba(0,0,255,0.1)",
-                            tension: 0.2
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: { position: 'top' },
-                            title: { display: true, text: `Ressource : ${data.component_name}` }
-                        }
-                    }
-                });
-            })
-            .catch(error => {
-                console.error("Erreur lors de la récupération des données pour le graphique :", error);
-                const ctx = document.getElementById('tracking-graph').getContext('2d');
-                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                ctx.fillText("Erreur lors du chargement des données", 10, 50);
-            });
-    }    
-
     // Afficher une erreur utilisateur
     function showError(message) {
         const errorBanner = document.getElementById("error-banner");
@@ -327,4 +281,10 @@ document.addEventListener("DOMContentLoaded", function () {
     // Charger les suivis et les derniers crafts au démarrage
     loadTrackings();
     loadUserLastCrafts();
+
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
 });

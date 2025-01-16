@@ -407,27 +407,29 @@ def autocomplete_items():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@routes.route('/track/<int:component_id>', methods=['POST'])
+@routes.route('/track_component', methods=['POST'])
 @login_required
-def track_component(component_id):
-    existing_tracking = TrackedResource.query.filter_by(user_id=current_user.id, component_id=component_id).first()
-
-    if existing_tracking:
-        return jsonify({"success": False, "message": "Ce composant est déjà suivi."}), 400
-
+def track_component():
+    data = request.get_json()
+    component_id = data.get('component_id')
     component = Component.query.get(component_id)
+    
     if not component:
-        return jsonify({"success": False, "message": "Composant introuvable."}), 404
+        return jsonify({'error': 'Component not found'}), 404
 
-    new_tracking = TrackedResource(
-        component_id=component.id,
+    tracked_resource = TrackedResource.query.filter_by(user_id=current_user.id, component_id=component_id).first()
+    if tracked_resource:
+        return jsonify({'message': 'Component already tracked'}), 200
+
+    new_tracked_resource = TrackedResource(
+        component_id=component_id,
         component_name=component.name,
         user_id=current_user.id
     )
-    db.session.add(new_tracking)
+    db.session.add(new_tracked_resource)
     db.session.commit()
 
-    return jsonify({"success": True, "message": f"Vous suivez maintenant le composant {component.name}."}), 201
+    return jsonify({'message': 'Component tracked successfully'}), 201
 
 @routes.route("/my_trackings", methods=["GET"])
 @login_required

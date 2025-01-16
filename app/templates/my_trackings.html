@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h1 class="mb-4">Mes Suivis</h1>
+    <h1 class="mb-4">Mes Suivis <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="Suivez vos composants préférés ici."></i></h1>
     <p>Vous pouvez suivre jusqu'à <strong>15 composants</strong>.</p>
 
     <div class="row">
@@ -12,7 +12,7 @@
         <div class="col-lg-3">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <h4>Composants Suivis</h4>
+                    <h4>Composants Suivis <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="Liste des composants que vous suivez."></i></h4>
                     <table class="table table-hover">
                         <thead>
                             <tr>
@@ -34,7 +34,7 @@
         <div class="col-lg-8"> <!-- Augmenter la largeur -->
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <h4 id="resource-title" class="mb-3">Détails Ressource</h4>
+                    <h4 id="resource-title" class="mb-3">Détails Ressource <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="Détails et historique des prix de la ressource sélectionnée."></i></h4>
                     <div id="resource-info" style="display: none;">
                         <div id="resource-chart-container" style="width: 100%; height: 400px;"> <!-- Style agrandi -->
                             <canvas id="resource-chart"></canvas>
@@ -50,7 +50,7 @@
 
     <!-- Conteneur pour les anciens crafts -->
     <div class="mt-5">
-        <h2 class="text-center">Derniers Crafts</h2>
+        <h2 class="text-center">Derniers Crafts <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="Historique de vos derniers crafts."></i></h2>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3" id="last-crafts-container">
             <!-- Les cartes des crafts seront générées dynamiquement ici -->
         </div>
@@ -64,4 +64,11 @@
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/my_trackings.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+</script>
 {% endblock %}

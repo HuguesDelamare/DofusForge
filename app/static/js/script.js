@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const ajouterButton = document.getElementById('ajouter-recette');
     const hiddenItemIdInput = document.getElementById('selected-item-id');
     const historiqueTableBody = document.getElementById('historique-table-body');
+    const loadingSpinner = document.getElementById('loading-spinner');
 
     // Constantes globales
     const TAX_RATE = 0.02; // Taux de taxe pour le calcul des profits
@@ -70,6 +71,14 @@ document.addEventListener('DOMContentLoaded', function () {
         profitTtcSpan.className = profitAvantTaxe > 0 ? "profit" : "loss";
     }
 
+    function showLoadingSpinner() {
+        loadingSpinner.style.display = 'block';
+    }
+
+    function hideLoadingSpinner() {
+        loadingSpinner.style.display = 'none';
+    }
+
     // -------------------------------------------
     //  RÉCUPÉRER LES OBJETS CRAFTÉS RÉCEMMENT
     // -------------------------------------------
@@ -87,8 +96,10 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
+        showLoadingSpinner();
         fetch(`/api/last_recipes/${itemId}`)
             .then(response => {
+                hideLoadingSpinner();
                 if (!response.ok) {
                     throw new Error(`Erreur HTTP ${response.status}`);
                 }
@@ -117,14 +128,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 `).join('');
             })
             .catch(error => {
+                hideLoadingSpinner();
                 console.error("Erreur lors de la récupération des anciens crafts :", error);
             });
     }
 
     function fetchComponentPrices(itemId) {
+        showLoadingSpinner();
         fetch(`/get_component_prices/${itemId}`)
             .then(response => response.json())
             .then(data => {
+                hideLoadingSpinner();
                 data.forEach(component => {
                     const row = ingredientTableBody.querySelector(`[data-id="${component.component_id}"]`);
                     if (!row) return;
@@ -144,6 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 updateCraftTotal();
             })
             .catch(error => {
+                hideLoadingSpinner();
                 console.error("Erreur lors de la récupération des prix des composants :", error);
             });
     }
@@ -172,10 +187,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const componentId = button.dataset.id;
         const isTracked = button.dataset.tracked === 'true';
 
-        fetch(isTracked ? `/untrack/${componentId}` : `/track/${componentId}`, {
-            method: isTracked ? 'DELETE' : 'POST',
+        fetch(isTracked ? `/untrack_component` : `/track_component`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ component_id: componentId }),
         })
-            .then(response => response.json())
+            .then(response => response.json()) // Parse the response as JSON
             .then(data => {
                 alert(data.message);
                 button.dataset.tracked = isTracked ? 'false' : 'true';
@@ -185,6 +202,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Erreur lors de la gestion du suivi :', error);
             });
     }
+
+    // Add event listener for track buttons
+    ingredientTableBody.addEventListener('click', function(event) {
+        const target = event.target.closest('.track-btn');
+        if (target) {
+            handleTrackButton(target);
+        }
+    });
 
     // -------------------------------------------
     //  GESTION DES BOUTONS
@@ -264,8 +289,10 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     function fetchAutocomplete(term) {
+        showLoadingSpinner();
         fetch(`/api/autocomplete_items?term=${term}`)
             .then(response => {
+                hideLoadingSpinner();
                 if (!response.ok) {
                     throw new Error(`Erreur HTTP ${response.status}`);
                 }
@@ -284,6 +311,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 `).join("");
             })
             .catch(error => {
+                hideLoadingSpinner();
                 console.error("Erreur lors de l'autocomplétion :", error);
                 resultDiv.innerHTML = "<div class='text-danger p-2'>Erreur lors de l'autocomplétion.</div>";
             });
@@ -312,6 +340,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 })
                 .catch(error => {
+                    hideLoadingSpinner();
                     console.error("Erreur lors de la recherche :", error);
                 });
         }, 300);
@@ -350,9 +379,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const normalizedSlug = normalizeSlug(slug);
         const encodedSlug = encodeURIComponent(normalizedSlug);
 
+        showLoadingSpinner();
         fetch(`/get_craft_data/${encodedSlug}`)
             .then(response => response.json())
             .then(data => {
+                hideLoadingSpinner();
                 isFetching = false;
 
                 if (data.error) {
@@ -375,6 +406,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             })
             .catch(error => {
+                hideLoadingSpinner();
                 isFetching = false;
                 console.error("Erreur lors de la récupération de l'objet :", error);
             });

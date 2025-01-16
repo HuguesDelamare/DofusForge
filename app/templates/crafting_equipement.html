@@ -23,12 +23,19 @@
         <!-- INPUT CACHE pour stocker l'ID de l'item sélectionné -->
         <input type="hidden" id="selected-item-id" value="">
 
+        <!-- Loading Spinner -->
+        <div id="loading-spinner" class="text-center" style="display: none;">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Chargement...</span>
+            </div>
+        </div>
+
         <div class="row g-4">
             <!-- Tableau des ingrédients -->
-            <div class="col-lg-8">
+            <div class="col-lg-8 col-md-12">
                 <div class="table-responsive">
                     <table 
-                        class="table table-custom table-striped table-hover align-middle text-center" 
+                        class="table table-custom table-striped table-hover align-middle text-center bg-white" 
                         id="ingredient-table">
                         <thead class="table-dark">
                             <tr>
@@ -53,10 +60,10 @@
             </div>
 
             <!-- Section des calculs -->
-            <div class="col-lg-4">
-                <div class="button-row mb-3 d-flex">
-                    <button class="btn btn-danger" type="button" id="reset-button">Réinitialiser</button>
-                    <button class="btn btn-success" type="button" id="ajouter-recette">
+            <div class="col-lg-4 col-md-12">
+                <div class="button-row mb-3 d-flex flex-wrap">
+                    <button class="btn btn-danger mb-2 me-2" type="button" id="reset-button">Réinitialiser</button>
+                    <button class="btn btn-success mb-2" type="button" id="ajouter-recette">
                         Enregistrer le prix du craft
                     </button>
                 </div>
@@ -93,7 +100,7 @@
         <div class="mt-5">
             <h4>Objets craftés récents</h4>
             <div class="table-responsive">
-                <table class="table table-custom" id="historique-table">
+                <table class="table table-custom bg-white" id="historique-table">
                     <thead>
                         <tr>
                             <th>Nom de l'objet</th>
