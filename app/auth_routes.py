@@ -49,7 +49,6 @@ def register():
     
     return render_template('auth/register.html')
 
-
 @auth.route('/confirm/<token>')
 def confirm_email(token):
     print(f"Token reçu pour confirmation : {token}")  # Log

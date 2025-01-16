@@ -109,7 +109,7 @@ class User(UserMixin, db.Model):
 
     def generate_confirmation_token(self, expires_in=3600):
         payload = {
-            'user_id': self.id,  # Utilise l'ID de l'utilisateur
+            'user_id': self.id,
             'exp': datetime.utcnow() + timedelta(seconds=expires_in)
         }
         return jwt.encode(payload, current_app.config['SECRET_KEY'], algorithm='HS256')
@@ -119,13 +119,10 @@ class User(UserMixin, db.Model):
         try:
             secret_key = current_app.config['SECRET_KEY']
             payload = jwt.decode(token, secret_key, algorithms=['HS256'])
-            print(f"Payload décodé : {payload}")  # Log pour debug
             return User.query.get(payload['user_id'])
         except jwt.ExpiredSignatureError:
-            print("Le jeton a expiré.")
             return None
         except jwt.InvalidTokenError:
-            print("Le jeton est invalide.")
             return None
 
 class TrackedResource(db.Model):
