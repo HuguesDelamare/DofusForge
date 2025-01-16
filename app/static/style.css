@@ -251,12 +251,18 @@ div {
     background-color: #dc3545 !important;
 }
 
+.progress-container {
+    position: relative;
+    height: 20px; /* Define the height of the parent container */
+}
+
 .progress-section {
     position: absolute;
     top: 0;
     bottom: 0;
-    width: 1px;
+    width: 2px;
     background-color: #fff;
+    z-index: 2; /* Ensure the sections are above the progress bar background */
 }
 
 .progress-section-3h {
@@ -264,7 +270,58 @@ div {
 }
 
 .progress-section-9h {
-    left: 100%;
+    left: 66.66%;
+}
+
+.progress {
+    height: 20px;
+    background-color: #e9ecef;
+    border-radius: 0.25rem;
+    margin: 0;
+    overflow: hidden;
+}
+
+.progress-bar {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    transition: width .6s ease;
+}
+
+.progress-bar-striped {
+    background-image: linear-gradient(45deg, 
+        rgba(255,255,255,.15) 25%, 
+        transparent 25%, 
+        transparent 50%, 
+        rgba(255,255,255,.15) 50%, 
+        rgba(255,255,255,.15) 75%, 
+        transparent 75%, 
+        transparent);
+    background-size: 1rem 1rem;
+}
+
+.progress-bar-animated {
+    animation: progress-bar-stripes 1s linear infinite;
+}
+
+@keyframes progress-bar-stripes {
+    from { background-position: 1rem 0; }
+    to { background-position: 0 0; }
+}
+
+.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+.bg-success {
+    background-color: #28a745 !important;
+}
+
+.bg-primary {
+    background-color: #007bff !important;
 }
 
 /*-------------------------------------------

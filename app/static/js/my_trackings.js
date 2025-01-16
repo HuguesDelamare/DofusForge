@@ -114,6 +114,8 @@ document.addEventListener("DOMContentLoaded", function () {
                             legend: { display: true },
                             tooltip: {
                                 enabled: true,
+                                intersect: false, // Show tooltip when near a point
+                                mode: 'nearest', // Show tooltip for the nearest point
                                 callbacks: {
                                     label: function (context) {
                                         return `Prix : ${context.raw.toLocaleString('fr-FR')} kamas`;

@@ -59,7 +59,8 @@ document.addEventListener("DOMContentLoaded", () => {
                             const hoursSinceLastKilled = Math.floor(timeSinceLastKilled / 3600000);
                             const minutesSinceLastKilled = Math.floor((timeSinceLastKilled % 3600000) / 60000);
                             const secondsSinceLastKilled = Math.floor((timeSinceLastKilled % 60000) / 1000);
-                            const minutesUntilMaxRespawn = Math.max(0, Math.floor((9 - hoursSinceLastKilled) * 60));
+                            const totalMinutesSinceLastKilled = Math.floor(timeSinceLastKilled / 60000);
+                            const minutesUntilMaxRespawn = Math.max(0, Math.floor((9 * 60) - totalMinutesSinceLastKilled));
                             const secondsUntilMaxRespawn = Math.max(0, Math.floor((9 * 60 * 60 - timeSinceLastKilled) / 1000));
 
                             let progressBarColor = "bg-danger";
@@ -73,8 +74,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
                             row.querySelector(".window-status").innerHTML = `Depuis ${hoursSinceLastKilled}h ${minutesSinceLastKilled}m ${secondsSinceLastKilled}s`;
                             row.querySelector(".window-status").setAttribute("title", `Fenêtre ${windowStatus}. Dernière mort: ${lastKilled}`);
-                            row.querySelector(".progress-bar").style.width = `${Math.min(hoursSinceLastKilled / 9 * 100, 100)}%`;
-                            row.querySelector(".progress-bar").className = `progress-bar ${progressBarColor}`;
+                            row.querySelector(".progress-bar").style.width = `${Math.min(totalMinutesSinceLastKilled / (9 * 60) * 100, 100)}%`;
+                            row.querySelector(".progress-bar").className = `progress-bar progress-bar-striped progress-bar-animated ${progressBarColor}`;
                             row.querySelector(".progress-bar").innerHTML = `${hoursSinceLastKilled}h ${minutesSinceLastKilled}m ${secondsSinceLastKilled}s`;
                             row.querySelector(".max-respawn").innerHTML = `Dans ${Math.floor(secondsUntilMaxRespawn / 60)}m ${secondsUntilMaxRespawn % 60}s`;
 
@@ -82,6 +83,9 @@ document.addEventListener("DOMContentLoaded", () => {
                             if (hoursSinceLastKilled >= 3 && hoursSinceLastKilled < 9) {
                                 row.querySelector(".progress-bar").classList.remove("bg-danger");
                                 row.querySelector(".progress-bar").classList.add("bg-success");
+                            } else if (hoursSinceLastKilled >= 9) {
+                                row.querySelector(".progress-bar").classList.remove("bg-success");
+                                row.querySelector(".progress-bar").classList.add("bg-primary");
                             }
                         };
 
@@ -90,12 +94,12 @@ document.addEventListener("DOMContentLoaded", () => {
                             <td>${bounty.name}</td>
                             <td class="window-status" title="Fenêtre Fermé. Dernière mort: ${lastKilled}">Depuis 0h 0m 0s</td>
                             <td>
-                                <div class="progress">
-                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="9">
+                                <div class="progress position-relative">
+                                    <div class="progress-bar bg-danger progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="9">
                                         0h 0m 0s
                                     </div>
-                                    <div class="progress-section progress-section-3h"></div>
-                                    <div class="progress-section progress-section-9h"></div>
+                                    <div class="progress-section progress-section-3h position-absolute" style="left: 33.33%; height: 100%; width: 2px; background-color: #fff;"></div>
+                                    <div class="progress-section progress-section-9h position-absolute" style="left: 66.66%; height: 100%; width: 2px; background-color: #fff;"></div>
                                 </div>
                             </td>
                             <td class="max-respawn">Dans 0m 0s</td>
