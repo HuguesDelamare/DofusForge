@@ -68,11 +68,11 @@
         "server_id": 1
     },
     {
-        "name": "Maître Bolet",
+        "name": "Maître Boulet",
         "respawn_time": 9,
-        "image_url": "/static/images/bounties_illustrations/maitre-bolet.png",
-        "infos_image": "/static/images/bounties_infos/maitre-bolet.jpg",
-        "links": "https://www.dofuspourlesnoobs.com/on-recherche-maitre-bolet.html",
+        "image_url": "/static/images/bounties_illustrations/maitre-boulet.png",
+        "infos_image": "/static/images/bounties_infos/maitre-boulet.jpg",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-maitre-boulet.html",
         "reward": {
             "amount": 3,
             "type": "Aliton"
@@ -81,6 +81,159 @@
         "location": {
             "image": "/static/images/bounties_maps/maitre-bolet.jpg",
             "map_name": "Bord de la forêt maléfique"
+        },
+        "server_id": 1
+    },
+    {
+        "name": "Marzwel le gobelin",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/marzwel-le-gobelin.png",
+        "infos_image": "/static/images/bounties_infos/marzwel-le-gobelin.jpg",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-marzwel-le-gobelin.html",
+        "reward": {
+            "amount": 360,
+            "type": "Doplon"
+        },
+        "difficulty": 30,
+        "location": {
+            "image": "/static/images/bounties_maps/marzwel-le-gobelin.jpg",
+            "map_name": "Massif de Cania"
+        },
+        "server_id": 1
+    },
+    {
+        "name": "Musha l'Oni",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/musha-l-oni.png",
+        "infos_image": "/static/images/bounties_infos/musha-l-oni.jpg",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-mufafah.html",
+        "reward": {
+            "amount": 600,
+            "type": "Doplon"
+        },
+        "difficulty": 30,
+        "location": {
+            "image": "/static/images/bounties_maps/musha-l-oni.jpg",
+            "map_name": "Baie de Cania"
+        },
+        "server_id": 1
+    },
+    {
+        "name": "Rok Gnorok",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/rok-gnorok.png",
+        "infos_image": "/static/images/bounties_infos/nelween.jpg",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-nelween.html",
+        "reward": {
+            "amount": 660,
+            "type": "Doplon"
+        },
+        "difficulty": 30,
+        "location": {
+            "image": "/static/images/bounties_maps/rok-gnorok.jpg",
+            "map_name": "Lac enchantés"
+        },
+        "server_id": 1
+    },
+    {
+        "name": "Qil Bil",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/qil-bil.png",
+        "infos_image": "/static/images/bounties_infos/qil-bil.jpg",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-qil-bil.html",
+        "reward": {
+            "amount": 480,
+            "type": "Doplon"
+        },
+        "difficulty": 30,
+        "location": {
+            "image": "/static/images/bounties_maps/qil-bil.jpg",
+            "map_name": "Cimetière des torturés"
+        },
+        "server_id": 1
+    },
+    {
+        "name": "Padgref demoel",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/padgref-demoel.png",
+        "infos_image": "/static/images/bounties_infos/padgref-demoel.jpg",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-padgref-demoel.html",
+        "reward": {
+            "amount": 1080,
+            "type": "Doplon"
+        },
+        "difficulty": 30,
+        "location": {
+            "image": "/static/images/bounties_maps/padgref-demoel.jpg",
+            "map_name": "Bois de Litneg"
+        },
+        "server_id": 1
+    },
+    {
+        "name": "Aermyne 'Braco' Scalptaras",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/aermyne-braco-scalptaras.png",
+        "infos_image": "/static/images/bounties_infos/aermyne-braco-scalptaras.jpg",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-aermyne-braco-scalptaras.html",
+        "reward": {
+            "amount": 600,
+            "type": "Doplon"
+        },
+        "difficulty": 30,
+        "location": {
+            "image": "/static/images/bounties_maps/aermyne-braco-scalptaras.jpg",
+            "map_name": "Forêt de Kaliptus"
+        },
+        "server_id": 1
+    },
+    {
+        "name": "Brumen Tinctorias",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/brumen-tinctorias.png",
+        "infos_image": "/static/images/bounties_infos/brumen-tinctorias.jpg",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-brumen-tinctorias.html",
+        "reward": {
+            "amount": 360,
+            "type": "Doplon"
+        },
+        "difficulty": 30,
+        "location": {
+            "image": "/static/images/bounties_maps/brumen-tinctorias.jpg",
+            "map_name": "Désolation de Sidimote"
+        },
+        "server_id": 1
+    },
+    {
+        "name": "Ogivol Scarlacin",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/ogivol-scalarcin.png",
+        "infos_image": "/static/images/bounties_infos/ogivol-scalarcin.jpg",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-ogivol-scalarcin.html",
+        "reward": {
+            "amount": 300,
+            "type": "Doplon"
+        },
+        "difficulty": 30,
+        "location": {
+            "image": "/static/images/bounties_maps/ogivol-scalarcin.jpg",
+            "map_name": "Village des Zoths"
+        },
+        "server_id": 1
+    },
+    {
+        "name": "Zatoïshwan",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/zatoïshwan.png",
+        "infos_image": "/static/images/bounties_infos/zatoïshwan.jpg",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-zatoishwan.html",
+        "reward": {
+            "amount": 1320,
+            "type": "Doplon"
+        },
+        "difficulty": 30,
+        "location": {
+            "image": "/static/images/bounties_maps/zatoïshwan.jpg",
+            "map_name": "Village des Zoths"
         },
         "server_id": 1
     }
