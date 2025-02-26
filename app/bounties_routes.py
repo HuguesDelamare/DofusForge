@@ -50,7 +50,7 @@ def get_bounties(server_id):
             'return_quest': server_bounty.bounty.return_quest,
             'tag': server_bounty.bounty.tag,
             'is_hunted': user_bounty_status_dict.get(server_bounty.bounty.id, False)
-        } for server_bounty in server_bounties
+        } for server_bounty in server_bounties if server_bounty.bounty is not None
     ])
 
 @bounties.route('/report/<int:bounty_id>', methods=['POST'])
