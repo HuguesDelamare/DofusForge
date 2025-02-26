@@ -13,6 +13,14 @@
             <option value="">Sélectionnez un serveur</option>
         </select>        
     </div>
+
+    <!-- Boutons de filtre par tag -->
+    <div class="my-4 text-center">
+        <button class="btn btn-primary filter-btn" data-tag="Astrub">Astrub</button>
+        <button class="btn btn-primary filter-btn" data-tag="Château d'Amakna">Château d'Amakna</button>
+        <button class="btn btn-primary filter-btn" data-tag="Ecaflipus">Ecaflipus</button>
+        <button class="btn btn-primary filter-btn" data-tag="Justiciers">Justiciers</button>
+    </div>
     
     <!-- Tableau des recherchés -->
     <div id="bounties-container" class="d-none">
@@ -27,7 +35,7 @@
                     <th>Max</th>
                     <th>Zone</th>
                     <th>Actions</th>
-                    <th>Suivi</th> <!-- Nouvelle colonne pour le suivi -->
+                    <th>Suivi</th>
                 </tr>
             </thead>
             <tbody id="bounties-table-body"></tbody>

@@ -3,17 +3,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const bountiesContainer = document.getElementById("bounties-container");
     const serverName = document.getElementById("server-name");
     const bountiesTableBody = document.getElementById("bounties-table-body");
-    const additionalInfoContainer = document.getElementById("additional-info-container");
-    const locationImage = document.getElementById("location-image");
+    const filterButtons = document.querySelectorAll(".filter-btn");
+
+    let currentServerId = null;
+    let currentTag = null;
 
     // Charger les serveurs
     fetch('/bounties/servers')
-        .then(response => {
-            console.log("Réponse du serveur :", response);
-            return response.json();
-        })
+        .then(response => response.json())
         .then(servers => {
-            console.log("Serveurs récupérés :", servers);
             servers.forEach(server => {
                 const option = document.createElement("option");
                 option.value = server.id;
@@ -25,13 +23,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Charger les recherchés pour un serveur donné
     serverSelect.addEventListener("change", (event) => {
-        const serverId = event.target.value;
-        if (!serverId) {
+        currentServerId = event.target.value;
+        currentTag = null; // Reset the tag filter when changing server
+        loadBounties();
+    });
+
+    // Filtrer les recherchés par tag
+    filterButtons.forEach(button => {
+        button.addEventListener("click", (event) => {
+            currentTag = event.target.getAttribute("data-tag");
+            loadBounties();
+        });
+    });
+
+    function loadBounties() {
+        if (!currentServerId) {
             bountiesContainer.classList.add("d-none");
             return;
         }
 
-        fetch(`/bounties/${serverId}`)
+        let url = `/bounties/${currentServerId}`;
+        if (currentTag) {
+            url += `?tag=${currentTag}`;
+        }
+
+        fetch(url)
             .then(response => response.json())
             .then(bounties => {
                 bountiesTableBody.innerHTML = ""; // Vider le tableau
@@ -52,43 +68,6 @@ document.addEventListener("DOMContentLoaded", () => {
                             ? new Date(bounty.last_killed_at).toLocaleString("fr-FR")
                             : "Inconnu";
 
-                        const updateTimer = () => {
-                            const now = new Date();
-                            const lastKilledDate = new Date(bounty.last_killed_at);
-                            const timeSinceLastKilled = now - lastKilledDate;
-                            const hoursSinceLastKilled = Math.floor(timeSinceLastKilled / 3600000);
-                            const minutesSinceLastKilled = Math.floor((timeSinceLastKilled % 3600000) / 60000);
-                            const secondsSinceLastKilled = Math.floor((timeSinceLastKilled % 60000) / 1000);
-                            const totalMinutesSinceLastKilled = Math.floor(timeSinceLastKilled / 60000);
-                            const minutesUntilMaxRespawn = Math.max(0, Math.floor((9 * 60) - totalMinutesSinceLastKilled));
-                            const secondsUntilMaxRespawn = Math.max(0, Math.floor((9 * 60 * 60 - timeSinceLastKilled) / 1000));
-
-                            let progressBarColor = "bg-danger";
-                            if (hoursSinceLastKilled >= 3 && hoursSinceLastKilled < 9) {
-                                progressBarColor = "bg-success";
-                            } else if (hoursSinceLastKilled >= 9) {
-                                progressBarColor = "bg-primary";
-                            }
-
-                            const windowStatus = hoursSinceLastKilled >= 3 ? "Ouvert" : "Fermé";
-
-                            row.querySelector(".window-status").innerHTML = `Depuis ${hoursSinceLastKilled}h ${minutesSinceLastKilled}m ${secondsSinceLastKilled}s`;
-                            row.querySelector(".window-status").setAttribute("title", `Fenêtre ${windowStatus}. Dernière mort: ${lastKilled}`);
-                            row.querySelector(".progress-bar").style.width = `${Math.min(totalMinutesSinceLastKilled / (9 * 60) * 100, 100)}%`;
-                            row.querySelector(".progress-bar").className = `progress-bar progress-bar-striped progress-bar-animated ${progressBarColor}`;
-                            row.querySelector(".progress-bar").innerHTML = `${hoursSinceLastKilled}h ${minutesSinceLastKilled}m ${secondsSinceLastKilled}s`;
-                            row.querySelector(".max-respawn").innerHTML = `Dans ${Math.floor(secondsUntilMaxRespawn / 60)}m ${secondsUntilMaxRespawn % 60}s`;
-
-                            // Changer la couleur de la barre de progression à la section de 3 heures
-                            if (hoursSinceLastKilled >= 3 && hoursSinceLastKilled < 9) {
-                                row.querySelector(".progress-bar").classList.remove("bg-danger");
-                                row.querySelector(".progress-bar").classList.add("bg-success");
-                            } else if (hoursSinceLastKilled >= 9) {
-                                row.querySelector(".progress-bar").classList.remove("bg-success");
-                                row.querySelector(".progress-bar").classList.add("bg-primary");
-                            }
-                        };
-
                         row.innerHTML = `
                             <td><img src="${bounty.image_url}" alt="${bounty.name}" style="width: 50px; height: 50px;"></td>
                             <td>${bounty.name}</td>
@@ -108,45 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             <td><input type="checkbox" class="track-checkbox" data-bounty-id="${bounty.id}" ${bounty.is_hunted ? 'checked' : ''}></td>
                         `;
 
-                        const detailsRow = document.createElement("tr");
-                        detailsRow.classList.add("details-row", "d-none");
-                        detailsRow.innerHTML = `
-                            <td colspan="8">
-                                <div class="details-container">
-                                    <img src="${bounty.location_image}" alt="Location">
-                                    <div class="details-info">
-                                        <div class="info-row">
-                                            <p><strong>Difficulté:</strong> ${bounty.difficulty}</p>
-                                            <p><strong>Jetons gagnés:</strong> ${bounty.reward_amount} ${bounty.reward_type}</p>
-                                        </div>
-                                        <img src="${bounty.infos_image}" alt="Infos" class="infos-image">
-                                        <a href="${bounty.links}" target="_blank" class="btn btn-info mt-2">Voir sur DofusPourLesNoobs</a>
-                                    </div>
-                                </div>
-                            </td>
-                        `;
-
-                        console.log("infos_image URL:", bounty.infos_image); // Ajouter un log pour vérifier le chemin de l'image
-
-                        row.addEventListener("click", () => {
-                            detailsRow.classList.toggle("d-none");
-                            if (locationImage) {
-                                if (bounty.location_image) {
-                                    locationImage.src = bounty.location_image;
-                                    locationImage.classList.remove("d-none");
-                                } else {
-                                    locationImage.classList.add("d-none");
-                                }
-                                additionalInfoContainer.classList.remove("d-none");
-                            }
-                            console.log("infos_image URL on click:", bounty.infos_image); // Ajouter un log pour vérifier le chemin de l'image lors du clic
-                        });
-
                         bountiesTableBody.appendChild(row);
-                        bountiesTableBody.appendChild(detailsRow);
-
-                        setInterval(updateTimer, 1000); // Mettre à jour toutes les secondes
-                        updateTimer(); // Mettre à jour immédiatement
 
                         document.querySelector(`.report-btn[data-bounty-id="${bounty.id}"]`).addEventListener("click", (event) => {
                             const bountyId = event.target.getAttribute("data-bounty-id");
@@ -162,14 +103,11 @@ document.addEventListener("DOMContentLoaded", () => {
                                 console.log("Report successful:", data);
                                 // Réinitialiser le timer
                                 bounty.last_killed_at = new Date().toISOString();
-                                updateTimer();
                             })
                             .catch(error => console.error("Erreur lors du report du recherché :", error));
                         });
-                    });
 
-                    document.querySelectorAll(".track-checkbox").forEach(checkbox => {
-                        checkbox.addEventListener("change", (event) => {
+                        document.querySelector(`.track-checkbox[data-bounty-id="${bounty.id}"]`).addEventListener("change", (event) => {
                             const bountyId = event.target.getAttribute("data-bounty-id");
                             const isHunted = event.target.checked;
                             fetch(`/bounties/track/${bountyId}`, {
@@ -186,25 +124,8 @@ document.addEventListener("DOMContentLoaded", () => {
                             .catch(error => console.error("Erreur lors du suivi du recherché :", error));
                         });
                     });
-
-                    // Initialize tooltips
-                    document.querySelectorAll('.window-status').forEach(element => {
-                        element.addEventListener('mouseover', (event) => {
-                            const tooltip = document.createElement('div');
-                            tooltip.className = 'tooltip';
-                            tooltip.innerText = event.target.getAttribute('title');
-                            document.body.appendChild(tooltip);
-                            const rect = event.target.getBoundingClientRect();
-                            tooltip.style.left = `${rect.left + window.scrollX}px`;
-                            tooltip.style.top = `${rect.top + window.scrollY - tooltip.offsetHeight}px`;
-                        });
-
-                        element.addEventListener('mouseout', () => {
-                            document.querySelectorAll('.tooltip').forEach(tooltip => tooltip.remove());
-                        });
-                    });
                 }
             })
             .catch(error => console.error("Erreur lors du chargement des recherchés :", error));
-    });
+    }
 });

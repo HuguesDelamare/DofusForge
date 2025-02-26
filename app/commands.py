@@ -3,7 +3,7 @@ import click
 from flask import current_app
 from flask.cli import with_appcontext
 import json
-from app.models import Bounty, db
+from app.models import Bounty, db, ServerBounty, Server
 
 @click.command('create-servers')
 @with_appcontext
@@ -53,11 +53,12 @@ def load_bounties():
         click.echo(f"Erreur de décodage JSON : {e}")
         return
 
+
+
+    servers = Server.query.all()
     for bounty_data in bounties_data:
         existing_bounty = Bounty.query.filter_by(name=bounty_data["name"]).first()
         if not existing_bounty:
-            last_killed_at_default = datetime.utcnow() - timedelta(hours=3)
-            
             bounty = Bounty(
                 name=bounty_data["name"],
                 respawn_time=bounty_data["respawn_time"],
@@ -66,13 +67,22 @@ def load_bounties():
                 links=bounty_data["links"],
                 reward_amount=bounty_data["reward"]["amount"],
                 reward_type=bounty_data["reward"]["type"],
-                difficulty=bounty_data["difficulty"],
                 location_image=bounty_data["location"]["image"],
                 location_map_name=bounty_data["location"]["map_name"],
-                server_id=bounty_data.get("server_id"),
-                last_killed_at=last_killed_at_default
+                starting_quest=bounty_data["starting_quest"],
+                return_quest=bounty_data["return_quest"],
+                tag=bounty_data["tag"]
             )
             db.session.add(bounty)
+            db.session.flush()  # Ensure the bounty ID is available
+
+            for server in servers:
+                server_bounty = ServerBounty(
+                    server_id=server.id,
+                    bounty_id=bounty.id,
+                    last_killed_at=datetime.utcnow() - timedelta(hours=3)
+                )
+                db.session.add(server_bounty)
 
     try:
         db.session.commit()

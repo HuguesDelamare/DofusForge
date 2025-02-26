@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         craftTotalSpan.textContent = formatNumber(craftTotal);
 
-        const hdvPrice = parseInt(hdvPriceInput.value) || 0;
+        const hdvPrice = parseInt(hdvPriceInput.value.replace(/\s/g, '')) || 0;
         const profitAvantTaxe = hdvPrice - craftTotal;
         const profitTtc = profitAvantTaxe * (1 - TAX_RATE);
         profitTtcSpan.textContent = (profitAvantTaxe > 0 ? "+" : "") + formatNumber(Math.round(profitTtc));
@@ -78,6 +78,31 @@ document.addEventListener('DOMContentLoaded', function () {
     function hideLoadingSpinner() {
         loadingSpinner.style.display = 'none';
     }
+
+    // -------------------------------------------
+    //  FORMATER LES PRIX
+    // -------------------------------------------
+
+    function formatPriceInput(input) {
+        const value = input.value.replace(/\s/g, '');
+        if (!isNaN(value) && value !== '') {
+            input.value = formatNumber(parseInt(value));
+        }
+    }
+
+    // Ajouter un écouteur d'événements pour formater les prix lors de la saisie
+    document.querySelectorAll('.price-input').forEach(input => {
+        input.addEventListener('input', function () {
+            formatPriceInput(this);
+            updateCraftTotal();
+        });
+    });
+
+    // Ajouter un écouteur d'événements pour formater le prix HDV lors de la saisie
+    hdvPriceInput.addEventListener('input', function () {
+        formatPriceInput(this);
+        updateCraftTotal();
+    });
 
     // -------------------------------------------
     //  RÉCUPÉRER LES OBJETS CRAFTÉS RÉCEMMENT
@@ -165,7 +190,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function updateRowTotal(priceInput, quantity, row) {
         const oldPrice = parseFloat(row.dataset.oldPrice) || 0;
-        const newPrice = parseFloat(priceInput.value) || 0;
+        const newPrice = parseFloat(priceInput.value.replace(/\s/g, '')) || 0;
         const totalCell = row.cells[4];
         const evoCell = row.cells[5];
 
@@ -240,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     ajouterButton.addEventListener("click", function () {
-        const hdvPrice = parseInt(hdvPriceInput.value);
+        const hdvPrice = parseInt(hdvPriceInput.value.replace(/\s/g, ''));
         if (isNaN(hdvPrice) || hdvPrice <= 0) {
             alert("Veuillez entrer un prix HDV valide avant d'enregistrer.");
             return;
@@ -249,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const components = [];
         ingredientTableBody.querySelectorAll('tr').forEach(row => {
             const componentId = row.querySelector('.track-btn')?.dataset.id;
-            const price = parseInt(row.querySelector('.price-input')?.value) || 0;
+            const price = parseInt(row.querySelector('.price-input')?.value.replace(/\s/g, '')) || 0;
             if (componentId && price) {
                 components.push({ componentId, price });
             }

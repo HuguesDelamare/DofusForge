@@ -56,8 +56,8 @@ class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     item_id = db.Column(db.Integer, db.ForeignKey('items.id'), nullable=False)
     item_name = db.Column(db.String(255), nullable=False)
-    item_price = db.Column(db.Integer, nullable=False)  # Prix HDV renseigné
-    item_craft_price = db.Column(db.Integer, nullable=False, default=0)  # Coût total du craft
+    item_price = db.Column(db.Integer, nullable=False)
+    item_craft_price = db.Column(db.Integer, nullable=False, default=0)
     date_recorded = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     # Relation avec User et Item
@@ -164,18 +164,36 @@ class Bounty(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     respawn_time = db.Column(db.Integer, nullable=False)
-    image_url = db.Column(db.String(512), nullable=True)  # URL complète de l'image
-    infos_image = db.Column(db.String(512), nullable=True)  # URL complète de l'image d'information
+    image_url = db.Column(db.String(512), nullable=True)
+    infos_image = db.Column(db.String(512), nullable=True)
     links = db.Column(db.String(512), nullable=True)
     reward_amount = db.Column(db.Integer, nullable=True)
     reward_type = db.Column(db.String(50), nullable=True)
-    difficulty = db.Column(db.Integer, nullable=True)
-    location_image = db.Column(db.String(512), nullable=True)  # URL complète de l'image de localisation
+    location_image = db.Column(db.String(512), nullable=True)
     location_map_name = db.Column(db.String(255), nullable=True)
-    server_id = db.Column(db.Integer, db.ForeignKey('servers.id'), nullable=True)
+    last_killed_at = db.Column(db.DateTime, default=datetime.utcnow)
+    starting_quest = db.Column(db.String(255), nullable=True)
+    return_quest = db.Column(db.String(255), nullable=True)
+    tag = db.Column(db.String(255), nullable=True)
+
+    def __repr__(self):
+        return (
+            f"<Bounty {self.name}, respawn_time={self.respawn_time}, reward={self.reward_amount} {self.reward_type}, "
+            f"location={self.location_map_name}, starting_quest={self.starting_quest}, return_quest={self.return_quest}, tag={self.tag}>"
+        )
+
+class ServerBounty(db.Model):
+    __tablename__ = 'server_bounties'
+    id = db.Column(db.Integer, primary_key=True)
+    server_id = db.Column(db.Integer, db.ForeignKey('servers.id'), nullable=False)
+    bounty_id = db.Column(db.Integer, db.ForeignKey('bounties.id'), nullable=False)
     last_killed_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    server = db.relationship('Server', backref='bounties', lazy=True)
+    server = db.relationship('Server', backref='server_bounties', lazy=True)
+    bounty = db.relationship('Bounty', backref='server_bounties', lazy=True)
+
+    def __repr__(self):
+        return f"<ServerBounty server_id={self.server_id}, bounty_id={self.bounty_id}, last_killed_at={self.last_killed_at}>"
 
 class UserBountyStatus(db.Model):
     """
@@ -187,7 +205,7 @@ class UserBountyStatus(db.Model):
     bounty_id = db.Column(db.Integer, db.ForeignKey('bounties.id'), nullable=False)
     server_id = db.Column(db.Integer, db.ForeignKey('servers.id'), nullable=False)
     status = db.Column(db.Boolean, default=False)
-    is_hunted = db.Column(db.Boolean, default=False)  # Nouveau champ pour le suivi
+    is_hunted = db.Column(db.Boolean, default=False)
     user = db.relationship('User', backref='bounty_statuses', lazy=True)
     bounty = db.relationship('Bounty', backref='user_statuses', lazy=True)
     server = db.relationship('Server', backref='user_statuses', lazy=True)

@@ -9,12 +9,13 @@
             "amount": 120,
             "type": "Doplon"
         },
-        "difficulty": 20,
         "location": {
             "image": "/static/images/bounties_maps/fouduglen-l-ecureuil.jpg",
             "map_name": "Cité d'Astrub"
         },
-        "server_id": 1
+        "starting_quest": "Milice d'Astrub",
+        "return_quest": "Milice d'Astrub",
+        "tag": "Astrub"
     },
     {
         "name": "Sam Sagaz",
@@ -26,12 +27,13 @@
             "amount": 2,
             "type": "Aliton"
         },
-        "difficulty": 20,
         "location": {
             "image": "/static/images/bounties_maps/sam-sagaz.jpg",
             "map_name": "Prairies d'Astrub"
         },
-        "server_id": 1
+        "starting_quest": "Milice d'Astrub",
+        "return_quest": "Milice d'Astrub",
+        "tag": "Astrub"
     },
     {
         "name": "Frakacia leukocytine",
@@ -40,15 +42,16 @@
         "infos_image": "/static/images/bounties_infos/frakacia-leukocytine.jpg",
         "links": "https://www.dofuspourlesnoobs.com/on-recherche-frakacia-leukocytine.html",
         "reward": {
-            "amount": 30,
+            "amount": 180,
             "type": "Doplon"
         },
-        "difficulty": 30,
         "location": {
             "image": "/static/images/bounties_maps/frakacia-leukocytine.jpg",
             "map_name": "Forêt d'Astrub"
         },
-        "server_id": 1
+        "starting_quest": "Milice d'Astrub",
+        "return_quest": "Milice d'Astrub",
+        "tag": "Astrub"
     },
     {
         "name": "Guman",
@@ -60,12 +63,13 @@
             "amount": 180,
             "type": "Doplon"
         },
-        "difficulty": 30,
         "location": {
             "image": "/static/images/bounties_maps/guman.jpg",
             "map_name": "Champs des Ingalsse"
         },
-        "server_id": 1
+        "starting_quest": "Base des Justiciers",
+        "return_quest": "Base des Justiciers",
+        "tag": "Justiciers"
     },
     {
         "name": "Maître Boulet",
@@ -77,12 +81,13 @@
             "amount": 3,
             "type": "Aliton"
         },
-        "difficulty": 30,
         "location": {
             "image": "/static/images/bounties_maps/maitre-bolet.jpg",
             "map_name": "Bord de la forêt maléfique"
         },
-        "server_id": 1
+        "starting_quest": "Bonta/Brakmar",
+        "return_quest": "Bonta/Brakmar",
+        "tag": "Alignement"
     },
     {
         "name": "Marzwel le gobelin",
@@ -94,12 +99,13 @@
             "amount": 360,
             "type": "Doplon"
         },
-        "difficulty": 30,
         "location": {
             "image": "/static/images/bounties_maps/marzwel-le-gobelin.jpg",
             "map_name": "Massif de Cania"
         },
-        "server_id": 1
+        "starting_quest": "Milice d'Astrub",
+        "return_quest": "Milice d'Astrub",
+        "tag": "Astrub"
     },
     {
         "name": "Musha l'Oni",
@@ -111,12 +117,13 @@
             "amount": 600,
             "type": "Doplon"
         },
-        "difficulty": 30,
         "location": {
             "image": "/static/images/bounties_maps/musha-l-oni.jpg",
             "map_name": "Baie de Cania"
         },
-        "server_id": 1
+        "starting_quest": "Milice d'Astrub",
+        "return_quest": "Milice d'Astrub",
+        "tag": "Astrub"
     },
     {
         "name": "Rok Gnorok",
@@ -128,12 +135,13 @@
             "amount": 660,
             "type": "Doplon"
         },
-        "difficulty": 30,
         "location": {
             "image": "/static/images/bounties_maps/rok-gnorok.jpg",
             "map_name": "Lac enchantés"
         },
-        "server_id": 1
+        "starting_quest": "Milice d'Astrub",
+        "return_quest": "Milice d'Astrub",
+        "tag": "Astrub"
     },
     {
         "name": "Qil Bil",
@@ -145,12 +153,13 @@
             "amount": 480,
             "type": "Doplon"
         },
-        "difficulty": 30,
         "location": {
             "image": "/static/images/bounties_maps/qil-bil.jpg",
             "map_name": "Cimetière des torturés"
         },
-        "server_id": 1
+        "starting_quest": "Milice d'Astrub",
+        "return_quest": "Milice d'Astrub",
+        "tag": "Astrub"
     },
     {
         "name": "Padgref demoel",
@@ -162,12 +171,13 @@
             "amount": 1080,
             "type": "Doplon"
         },
-        "difficulty": 30,
         "location": {
             "image": "/static/images/bounties_maps/padgref-demoel.jpg",
             "map_name": "Bois de Litneg"
         },
-        "server_id": 1
+        "starting_quest": "Milice d'Astrub",
+        "return_quest": "Milice d'Astrub",
+        "tag": "Astrub"
     },
     {
         "name": "Aermyne 'Braco' Scalptaras",
@@ -179,12 +189,13 @@
             "amount": 600,
             "type": "Doplon"
         },
-        "difficulty": 30,
         "location": {
             "image": "/static/images/bounties_maps/aermyne-braco-scalptaras.jpg",
             "map_name": "Forêt de Kaliptus"
         },
-        "server_id": 1
+        "starting_quest": "Milice d'Astrub",
+        "return_quest": "Milice d'Astrub",
+        "tag": "Astrub"
     },
     {
         "name": "Brumen Tinctorias",
@@ -196,12 +207,13 @@
             "amount": 360,
             "type": "Doplon"
         },
-        "difficulty": 30,
         "location": {
             "image": "/static/images/bounties_maps/brumen-tinctorias.jpg",
             "map_name": "Désolation de Sidimote"
         },
-        "server_id": 1
+        "starting_quest": "Milice d'Astrub",
+        "return_quest": "Milice d'Astrub",
+        "tag": "Astrub"
     },
     {
         "name": "Ogivol Scarlacin",
@@ -213,12 +225,13 @@
             "amount": 300,
             "type": "Doplon"
         },
-        "difficulty": 30,
         "location": {
             "image": "/static/images/bounties_maps/ogivol-scalarcin.jpg",
             "map_name": "Village des Zoths"
         },
-        "server_id": 1
+        "starting_quest": "Milice d'Astrub",
+        "return_quest": "Milice d'Astrub",
+        "tag": "Astrub"
     },
     {
         "name": "Zatoïshwan",
@@ -230,11 +243,318 @@
             "amount": 1320,
             "type": "Doplon"
         },
-        "difficulty": 30,
         "location": {
             "image": "/static/images/bounties_maps/zatoïshwan.jpg",
             "map_name": "Village des Zoths"
         },
-        "server_id": 1
+        "starting_quest": "Milice d'Astrub",
+        "return_quest": "Milice d'Astrub",
+        "tag": "Astrub"
+    },
+    {
+        "name": "Amy l'empoisonneuse",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/amy-l-empoisonneuse.png",
+        "infos_image": "/static/images/bounties_infos/amy-l-empoisonneuse.jpg",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-amy-l-empoisonneuse.html",
+        "reward": {
+            "amount": 1200,
+            "type": "Doplon"
+        },
+        "location": {
+            "image": "/static/images/bounties_maps/amy-l-empoisonneuse.jpg",
+            "map_name": "Jungle obscure"
+        },
+        "starting_quest": "Base des Justiciers",
+        "return_quest": "Base des Justiciers",
+        "tag": "Justiciers"
+    },
+    {
+        "name": "Gadoo",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/gadoo.png",
+        "infos_image": "/static/images/bounties_infos/gadoo.jpg",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-gadoo.html",
+        "reward": {
+            "amount": 360,
+            "type": "Doplon"
+        },
+        "location": {
+            "image": "/static/images/bounties_maps/gadoo.jpg",
+            "map_name": "Marécages sans fond"
+        },
+        "starting_quest": "Base des Justiciers",
+        "return_quest": "Base des Justiciers",
+        "tag": "Justiciers"
+    },
+    {
+        "name": "l'Hyperscampe",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/l-hyperscampe.png",
+        "infos_image": "/static/images/bounties_infos/l-hyperscampe.jpg",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-l-hyperscampe.html",
+        "reward": {
+            "amount": 2040,
+            "type": "Doplon"
+        },
+        "location": {
+            "image": "/static/images/bounties_maps/l-hyperscampe.jpg",
+            "map_name": "salles des abîmes"
+        },
+        "starting_quest": "Base des Justiciers",
+        "return_quest":  "Base des Justiciers",
+        "tag": "Justiciers"
+    },
+    {
+        "name": "Atcham",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/atcham.png",
+        "infos_image": "/static/images/bounties_infos/atcham.jpg",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-atcham.html",
+        "reward": {
+            "amount": 2040,
+            "type": "Doplon"
+        },
+        "location": {
+            "image": "/static/images/bounties_maps/atcham.jpg",
+            "map_name": "Temple de Kerubim"
+        },
+        "starting_quest": "Avant-poste des Voyageurs",
+        "return_quest": "Avant-poste des Voyageurs",
+        "tag": "Ecaflipus"
+    },
+    {
+        "name": "Ali grothor",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/ali-grothor.png",
+        "infos_image": "/static/images/bounties_infos/ali-grothor.jpg",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-ali-grothor.html",
+        "reward": {
+            "amount": 1080,
+            "type": "Doplon"
+        },
+        "location": {
+            "image": "/static/images/bounties_maps/ali-grothor.jpg",
+            "map_name": "Tourbière nauséabonde"
+        },
+        "starting_quest": "Milice du Château d'Amakna",
+        "return_quest": "Milice du Château d'Amakna",
+        "tag": "Château d'Amakna"
+    },
+    {
+        "name": "Anatak Diskedor",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/anatak-diskedor.png",
+        "infos_image": "/static/images/bounties_infos/anatak-diskedor.jpg",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-anatak-diskedor.html",
+        "reward": {
+            "amount": 1440,
+            "type": "Doplon"
+        },
+        "location": {
+            "image": "/static/images/bounties_maps/anatak-diskedor.jpg",
+            "map_name": "Dents de Pierre"
+        },
+        "starting_quest": "Milice du Château d'Amakna",
+        "return_quest": "Milice du Château d'Amakna",
+        "tag": "Milice du Château d'Amakna"
+    },
+    {
+        "name": "Calita de l'Aguerfelde",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/calita-de-l-aguerfelde.png",
+        "infos_image": "/static/images/bounties_infos/calita-de-l-aguerfelde.jpg",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-carlita-de-l-aguerfelde.html",
+        "reward": {
+            "amount": 660,
+            "type": "Doplon"
+        },
+        "location": {
+            "image": "/static/images/bounties_maps/calita-de-l-aguerfelde.jpg",
+            "map_name": "Hauts des Hurlements"
+        },
+        "starting_quest": "Milice du Château d'Amakna",
+        "return_quest": "Milice du Château d'Amakna",
+        "tag": "Château d'Amakna"
+    },
+    {
+        "name": "Fojumo",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/fojumo.png",
+        "infos_image": "/static/images/bounties_infos/fojumo.jpg",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-fojumo.html",
+        "reward": {
+            "amount": 1200,
+            "type": "Doplon"
+        },
+        "location": {
+            "image": "/static/images/bounties_maps/fojumo.jpg",
+            "map_name": "Cirque de Cania"
+        },
+        "starting_quest": "Milice du Château d'Amakna",
+        "return_quest": "Milice du Château d'Amakna",
+        "tag": "Château d'Amakna"
+    },
+    {
+        "name": "Grand Kongoku",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/grand-kongoku.png",
+        "infos_image": "/static/images/bounties_infos/grand-kongoku.jpg",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-fojumo.html",
+        "reward": {
+            "amount": 2040,
+            "type": "Doplon"
+        },
+        "location": {
+            "image": "/static/images/bounties_maps/grand-kongoku.jpg",
+            "map_name": "Salles des Embruns"
+        },
+        "starting_quest": "Milice du Château d'Amakna",
+        "return_quest": "Milice du Château d'Amakna",
+        "tag": "Château d'Amakna"
+    },
+    {
+        "name": "Guerrier du K.O",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/guerrier-du-ko.png",
+        "infos_image": "/static/images/bounties_infos/guerrier-du-ko.jpg",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-le-guerrier-du-ko.html",
+        "reward": {
+            "amount": 1680,
+            "type": "Doplon"
+        },
+        "location": {
+            "image": "/static/images/bounties_maps/guerrier-du-ko.jpg",
+            "map_name": "Mont Torrideau"
+        },
+        "starting_quest": "Milice du Château d'Amakna",
+        "return_quest": "Milice du Château d'Amakna",
+        "tag": "Château d'Amakna"
+    },
+    {
+        "name": "Naganita",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/naganita.png",
+        "infos_image": "/static/images/bounties_infos/naganita.jpg",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-naganita.html",
+        "reward": {
+            "amount": 660,
+            "type": "Doplon"
+        },
+        "location": {
+            "image": "/static/images/bounties_maps/naganita.jpg",
+            "map_name": "Ile de Kartonpath"
+        },
+        "starting_quest": "Milice du Château d'Amakna",
+        "return_quest": "Milice du Château d'Amakna",
+        "tag": "Château d'Amakna"
+    },
+    {
+        "name": "Nenufor Tilotus",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/nenufor-tilotus.png",
+        "infos_image": "/static/images/bounties_infos/nenufor-tilotus.jpg",
+        "links": "https://www.dofuspourlesnoobs.com/on-recherche-nenufor-tilotus.html",
+        "reward": {
+            "amount": 960,
+            "type": "Doplon"
+        },
+        "location": {
+            "image": "/static/images/bounties_maps/nenufor-tilotus.jpg",
+            "map_name": "Tourbière sans fond"
+        },
+        "starting_quest": "Milice du Château d'Amakna",
+        "return_quest": "Milice du Château d'Amakna",
+        "tag": "Château d'Amakna"
+    },
+    {
+        "name": "Predagob",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/predagob.png",
+        "infos_image": "/static/images/bounties_infos/predagob.jpg",
+        "links": "/static/images/bounties_maps/predagob.jpg",
+        "reward": {
+            "amount": 1680,
+            "type": "Doplon"
+        },
+        "location": {
+            "image": "/static/images/bounties_maps/predagob.jpg",
+            "map_name": "Nimotopia"
+        },
+        "starting_quest": "Milice du Château d'Amakna",
+        "return_quest": "Milice du Château d'Amakna",
+        "tag": "Château d'Amakna"
+    },
+    {
+        "name": "Sushu Debruk'Sayl",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/sushu-debruk-sayl.png",
+        "infos_image": "/static/images/bounties_infos/sushu-debruk-sayl.jpg",
+        "links": "/static/images/bounties_maps/sushu-debruk-sayl.jpg",
+        "reward": {
+            "amount": 1680,
+            "type": "Doplon"
+        },
+        "location": {
+            "image": "/static/images/bounties_maps/sushu-debruk-sayl.jpg",
+            "map_name": "Gisgoul"
+        },
+        "starting_quest": "Milice du Château d'Amakna",
+        "return_quest": "Milice du Château d'Amakna",
+        "tag": "Château d'Amakna"
+    },
+    {
+        "name": "Simbadas",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/simbadas.png",
+        "infos_image": "/static/images/bounties_infos/simbadas.jpg",
+        "links": "/static/images/bounties_maps/simbadas.jpg",
+        "reward": {
+            "amount": 660,
+            "type": "Doplon"
+        },
+        "location": {
+            "image": "/static/images/bounties_maps/simbadas.jpg",
+            "map_name": "Route des Roulottes"
+        },
+        "starting_quest": "Milice du Château d'Amakna",
+        "return_quest": "Milice du Château d'Amakna",
+        "tag": "Château d'Amakna"
+    },
+    {
+        "name": "Trukipik",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/trukipik.png",
+        "infos_image": "/static/images/bounties_infos/trukipik.jpg",
+        "links": "/static/images/bounties_maps/trukipik.jpg",
+        "reward": {
+            "amount": 660,
+            "type": "Doplon"
+        },
+        "location": {
+            "image": "/static/images/bounties_maps/trukipik.jpg",
+            "map_name": "Jungle Interdite"
+        },
+        "starting_quest": "Milice du Château d'Amakna",
+        "return_quest": "Milice du Château d'Amakna",
+        "tag": "Château d'Amakna"
+    },
+    {
+        "name": "Tyranne la Terrible",
+        "respawn_time": 9,
+        "image_url": "/static/images/bounties_illustrations/tyranne-la-terrible.png",
+        "infos_image": "/static/images/bounties_infos/tyranne-la-terrible.jpg",
+        "links": "/static/images/bounties_maps/tyranne-la-terrible.jpg",
+        "reward": {
+            "amount": 600,
+            "type": "Doplon"
+        },
+        "location": {
+            "image": "/static/images/bounties_maps/tyranne-la-terrible.jpg",
+            "map_name": "Forêt Sombre"
+        },
+        "starting_quest": "Milice du Château d'Amakna",
+        "return_quest": "Milice du Château d'Amakna",
+        "tag": "Château d'Amakna"
     }
 ]
