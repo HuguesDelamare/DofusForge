@@ -16,10 +16,21 @@
 
     <!-- Boutons de filtre par tag -->
     <div class="my-4 text-center">
-        <button class="btn btn-primary filter-btn" data-tag="Astrub">Astrub</button>
-        <button class="btn btn-primary filter-btn" data-tag="Château d'Amakna">Château d'Amakna</button>
-        <button class="btn btn-primary filter-btn" data-tag="Ecaflipus">Ecaflipus</button>
-        <button class="btn btn-primary filter-btn" data-tag="Justiciers">Justiciers</button>
+        <div class="filter-btn-container">
+            <button class="btn btn-primary filter-btn" data-tag="Astrub">Astrub</button>
+            <button class="btn btn-primary filter-btn" data-tag="Château d'Amakna">Château d'Amakna</button>
+            <button class="btn btn-primary filter-btn" data-tag="Ecaflipus">Ecaflipus</button>
+            <button class="btn btn-primary filter-btn" data-tag="Justiciers">Justiciers</button>
+            <button class="btn btn-primary filter-btn" data-tag="Enutrosor">Enutrosor</button>
+            <button class="btn btn-primary filter-btn" data-tag="Frigost">Frigost</button>
+            <button class="btn btn-primary filter-btn" data-tag="la Bourgade">la Bourgade</button>
+            <button class="btn btn-primary filter-btn" data-tag="Frigost, le Village Enseveli">Frigost, le Village Enseveli</button>
+            <button class="btn btn-primary filter-btn" data-tag="Frigost III">Frigost III</button>
+            <button class="btn btn-primary filter-btn" data-tag="Saharach">Saharach</button>
+            <button class="btn btn-primary filter-btn" data-tag="Srambad">Srambad</button>
+            <button class="btn btn-primary filter-btn" data-tag="Sufokia">Sufokia</button>
+            <button class="btn btn-primary filter-btn" data-tag="Xélorium">Xélorium</button>
+        </div>
     </div>
     
     <!-- Tableau des recherchés -->
@@ -40,6 +51,17 @@
             </thead>
             <tbody id="bounties-table-body"></tbody>
         </table>      
+        <!-- Div pour afficher les informations supplémentaires -->
+        <div id="additional-info-container" class="d-none mt-4">
+            <div class="details-container">
+                <img id="location-image" class="d-none" alt="Location Image" style="max-width: 300px; height: auto;">
+                <div class="details-info">
+                    <h3>Informations supplémentaires</h3>
+                    <div id="additional-info"></div>
+                    <a id="bounty-link" class="btn btn-info mt-2" target="_blank">Voir sur Dofus pour les Noobs</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
