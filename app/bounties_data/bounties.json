@@ -362,15 +362,15 @@
     {
         "name": "Calita de l'Aguerfelde",
         "respawn_time": 9,
-        "image_url": "/static/images/bounties_illustrations/calita-de-l-aguerfelde.png",
-        "infos_image": "/static/images/bounties_infos/calita-de-l-aguerfelde.jpg",
+        "image_url": "/static/images/bounties_illustrations/carlita-de-l-aguerfelde.png",
+        "infos_image": "/static/images/bounties_infos/carlita-de-l-aguerfelde.jpg",
         "links": "https://www.dofuspourlesnoobs.com/on-recherche-carlita-de-l-aguerfelde.html",
         "reward": {
             "amount": 660,
             "type": "Doplon"
         },
         "location": {
-            "image": "/static/images/bounties_maps/calita-de-l-aguerfelde.jpg",
+            "image": "/static/images/bounties_maps/carlita-de-l-aguerfelde.jpg",
             "map_name": "Hauts des Hurlements"
         },
         "starting_quest": "Milice du Château d'Amakna",
@@ -486,17 +486,17 @@
         "tag": "Château d'Amakna"
     },
     {
-        "name": "Sushu Debruk'Sayl",
+        "name": "Shushu Debruk'Sayl",
         "respawn_time": 9,
-        "image_url": "/static/images/bounties_illustrations/sushu-debruk-sayl.png",
-        "infos_image": "/static/images/bounties_infos/sushu-debruk-sayl.jpg",
-        "links": "/static/images/bounties_maps/sushu-debruk-sayl.jpg",
+        "image_url": "/static/images/bounties_illustrations/shushu-debruk-sayl.png",
+        "infos_image": "/static/images/bounties_infos/shushu-debruk-sayl.jpg",
+        "links": "/static/images/bounties_maps/shushu-debruk-sayl.jpg",
         "reward": {
             "amount": 1680,
             "type": "Doplon"
         },
         "location": {
-            "image": "/static/images/bounties_maps/sushu-debruk-sayl.jpg",
+            "image": "/static/images/bounties_maps/shushu-debruk-sayl.jpg",
             "map_name": "Gisgoul"
         },
         "starting_quest": "Milice du Château d'Amakna",
