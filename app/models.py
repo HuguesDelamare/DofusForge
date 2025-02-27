@@ -1,34 +1,31 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import current_app
-from sqlalchemy.exc import IntegrityError
 import jwt
 from app import db
 
-
 class Item(db.Model):
     __tablename__ = 'items'
-    id = db.Column(db.Integer, primary_key=True)  # ID unique de l'item
-    name = db.Column(db.String(255), nullable=False)  # Nom de l'objet
-    level = db.Column(db.Integer, nullable=False)  # Niveau de l'objet
-    type = db.Column(db.String(255), nullable=False)  # Type (localisé)
-    description = db.Column(db.Text, nullable=True)  # Description
-    image_url = db.Column(db.String(512), nullable=True)  # URL de l'image
-    item_set = db.Column(db.String(255), nullable=True)  # Nom de la panoplie (slug)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    level = db.Column(db.Integer, nullable=False)
+    type = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    image_url = db.Column(db.String(512), nullable=True)
+    item_set = db.Column(db.String(255), nullable=True)
 
     def __repr__(self):
         return f"<Item {self.name}, level={self.level}, type={self.type}, set={self.item_set}>"
 
-# Décrit le composant indépendamment de Item ou Recette, Composant Unique
 class Component(db.Model):
     __tablename__ = 'components'
-    id = db.Column(db.Integer, primary_key=True)  # ID unique du composant
-    name = db.Column(db.String(255), nullable=False)  # Nom du composant
-    image_url = db.Column(db.String(512), nullable=True)  # URL de l'image du composant
-    description = db.Column(db.Text, nullable=True)  # Description du composant
-    type = db.Column(db.String(255), nullable=True)  # Type du composant (optionnel)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    image_url = db.Column(db.String(512), nullable=True)
+    description = db.Column(db.Text, nullable=True)
+    type = db.Column(db.String(255), nullable=True)
 
     def __repr__(self):
         return f"<Component {self.name}, type={self.type}>"
@@ -40,10 +37,8 @@ class RecipeComponent(db.Model):
     component_id = db.Column(db.Integer, db.ForeignKey('components.id'), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
 
-    # Relations
     component = db.relationship('Component', backref='recipe_components', lazy=True)
 
-    # Contrainte d'unicité
     __table_args__ = (
         db.UniqueConstraint('recipe_id', 'component_id', name='unique_recipe_component'),
     )
@@ -60,7 +55,6 @@ class Recipe(db.Model):
     item_craft_price = db.Column(db.Integer, nullable=False, default=0)
     date_recorded = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
-    # Relation avec User et Item
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship('User', backref='recipes', lazy=True)
     item = db.relationship('Item', backref='recipes', lazy=True)
@@ -100,11 +94,11 @@ class User(UserMixin, db.Model):
     is_confirmed = db.Column(db.Boolean, default=False)
 
     def set_password(self, password):
-        """Hash le mot de passe et le stocke."""
+        """Hash the password and store it."""
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
-        """Vérifie le mot de passe en le comparant au hash stocké."""
+        """Check the password by comparing it to the stored hash."""
         return check_password_hash(self.password_hash, password)
 
     def generate_confirmation_token(self, expires_in=3600):
@@ -139,7 +133,7 @@ class TrackedResource(db.Model):
 
 class Server(db.Model):
     """
-    Table représentant les serveurs (DAKAL, etc.).
+    Table representing servers (DAKAL, etc.).
     """
     __tablename__ = 'servers'
     id = db.Column(db.Integer, primary_key=True)
@@ -150,11 +144,11 @@ class Server(db.Model):
     @staticmethod
     def validate_server_data(server_data):
         if not server_data.get('name'):
-            raise ValueError("Le nom du serveur est obligatoire.")
+            raise ValueError("Server name is required.")
         if not server_data.get('server_type'):
-            raise ValueError("Le type du serveur est obligatoire.")
+            raise ValueError("Server type is required.")
         if not server_data.get('language'):
-            raise ValueError("La langue du serveur est obligatoire.")
+            raise ValueError("Server language is required.")
 
     def __repr__(self):
         return f"<Server {self.name} ({self.server_type}, {self.language})>"
@@ -197,7 +191,7 @@ class ServerBounty(db.Model):
 
 class UserBountyStatus(db.Model):
     """
-    Table reliant les utilisateurs aux recherchés pour gérer leur état de progression.
+    Table linking users to bounties to manage their progress status.
     """
     __tablename__ = 'user_bounty_status'
     id = db.Column(db.Integer, primary_key=True)
